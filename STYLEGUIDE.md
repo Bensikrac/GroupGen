@@ -18,6 +18,11 @@
 - member variables public when getter and setter exist and trivial
 - **never** abbreviate identifiers (except proper names)
 
+### Project structure
+- source files into `src`
+- no subfolders for single-file components
+- snake_case for filenames
+
 ### Other
 - **always** add TypeHints
 - **every** function and **every** class needs a docstring
