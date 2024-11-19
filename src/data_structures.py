@@ -5,11 +5,11 @@ class Participant:
     __attributes: Dict[str, List[str]]
     """attributes are mapped using attribute name ex. 'interest' -> ['math', 'physics']"""
     
-    def __init__(name: str):
+    def __init__(self, name: str):
         """Creates a participant with the name set. For groups Names should be unique"""
         self.__name = name
     
-    def __init__(name: str, attributes: Dict[str, List[str]]):
+    def __init__(self, name: str, attributes: Dict[str, List[str]]):
         """Creates a new participant with the given name and attributes. Attributes are given in a dict of str->List[str]"""
         self.__name = name
         self.__attributes = attributes
@@ -48,10 +48,10 @@ class Participant:
 class Group:
     __members: List[Participant]
 
-    def __init__():
+    def __init__(self):
         """ creates an empty group """
 
-    def __init__(members: List[Participant]):
+    def __init__(self, members: List[Participant]):
         """ creates a group with the given participants """
         self.__members = members
     
