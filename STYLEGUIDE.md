@@ -9,6 +9,7 @@
 ### Format
 - always use tabs
 - `black` formatter on default settings (https://marketplace.visualstudio.com/items?itemName=ms-python.black-formatter on vscode)
+- **every** code file should end with a newline
 
 ### Naming
 - PascalCase for classes
