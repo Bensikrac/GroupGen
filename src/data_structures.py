@@ -24,19 +24,19 @@ class Participant:
         return self.__attributes[attribute_name]
 
     def set_attributes(self, attributes: Dict[str, List[str]]):
-        """ overwrites all attributes of the participant with the given attribute list"""
+        """overwrites all attributes of the participant with the given attribute list"""
         self.__attributes = attributes
 
     def set_attribute(self, attribute_name: str, attribute_values: List[str]):
-        """ overwrites the given attribute name with the given attribute value"""
+        """overwrites the given attribute name with the given attribute value"""
         self.__attributes[attribute_name] = attribute_values
 
     def add_attribute_value(self, attribute_name: str, attribute_value: str):
-        """ adds a single value to the list of attribute values for the given attribute name"""
+        """adds a single value to the list of attribute values for the given attribute name"""
         self.__attributes[attribute_name].append(attribute_value)
 
     def remove_attribute_value(self, attribute_name: str, attribute_value: str):
-        """ removes the given attribute value from the attribute name"""
+        """removes the given attribute value from the attribute name"""
         self.__attributes[attribute_name].remove(attribute_value)
 
 
@@ -49,20 +49,20 @@ class Group:
     __members: List[Participant]
 
     def __init__(self):
-        """ creates an empty group """
+        """creates an empty group"""
 
     def __init__(self, members: List[Participant]):
-        """ creates a group with the given participants """
+        """creates a group with the given participants"""
         self.__members = members
     
     def add_participant(self, participant: Participant):
-        """ adds the given participant to the group """
+        """adds the given participant to the group"""
         self.__members.append(participant)
 
     def remove_participant(self, participant: Participant):
-        """ removes the given participant from the group """
+        """removes the given participant from the group"""
         self.__members.remove(participant)
     
     def get_participants(self) -> List[Participant]:
-        """ returns list of members """
+        """returns list of members"""
         return self.__members
