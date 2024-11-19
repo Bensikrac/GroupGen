@@ -1,0 +1,26 @@
+[project]
+name = "group_gen"
+version = "0.1.0"
+authors = [
+  {name = "Moritz Breiting"},
+  {name = "Benedek Major"},
+  {name = "David Schäfer"},
+  {name = "Tjark Stallmann"},
+  {name = "Daniel Wirth"},
+]
+
+readme = "README.md"
+license = {file = "LICENSE.md"}
+
+requires-python = ">= 3.12"
+
+dependencies = []
+
+[project.optional-dependencies]
+gui = [
+  "PyQt6"
+]
+
+[project.gui-scripts]
+hello_window = "group_gen:hello_window"
+
