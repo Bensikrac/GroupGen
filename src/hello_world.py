@@ -7,7 +7,7 @@ class HelloWindow(QMainWindow):
     A basic hello-world example window
     """
 
-    def __init__(self: Self):
+    def __init__(self):
         """
         Default initializer
         """
