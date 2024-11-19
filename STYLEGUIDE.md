@@ -26,5 +26,4 @@
 
 ### Other
 - **always** add TypeHints
-- **every** function and **every** class needs a docstring
-
+- **every** function and **every** class needs a docstring (PEP 257 - https://peps.python.org/pep-0257/)
