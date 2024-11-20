@@ -1,6 +1,8 @@
 from typing import Dict, List
 
 class Participant:
+    """data structure, which represents a participant by storing name and attribute list of an individual participant"""
+
     __name: str
     __attributes: Dict[str, List[str]]
     """attributes are mapped using attribute name ex. 'interest' -> ['math', 'physics']"""
@@ -46,6 +48,8 @@ class Participant:
 
 
 class Group:
+    """data structure which represents a group of participants"""
+
     __members: List[Participant]
 
     def __init__(self):
