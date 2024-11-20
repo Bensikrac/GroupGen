@@ -21,7 +21,7 @@ gui = [
   "PyQt6"
 ]
 formatter = [
-  "black"
+  "black>=24.8.0"
 ]
 
 [project.gui-scripts]
