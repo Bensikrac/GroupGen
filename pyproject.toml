@@ -20,6 +20,9 @@ dependencies = []
 gui = [
   "PyQt6"
 ]
+formatter = [
+  "black"
+]
 
 [project.gui-scripts]
 hello_window = "group_gen:hello_window"
