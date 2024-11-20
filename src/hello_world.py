@@ -3,14 +3,10 @@ from PyQt6.QtCore import Qt
 
 
 class HelloWindow(QMainWindow):
-    """
-    A basic hello-world example window
-    """
+    """A basic hello-world example window"""
 
     def __init__(self):
-        """
-        Default initializer
-        """
+        """Default initializer"""
         super().__init__()
 
         self.setWindowTitle("Hello World")
