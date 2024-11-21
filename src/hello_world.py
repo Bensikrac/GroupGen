@@ -3,7 +3,10 @@ from PyQt6.QtCore import Qt
 
 
 class HelloWindow(QMainWindow):
+    """A basic hello-world example window"""
+
     def __init__(self):
+        """Default initializer"""
         super().__init__()
 
         self.setWindowTitle("Hello World")
@@ -14,8 +17,9 @@ class HelloWindow(QMainWindow):
         self.setCentralWidget(label)
 
 
-app = QApplication([])
-window = HelloWindow()
-window.show()
+if __name__ == "__main__":
+    app = QApplication([])
+    window = HelloWindow()
+    window.show()
 
-app.exec()
+    app.exec()
