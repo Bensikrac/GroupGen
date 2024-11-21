@@ -1,32 +1,33 @@
-from abc import ABC
+from abc import ABCMeta, abstractmethod
+from typing import Self
 from data_interface import DataInterface
 
 
-class DataFilter(ABC, DataInterface):
+class DataFilter[G, FG, P, FP](DataInterface[FG, FP], metaclass=ABCMeta):
     """Abstract Base Class for simple data filtering operations"""
 
-    __wrapee: DataInterface
+    __wrapee: DataInterface[G, P]
 
-    def __init__(self, wrapee: DataInterface):
+    def __init__(self: Self, wrapee: DataInterface[G, P]) -> None:
         """Initializer. Require a `DataInterface` to wrap around"""
         self.__wrapee = wrapee
 
     @staticmethod
     @abstractmethod
-    def get_filter(data: Any) -> Any:
+    def get_filter(data: G) -> FG:
         """Filter `get` data from underlying `DataInterface`"""
         return None
 
-    def get(self) -> Any:
+    def get(self: Self) -> FG:
         """Use `get` filter on output of underlying `DataInterface` `get`"""
-        return get_filter(self.__wrapee.get())
+        return self.get_filter(self.__wrapee.get())
 
     @staticmethod
     @abstractmethod
-    def put_filter(data: Any) -> Any:
+    def put_filter(data: FP) -> P:
         """Filter `put` data from underlying `DataInterface`"""
         return None
 
-    def put(self, data: Any) -> None:
+    def put(self: Self, data: FP) -> None:
         """Use `put` filter on output of underlying `DataInterface` `put`"""
-        return self.__wrapee.put(put_filter(data))
+        return self.__wrapee.put(self.put_filter(data))
