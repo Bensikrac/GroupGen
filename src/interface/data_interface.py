@@ -3,14 +3,19 @@ from typing import Self
 
 
 class DataInterface[G, P](metaclass=ABCMeta):
-    """Abstract Base Class for simple I/O operations"""
+    """Abstract Base Class for simple I/O operations
+
+    Generic arguments:
+    G -- return type of `get`
+    P -- argument type of `put`
+    """
 
     @abstractmethod
-    def get(self: Self) -> G:
-        """get a set of data"""
-        return None
+    def get(self) -> G:
+        """get an arbitrary set of data"""
+        pass
 
     @abstractmethod
-    def put(self: Self, x: P) -> None:
-        """put a set of data"""
-        return None
+    def put(self, x: P) -> None:
+        """put an arbitrary set of data"""
+        pass
