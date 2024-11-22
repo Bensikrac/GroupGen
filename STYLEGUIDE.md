@@ -20,7 +20,7 @@
 - **never** abbreviate identifiers (except proper names)
 
 ### Other
-- **always** add TypeHints
+- **always** add TypeHints (exception: `self` parameters must omit `Self` typehints)
 - **every** function and **every** class needs a docstring (PEP 257 - https://peps.python.org/pep-0257/)
 
 
