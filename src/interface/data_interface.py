@@ -1,5 +1,4 @@
 from abc import ABCMeta, abstractmethod
-from typing import Self
 
 
 class DataInterface[G, P](metaclass=ABCMeta):
