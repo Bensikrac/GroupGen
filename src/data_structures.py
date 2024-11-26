@@ -5,12 +5,8 @@ class Participant:
     attributes: dict[str, str]
     """attributes are mapped using attribute name ex. 'course' -> 'math' """
 
-    def __init__(self, name: str):
+    def __init__(self, name: str, attributes: dict[str, str] = dict()):
         """Creates a participant with the name set. For groups Names should be unique"""
-        self.__name = name
-
-    def __init__(self, name: str, attributes: dict[str, str]):
-        """Creates a new participant with the given name and attributes. Attributes are given in a dict of str->List[str]"""
         self.__name = name
         self.attributes = attributes
 
@@ -29,6 +25,9 @@ class Participant:
     def __eq__(self, other) -> bool:
         """Compares if two participants are equal, based on their name"""
         return self.__name == other.__name
+
+    def __repr__(self) -> str:
+        return "Name: " + self.__name + " Attribute: " + str(self.attributes)
 
 
 class Group:
