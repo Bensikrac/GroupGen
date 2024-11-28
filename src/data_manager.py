@@ -4,7 +4,7 @@ from data_structures import AttributeUID, AttributeValueUID, ParticipantUID, UID
 
 
 class DataManager:
-    """Manage attribute names and IDs"""
+    """Manage attribute names and IDs, after creation the data cannot be changed"""
 
     __participant_uid_offset: int
     """The first ParticipantUID"""
@@ -17,6 +17,7 @@ class DataManager:
 
     __uid_name_mapping: dict[UID, str]
     __name_uid_mapping: dict[tuple[str, AttributeUID], UID]
+    __current_uid: UID
 
     def __map_value_name(
         self, uid: UID, attribute_uid: AttributeUID, name: str
@@ -44,17 +45,17 @@ class DataManager:
         self.__data_uid_offsets[-1] = len(data[0]) * (len(data) - 1)
         self.__participant_uid_offset = self.__data_uid_offsets[-1] + len(data[-1])
 
-        current_uid: UID = self.__data_uid_offsets[-1]
+        self.__current_uid = self.__data_uid_offsets[-1]
         for i in range(len(data[-1])):
             # self.__attribute_value_mapping[current_uid] = set()
-            self.__uid_name_mapping[current_uid] = data[-1][i]
-            self.__name_uid_mapping[(data[-1][i], -1)] = current_uid
-            self.__data_uids[-1][i] = current_uid
-            current_uid += 1
-
-        current_uid = 0
+            self.__uid_name_mapping[self.__current_uid] = data[-1][i]
+            self.__name_uid_mapping[(data[-1][i], -1)] = self.__current_uid
+            self.__data_uids[-1][i] = self.__current_uid
+            self.__current_uid += 1
+        current_uid_after: UID = self.__current_uid - 1
+        self.__current_uid = 0
         for i in range(len(data) - 1):
-            self.__data_uid_offsets[i] = current_uid
+            self.__data_uid_offsets[i] = self.__current_uid
             current_participant_uid: ParticipantUID = self.__participant_uid_offset
             for j in range(len(data[i])):
                 if (
@@ -62,15 +63,16 @@ class DataManager:
                     self.__data_uid_offsets[-1] + i,
                 ) not in self.__name_uid_mapping:
                     self.__map_value_name(
-                        current_uid, self.__data_uid_offsets[-1] + i, data[i][j]
+                        self.__current_uid, self.__data_uid_offsets[-1] + i, data[i][j]
                     )
-                    current_uid += 1
+                    self.__current_uid += 1
 
                 self.__data_uids[i][j] = self.__name_uid_mapping[
                     (data[i][j], self.__data_uid_offsets[-1] + i)
                 ]
 
                 current_participant_uid += 1
+        self.__current_uid = current_uid_after
 
     def get_values_by_attribute(self, uid: AttributeUID) -> set[AttributeValueUID]:
         """Returns a set containing all the uids of all the values the attribute with a given uid can have"""
@@ -82,12 +84,15 @@ class DataManager:
     """
 
     def get_attribute_uid_by_name(self, name: str) -> AttributeUID:
+        """Returns the uid of the attribute of a given name"""
         return self.__name_uid_mapping[(name, -1)]
 
     def get_value_uid_by_name_and_attribute(self, name: str, uid: AttributeUID):
+        """Returns the uid of the value of a given name for a given attribute"""
         return self.__name_uid_mapping[(name, uid)]
 
     def get_name_by_uid(self, uid: UID) -> str:
+        """Returns the name of the attribute or value of a given uid"""
         return self.__uid_name_mapping[uid]
 
     def get_value_by_participant(
