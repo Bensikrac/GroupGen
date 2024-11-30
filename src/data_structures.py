@@ -54,3 +54,10 @@ class Group:
     def remove_participant(self, participant: Participant):
         """removes the given participant from the group"""
         self.__members.remove(participant)
+
+    def get_member_set(self) -> set[Participant]:
+        """Returns a set containing all participants of the group"""
+        return set(self.__members)
+
+    def __len__(self) -> int:
+        """Returns the number of elements in the backing list"""

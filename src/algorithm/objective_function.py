@@ -1,5 +1,5 @@
 from math import comb, factorial, sqrt
-from data_structures import Participant
+from data_structures import Participant, Group
 
 
 class ObjectiveFunction:
@@ -12,35 +12,33 @@ class ObjectiveFunction:
     def __init__(self, attributes: list[str]) -> None:
         self.attributes = attributes
 
-    def __init__(
-        self, attributes: list[str], rounds: list[list[set[Participant]]]
-    ) -> None:
+    def __init__(self, attributes: list[str], rounds: list[list[Group]]) -> None:
         self.attributes = attributes
         self.recalculate_bounds(rounds)
 
-    def calculate_mix_cost(self, rounds: list[list[set[Participant]]]) -> float:
+    def calculate_mix_cost(self, rounds: list[list[Group]]) -> float:
         """Calculates a score between 0 and 1 based on the number of different participants each participant meets, the lower the better"""
         cost: float = 0
         participant_count: int = 0
-        groups: list[set[Participant]] = []
+        groups: list[Group] = []
         for round in rounds:
             for group in round:
                 groups += group
 
-        groups2: list[set[Participant]] = list(groups)
+        groups2: list[Group] = list(groups)
         for group in groups:
             groups2.remove(group)
             for group2 in groups2:
-                cost += len(group.intersection(group2))
+                cost += len(group.get_member_set().intersection(group2))
 
         return cost / self.__calculate_mix_cost_max(rounds)
 
-    def __get_mix_cost_max(self, rounds: list[list[set[Participant]]]) -> float:
+    def __get_mix_cost_max(self, rounds: list[list[Group]]) -> float:
         """Returns an upper bound for the unnormalized mix cost, using the stored value when possible"""
         if self.__get_mix_cost_max < 0:
             self.__mix_cost_max = self.__calculate_mix_cost_max(rounds)
 
-    def __calculate_mix_cost_max(self, rounds: list[list[set[Participant]]]) -> float:
+    def __calculate_mix_cost_max(self, rounds: list[list[Group]]) -> float:
         """Calculates an upper bound for the unnormalized mix cost"""
         participant_count: int = 0
 
@@ -49,7 +47,7 @@ class ObjectiveFunction:
 
         return comb(len(rounds), 2) * participant_count
 
-    def calculate_diversity_cost(self, rounds: list[list[set[Participant]]]) -> float:
+    def calculate_diversity_cost(self, rounds: list[list[Group]]) -> float:
         """Calculates a score between 0 and 1 based on how diverse groups are, the lower the better"""
         cost: float = 0
         participant_count: int = 0
@@ -62,12 +60,12 @@ class ObjectiveFunction:
                 group_cost: int = 0
                 for attribute in self.attributes:
                     values_checked: set[str] = set()
-                    for participant in group:
+                    for participant in group.get_member_set():
                         value: str = participant.get_attribute(attribute)
                         if value not in values_checked:
                             count: int = 1
                             values_checked.add(value)
-                            for participant2 in group:
+                            for participant2 in group.get_member_set():
                                 if (
                                     participant2 != participant
                                     and participant2.get_attribute(attribute) == value
@@ -78,14 +76,12 @@ class ObjectiveFunction:
 
         return cost / self.__calculate_diversity_cost_max(rounds)
 
-    def __get_diversity_cost_max(self, rounds: list[list[set[Participant]]]) -> float:
+    def __get_diversity_cost_max(self, rounds: list[list[Group]]) -> float:
         """Returns an upper bound for the unnormalized diversity cost, using the stored value when possible"""
         if self.__get_diversity_cost_max < 0:
             self.__diversity_cost_max = self.__calculate_diversity_cost_max(rounds)
 
-    def __calculate_diversity_cost_max(
-        self, rounds: list[list[set[Participant]]]
-    ) -> float:
+    def __calculate_diversity_cost_max(self, rounds: list[list[Group]]) -> float:
         """Calculates an upper bound for the unnormalized diversity cost"""
         bound: float = 0
         participant_count: int = 0
@@ -93,14 +89,14 @@ class ObjectiveFunction:
 
         for group in rounds[0]:
             participant_count += len(group)
-            participants += group
+            participants += group.get_member_set()
 
         for round in rounds:
             for group in round:
                 group_cost: int = 0
                 for attribute in self.attributes:
                     values_checked: set[str] = set()
-                    for participant in group:
+                    for participant in group.get_member_set():
                         value: str = participant.get_attribute(attribute)
                         if value not in values_checked:
                             count: int = 1
@@ -116,13 +112,13 @@ class ObjectiveFunction:
 
         return bound
 
-    def recalculate_bounds(self, rounds: list[list[set[Participant]]]) -> None:
+    def recalculate_bounds(self, rounds: list[list[Group]]) -> None:
         self.__diversity_cost_max = self.__calculate_diversity_cost_max(rounds)
         self.__mix_cost_max = self.__calculate_mix_cost_max(rounds)
 
     def calculate_weighted_cost(
         self,
-        rounds: list[list[set[Participant]]],
+        rounds: list[list[Group]],
         mix_weight: float = 1,
         diversity_weight: float = 1,
     ) -> float:
