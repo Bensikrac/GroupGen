@@ -119,3 +119,15 @@ class ObjectiveFunction:
     def recalculate_bounds(self, rounds: list[list[set[Participant]]]) -> None:
         self.__diversity_cost_max = self.__calculate_diversity_cost_max(rounds)
         self.__mix_cost_max = self.__calculate_mix_cost_max(rounds)
+
+    def calculate_weighted_cost(
+        self,
+        rounds: list[list[set[Participant]]],
+        mix_weight: float = 1,
+        diversity_weight: float = 1,
+    ) -> float:
+        """Returns a weighted sum of the diversity and mix cost renormalized to a range of 0 to 1, lower is better, by default both components are weighted equally"""
+        return (
+            self.calculate_mix_cost(rounds) * mix_weight
+            + self.calculate_diversity_cost(rounds) * diversity_weight
+        ) / (mix_weight + diversity_weight)
