@@ -10,11 +10,8 @@ class ObjectiveFunction:
     __diversity_cost_max: float = -1
 
     def __init__(self, attributes: list[str]) -> None:
+        """Initializer, sets attributes to the given list"""
         self.attributes = attributes
-
-    def __init__(self, attributes: list[str], rounds: list[list[Group]]) -> None:
-        self.attributes = attributes
-        self.recalculate_bounds(rounds)
 
     def calculate_mix_cost(self, rounds: list[list[Group]]) -> float:
         """Calculates a score between 0 and 1 based on the number of different participants each participant meets, the lower the better"""
@@ -31,7 +28,7 @@ class ObjectiveFunction:
             for group2 in groups2:
                 cost += len(group.get_member_set().intersection(group2))
 
-        return cost / self.__calculate_mix_cost_max(rounds)
+        return cost / self.__get_mix_cost_max(rounds)
 
     def __get_mix_cost_max(self, rounds: list[list[Group]]) -> float:
         """Returns an upper bound for the unnormalized mix cost, using the stored value when possible"""
@@ -75,7 +72,7 @@ class ObjectiveFunction:
                             group_cost += count**2
                 cost += sqrt(group_cost - len(group))
 
-        return cost / self.__calculate_diversity_cost_max(rounds)
+        return cost / self.__get_diversity_cost_max(rounds)
 
     def __get_diversity_cost_max(self, rounds: list[list[Group]]) -> float:
         """Returns an upper bound for the unnormalized diversity cost, using the stored value when possible"""
@@ -115,6 +112,12 @@ class ObjectiveFunction:
         return bound
 
     def recalculate_bounds(self, rounds: list[list[Group]]) -> None:
+        """
+        Recalculates the bounds based on a given sample assignment so this instance of ObjectiveFunction can be reused with a different number of rounds, groups or participants
+
+        :param list[list[Group]] rounds: the sample assignment, a list of lists each representing a round and containing a number of groups
+
+        """
         self.__diversity_cost_max = self.__calculate_diversity_cost_max(rounds)
         self.__mix_cost_max = self.__calculate_mix_cost_max(rounds)
 
