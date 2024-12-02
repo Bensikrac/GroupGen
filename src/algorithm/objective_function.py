@@ -35,8 +35,9 @@ class ObjectiveFunction:
 
     def __get_mix_cost_max(self, rounds: list[list[Group]]) -> float:
         """Returns an upper bound for the unnormalized mix cost, using the stored value when possible"""
-        if self.__get_mix_cost_max < 0:
+        if self.__mix_cost_max < 0:
             self.__mix_cost_max = self.__calculate_mix_cost_max(rounds)
+        return self.__mix_cost_max
 
     def __calculate_mix_cost_max(self, rounds: list[list[Group]]) -> float:
         """Calculates an upper bound for the unnormalized mix cost"""
@@ -78,8 +79,9 @@ class ObjectiveFunction:
 
     def __get_diversity_cost_max(self, rounds: list[list[Group]]) -> float:
         """Returns an upper bound for the unnormalized diversity cost, using the stored value when possible"""
-        if self.__get_diversity_cost_max < 0:
+        if self.__diversity_cost_max < 0:
             self.__diversity_cost_max = self.__calculate_diversity_cost_max(rounds)
+        return self.__diversity_cost_max
 
     def __calculate_diversity_cost_max(self, rounds: list[list[Group]]) -> float:
         """Calculates an upper bound for the unnormalized diversity cost"""
