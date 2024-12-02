@@ -31,33 +31,6 @@ class Participant:
         return self.__name == other.__name
 
 
-class Group:
-    """data structure which represents a group of participants"""
-
-    __members: list[Participant]
-
-    def __init__(self):
-        """creates an empty group"""
-
-    def __init__(self, members: list[Participant]):
-        """creates a group with the given participants"""
-        self.__members = members
-
-    def get_members(self) -> list[Participant]:
-        """returns all participants of the given group"""
-        return self.__members
-
-    def add_participant(self, participant: Participant):
-        """adds the given participant to the group"""
-        self.__members.append(participant)
-
-    def remove_participant(self, participant: Participant):
-        """removes the given participant from the group"""
-        self.__members.remove(participant)
-
-    def get_member_set(self) -> set[Participant]:
-        """Returns a set containing all participants of the group"""
-        return set(self.__members)
-
-    def __len__(self) -> int:
-        """Returns the number of elements in the backing list"""
+type Group = set[Participant]
+type Round = list[Group]
+type Assignment = list[Round]
