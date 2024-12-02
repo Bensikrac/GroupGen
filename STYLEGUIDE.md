@@ -19,6 +19,10 @@
 - member variables public when getter and setter exist and trivial
 - **never** abbreviate identifiers (except proper names)
 
+### Style
+- **always** add TypeHints (exception: `self` parameters must omit `Self` typehints)
+- no more than 4 indentation levels inside any function (readability; first instruction inside a function is considered to be on indent level 0)
+
 ### Docstrings
 - **every** function and **every** class needs a docstring (PEP 257 - https://peps.python.org/pep-0257/)
 - **must** be in `sphinx` compatible format (https://sphinx-rtd-tutorial.readthedocs.io/en/latest/docstrings.html)
@@ -63,9 +67,6 @@ TODO: type-parameters
 ...
 """
 ```
-
-### Other
-- **always** add TypeHints (exception: `self` parameters must omit `Self` typehints)
 
 
 ## Project structure
