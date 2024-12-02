@@ -19,9 +19,53 @@
 - member variables public when getter and setter exist and trivial
 - **never** abbreviate identifiers (except proper names)
 
+### Docstrings
+- **every** function and **every** class needs a docstring (PEP 257 - https://peps.python.org/pep-0257/)
+- **must** be in `sphinx` compatible format (https://sphinx-rtd-tutorial.readthedocs.io/en/latest/docstrings.html)
+- `self` parameters without typehint **must not** be documented
+- the order for documenting a function (with a double newline after each bullet-point group) (note that `__init__` is to be documented separate to the class itself)
+  - Summary (always imperative)
+  - Optional extended description
+  - parameter description in order of appearance
+  - `yield` then `return` value description
+  - possible errors raised in order of appearance
+  - privacy meta tag
+- the order for documenting a class (with a double newline after each bullet-point group)
+  - Summary (Description of what it represents, or in case of interfaces/abstract classes what it provides an interface for)
+  - TODO: documentation of type-parameters
+
+#### Example (Functions)
+```py
+"""[Summary]
+
+[Extended Description (optional)]
+
+:param [ParamName]: [ParamDescription], defaults to [DefaultParamVal]
+...
+
+:yield: [YieldDescription]
+:return: [ReturnDescription]
+
+:raises [ErrorType]: [ErrorDescription]
+...
+
+:meta (public|private):
+"""
+```
+
+#### Example (Classes)
+```py
+"""[Summary]
+
+[Extended Description (optional)]
+
+TODO: type-parameters
+...
+"""
+```
+
 ### Other
 - **always** add TypeHints (exception: `self` parameters must omit `Self` typehints)
-- **every** function and **every** class needs a docstring (PEP 257 - https://peps.python.org/pep-0257/)
 
 
 ## Project structure
