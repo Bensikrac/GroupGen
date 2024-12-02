@@ -27,6 +27,7 @@
 - **every** function and **every** class needs a docstring (PEP 257 - https://peps.python.org/pep-0257/)
 - **must** be in `sphinx` compatible format (https://sphinx-rtd-tutorial.readthedocs.io/en/latest/docstrings.html)
 - `self` parameters without typehint **must not** be documented
+- Summaries and extended descriptions **always** end with a dot (`.`). normal descriptions (like parameter descriptions) **must not** end with a dot
 - the order for documenting a function (with a double newline after each bullet-point group) (note that `__init__` is to be documented separate to the class itself)
   - Summary (always imperative)
   - Optional extended description
@@ -54,6 +55,18 @@
 ...
 
 :meta (public|private):
+
+:Examples:
+>>> line 1 of example
+>>> line 2 of example
+
+>>> line 1 of second example
+...
+
+.. seealso:: text
+.. note:: text
+.. warning:: text
+.. todo:: text
 """
 ```
 
@@ -65,6 +78,18 @@
 
 TODO: type-parameters
 ...
+
+:Examples:
+>>> line 1 of example
+>>> line 2 of example
+
+>>> line 1 of second example
+...
+
+.. seealso:: text
+.. note:: text
+.. warning:: text
+.. todo:: text
 """
 ```
 
