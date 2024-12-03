@@ -31,7 +31,6 @@ class ObjectiveFunction:
             for group in round:
                 groups += group
 
-        # find number of overlaps between groups:
         for i, group in enumerate(groups):
             for j in range(i, len(groups)):
                 cost += len(group.intersection(groups[j]))
@@ -88,8 +87,8 @@ class ObjectiveFunction:
 
         :return: the calculated diversity cost (or bound on diversity cost)
         """
-        if group_2 is None:
-            group_2 = group
+        if match_group is None:
+            match_group = group
         group_cost: int = 0
         for attribute in self.attributes:
             values_checked: set[str] = set()
@@ -98,7 +97,7 @@ class ObjectiveFunction:
                 if value not in values_checked:
                     values_checked.add(value)
                     group_cost += self.__calculate_value_diversity_cost(
-                        attribute, value, group_2
+                        attribute, value, match_group
                     )
         return sqrt(group_cost - len(group))
 
