@@ -1,4 +1,5 @@
 """example code for a hello world with qt"""
+
 from PyQt6.QtWidgets import QApplication, QMainWindow, QLabel
 from PyQt6.QtCore import Qt
 
