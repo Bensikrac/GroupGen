@@ -26,7 +26,7 @@ gui = [
   "PyQt6"
 ]
 formatter = [
-  "black>=24.10.0"
+  "black>=24.8.0"
 ]
 
 [project.gui-scripts]
@@ -34,6 +34,6 @@ hello_window = "group_gen:hello_window"
 
 [tool.black]
 target-version = ["py312"]
-required-version = "24.10.0"
+required-version = "24.8.0"
 fast = false
 
