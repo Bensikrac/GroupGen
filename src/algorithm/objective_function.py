@@ -26,24 +26,24 @@ class ObjectiveFunction:
         cost: float = 0
         participant_count: int = 0
         groups: list[Group] = []
+        # flatten assignment:
         for round in rounds:
             for group in round:
                 groups += group
 
-        groups2: list[Group] = list(groups)
-        for group in groups:
-            groups2.remove(group)
-            for group2 in groups2:
-                cost += len(group.intersection(group2))
+        # find number of overlaps between groups:
+        for i, group in enumerate(groups):
+            for j in range(i, len(groups)):
+                cost += len(group.intersection(groups[j]))
 
         return cost / self.__get_mix_cost_max(rounds)
 
     def __get_mix_cost_max(self, rounds: Assignment) -> float:
         """Return an upper bound for the unnormalized mix cost, using the stored value when possible
 
-        :param rounds: a sample assignment, the bound should hold for all assignments of the same shape that contain the same participants
+        :param rounds: a sample assignment
 
-        :return: the upper bound
+        :return: the upper bound, holds for all assignments of the same shape as the sample that contain the same participants
         """
         if self.__mix_cost_max < 0:
             self.__mix_cost_max = self.__calculate_mix_cost_max(rounds)
@@ -52,9 +52,9 @@ class ObjectiveFunction:
     def __calculate_mix_cost_max(self, rounds: Assignment) -> float:
         """Calculate an upper bound for the unnormalized mix cost
 
-        :param rounds: a sample assignment, the bound should hold for all assignments of the same shape that contain the same participants
+        :param rounds: a sample assignment
 
-        :return: the upper bound
+        :return: the upper bound, holds for all assignments of the same shape as the sample that contain the same participants
         """
         participant_count: int = 0
 
@@ -79,12 +79,12 @@ class ObjectiveFunction:
         return cost / self.__get_diversity_cost_max(rounds)
 
     def __calculate_group_diversity_cost(
-        self, group: Group, group_2: Group = None
+        self, group: Group, match_group: Group = None
     ) -> float:
         """Calculate the unnormalized diversity cost of a single group.
 
         :param group: the group to calculate the cost for
-        :param group_2: a second group of participants to search for matching attribute values in, used only to calculate bounds, defaults to None
+        :param match_group: a second group of participants to search for matching attribute values in, used only to calculate bounds, defaults to None
 
         :return: the calculated diversity cost (or bound on diversity cost)
         """
@@ -103,27 +103,27 @@ class ObjectiveFunction:
         return sqrt(group_cost - len(group))
 
     def __calculate_value_diversity_cost(
-        self, attribute: str, value: str, group_2: Group
+        self, attribute: str, value: str, group: Group
     ) -> float:
         """Calculate the cost contribution of a single value.
 
         :param attribute: the attribute to check in
         :param value: the value to check for
-        :param group_2: the group to check against
+        :param group: the group to check against
 
         :return: the calculated cost contribution
         """
-        for participant2 in group_2:
-            if participant2.get_attribute(attribute) == value:
+        for participant in group:
+            if participant.get_attribute(attribute) == value:
                 count += 1
         return count**2
 
     def __get_diversity_cost_max(self, rounds: Assignment) -> float:
         """Return an upper bound for the unnormalized diversity cost, using the stored value when possible.
 
-        :param rounds: a sample assignment, the bound should hold for all assignments of the same shape that contain the same participants
+        :param rounds: a sample assignment
 
-        :return: the upper bound
+        :return: the upper bound, holds for all assignments of the same shape as the sample that contain the same participants
         """
         if self.__diversity_cost_max < 0:
             self.__diversity_cost_max = self.__calculate_diversity_cost_max(rounds)
@@ -132,9 +132,9 @@ class ObjectiveFunction:
     def __calculate_diversity_cost_max(self, rounds: Assignment) -> float:
         """Calculate an upper bound for the unnormalized diversity cost.
 
-        :param rounds: a sample assignment, the bound should hold for all assignments of the same shape that contain the same participants
+        :param rounds: a sample assignment
 
-        :return: the upper bound
+        :return: the upper bound, holds for all assignments of the same shape as the sample that contain the same participants
         """
         bound: float = 0
         participants: set[Participant] = set()
