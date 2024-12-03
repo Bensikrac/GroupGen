@@ -28,6 +28,9 @@ class Participant:
 
     def __repr__(self) -> str:
         return "Name: " + self.__name + " Attribute: " + str(self.attributes)
+    
+    def __hash__(self) -> int:
+        return int(self.__name)
 
 
 class Group:
