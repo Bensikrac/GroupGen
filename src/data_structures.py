@@ -1,5 +1,6 @@
 """Data structures module"""
 
+
 class Participant:
     """data structure, which represents a participant by storing name and attribute list"""
 
