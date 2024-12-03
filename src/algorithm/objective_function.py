@@ -69,13 +69,26 @@ class ObjectiveFunction:
 
         :return: a score between 0 and 1, the lower the better
         """
-        cost: float = 0
-
-        for round in assignment:
-            for group in round:
-                cost += self.__calculate_group_diversity_cost(group)
+        return self.__calculate_total_group_diversity_cost(
+            assignment
+        ) / self.__get_diversity_cost_max(assignment)
 
         return cost / self.__get_diversity_cost_max(assignment)
+
+    def __calculate_total_group_diversity_cost(
+        self, assignment: Assignment, match_group=None
+    ) -> float:
+        """Calculate the summed unnormalized diversity cost of all groups in an assignment.
+
+        :param assignment: the assignment
+        :param match_group: a group of participants to search for matching attribute values in, used only to calculate bounds, defaults to None
+        :return: the sum of the unnormalized diversity costs of all groups in the assignment
+        """
+        cost: float = 0
+        for round in assignment:
+            for group in round:
+                cost += self.__calculate_group_diversity_cost(group, match_group)
+        return cost
 
     def __calculate_group_diversity_cost(
         self, group: Group, match_group: Group = None
@@ -143,11 +156,9 @@ class ObjectiveFunction:
         for group in sample_assignment[0]:
             participants &= group
 
-        for round in sample_assignment:
-            for group in round:
-                bound += self.__calculate_group_diversity_cost(group, participants)
-
-        return bound
+        return self.__calculate_total_group_diversity_cost(
+            sample_assignment, participants
+        )
 
     def recalculate_bounds(self, sample_assignment: Assignment) -> None:
         """Recalculate the bounds based on a given sample assignment so this instance of ObjectiveFunction can be reused with a different number of rounds, groups or participants.
