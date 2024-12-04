@@ -29,7 +29,7 @@
 - **must** be in [`sphinx` compatible format](https://sphinx-rtd-tutorial.readthedocs.io/en/latest/docstrings.html)
 - `self` parameters without typehint **must not** be documented
 - Summaries and extended descriptions **always** end with a dot (`.`). normal descriptions (like parameter descriptions) **must not** end with a dot
-- the order for documenting a function (with a double newline after each bullet-point group; an empty line in-between)
+- the order for documenting a function (with a double newline between each non-empty bullet-point group; an empty line in-between)
   - Summary (always imperative)
   - Optional extended description
   - parameter description in order of appearance
