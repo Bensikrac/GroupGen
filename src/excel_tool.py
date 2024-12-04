@@ -13,7 +13,7 @@ class Reader:
 
     def set_filepath(self, path: str) -> None:
         """sets the filepath to the given path in the reader"""
-        __filepath = path
+        self.__filepath = path
 
     def read(self) -> list[Participant]:
         """main read function, returns the parsed list of participants"""
