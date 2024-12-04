@@ -1,3 +1,5 @@
+"""Module which handles reading and writing of excel files"""
+
 import openpyxl as opxl
 from data_structures import Participant
 
@@ -18,12 +20,12 @@ class Reader:
     def read(self) -> list[Participant]:
         """main read function, returns the parsed list of participants"""
 
-        participant_list: list[Participant] = list()
+        participant_list: list[Participant] = []
 
         dataframe = opxl.load_workbook(self.__filepath)
         dataframe_active = dataframe.active
 
-        header_list: dict[int, str] = dict()
+        header_list: dict[int, str] = {}
 
         header_row = next(dataframe_active.rows)
 
