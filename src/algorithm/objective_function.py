@@ -73,8 +73,6 @@ class ObjectiveFunction:
             assignment
         ) / self.__get_diversity_cost_max(assignment)
 
-        return cost / self.__get_diversity_cost_max(assignment)
-
     def __calculate_total_group_diversity_cost(
         self, assignment: Assignment, match_group=None
     ) -> float:
@@ -150,7 +148,6 @@ class ObjectiveFunction:
 
         :return: the upper bound, holds for all assignments of the same shape as the sample that contain the same participants
         """
-        bound: float = 0
         participants: set[Participant] = set()
 
         for group in sample_assignment[0]:
