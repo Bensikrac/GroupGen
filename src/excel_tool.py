@@ -7,13 +7,9 @@ class Reader:
 
     __filepath: str
 
-    def __init__(self, path: str) -> None:
-        """create a new reader with the given file path. the path can be absolute or reltive"""
-        self.__filepath = path
-
     def set_filepath(self, path: str) -> None:
         """sets the filepath to the given path in the reader"""
-        __filepath = path
+        self.__filepath = path
 
     def read(self) -> list[Participant]:
         """main read function, returns the parsed list of participants"""
@@ -30,7 +26,7 @@ class Reader:
         for i, entry in enumerate(header_row):
             header_list[i] = entry.value
 
-        for i in range(1, dataframe_active.max_row):
+        for i in range(2, dataframe_active.max_row):
             p: Participant = Participant(str(i))
             for j in range(0, dataframe_active.max_column):
                 p.set_attribute(header_list[j], dataframe_active[i][j].value)
