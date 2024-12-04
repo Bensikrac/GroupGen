@@ -2,7 +2,8 @@
 
 
 class Participant:
-    """data structure, which represents a participant by storing unique id and attribute list of an individual participant
+    """data structure, which represents a participant by storing unique id and
+    attribute list of an individual participant
 
     :param uid: unique id for participant
     :param attributes: list of attributes for participants
