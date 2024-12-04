@@ -1,5 +1,7 @@
-from math import comb, factorial, sqrt
-from data_structures import Participant, Group, Round, Assignment
+"""Module containing the objective function."""
+
+from math import comb, sqrt
+from data_structures import Participant, Group, Assignment
 
 
 class ObjectiveFunction:
@@ -17,18 +19,17 @@ class ObjectiveFunction:
         self.attributes = attributes
 
     def calculate_mix_cost(self, assignment: Assignment) -> float:
-        """Calculate a score between 0 and 1 based on the number of different participants each participant meets, the lower the better
+        """Calculate a score based on the number of different participants each participant meets
 
         :param assignment: the group assignment to evaluate
 
         :return: a score between 0 and 1, the lower the better
         """
         cost: float = 0
-        participant_count: int = 0
         groups: list[Group] = []
         # flatten assignment:
-        for round in assignment:
-            for group in round:
+        for iteration in assignment:
+            for group in iteration:
                 groups += group
 
         for i, group in enumerate(groups):
@@ -38,11 +39,13 @@ class ObjectiveFunction:
         return cost / self.__get_mix_cost_max(assignment)
 
     def __get_mix_cost_max(self, sample_assignment: Assignment) -> float:
-        """Return an upper bound for the unnormalized mix cost, using the stored value when possible
+        """Return an upper bound for the unnormalized mix cost,
+          using the stored value when possible
 
         :param sample_assignment: a sample assignment
 
-        :return: the upper bound, holds for all assignments of the same shape as the sample that contain the same participants
+        :return: the upper bound,
+          holds for all assignments of the same shape
         """
         if self.__mix_cost_max < 0:
             self.__mix_cost_max = self.__calculate_mix_cost_max(sample_assignment)
@@ -53,7 +56,8 @@ class ObjectiveFunction:
 
         :param sample_assignment: a sample assignment
 
-        :return: the upper bound, holds for all assignments of the same shape as the sample that contain the same participants
+        :return: the upper bound,
+          holds for all assignments of the same shape
         """
         participant_count: int = 0
 
@@ -79,12 +83,13 @@ class ObjectiveFunction:
         """Calculate the summed unnormalized diversity cost of all groups in an assignment.
 
         :param assignment: the assignment
-        :param match_group: a group of participants to search for matching attribute values in, used only to calculate bounds, defaults to None
+        :param match_group: a group of participants to search for matching attribute values in,
+        used only to calculate bounds, defaults to None
         :return: the sum of the unnormalized diversity costs of all groups in the assignment
         """
         cost: float = 0
-        for round in assignment:
-            for group in round:
+        for iteration in assignment:
+            for group in iteration:
                 cost += self.__calculate_group_diversity_cost(group, match_group)
         return cost
 
@@ -94,7 +99,8 @@ class ObjectiveFunction:
         """Calculate the unnormalized diversity cost of a single group.
 
         :param group: the group to calculate the cost for
-        :param match_group: a second group of participants to search for matching attribute values in, used only to calculate bounds, defaults to None
+        :param match_group: a second group of participants to search for matching attribute values,
+        used only to calculate bounds, defaults to None
 
         :return: the calculated diversity cost (or bound on diversity cost)
         """
@@ -129,11 +135,13 @@ class ObjectiveFunction:
         return count**2
 
     def __get_diversity_cost_max(self, sample_assignment: Assignment) -> float:
-        """Return an upper bound for the unnormalized diversity cost, using the stored value when possible.
+        """Return an upper bound for the unnormalized diversity cost,
+        using the stored value when possible.
 
         :param sample_assignment: a sample assignment
 
-        :return: the upper bound, holds for all assignments of the same shape as the sample that contain the same participants
+        :return: the upper bound,
+        holds for all assignments of the same shape that contain the same participants
         """
         if self.__diversity_cost_max < 0:
             self.__diversity_cost_max = self.__calculate_diversity_cost_max(
@@ -146,7 +154,8 @@ class ObjectiveFunction:
 
         :param sample_assignment: a sample assignment
 
-        :return: the upper bound, holds for all assignments of the same shape as the sample that contain the same participants
+        :return: the upper bound,
+        holds for all assignments of the same shape that contain the same participants
         """
         participants: set[Participant] = set()
 
@@ -158,9 +167,10 @@ class ObjectiveFunction:
         )
 
     def recalculate_bounds(self, sample_assignment: Assignment) -> None:
-        """Recalculate the bounds based on a given sample assignment so this instance of ObjectiveFunction can be reused with a different number of rounds, groups or participants.
+        """Recalculate the bounds based on a given sample assignment
 
-        :param sample_assignment: the sample assignment, a list of lists each representing a round and containing a number of groups
+        :param sample_assignment: the sample assignment,
+        a list of lists each representing a round and containing a number of groups
         """
         self.__diversity_cost_max = self.__calculate_diversity_cost_max(
             sample_assignment
@@ -173,10 +183,12 @@ class ObjectiveFunction:
         mix_weight: float = 1,
         diversity_weight: float = 1,
     ) -> float:
-        """Return a weighted sum of the diversity and mix cost renormalized to a range of 0 to 1, lower is better, by default both components are weighted equally.
+        """Return a weighted sum of the diversity and mix cost renormalized to a range of 0 to 1,
+        lower is better, by default both components are weighted equally.
 
         :param assignment: the Assignment to calculate the cost for
-        :param mix_weight: the weight of the mix cost, the weighted cost is normalized again so only the relative size of this number compared to the diversity weight matters, defaults to 1
+        :param mix_weight: the weight of the mix cost,
+        only the size of this number compared to the diversity weight matters, defaults to 1
         :param diversity_weight: the weight of the mix cost, defaults to 1
 
         :return: the weighted cost, between 0 and 1, lower is better

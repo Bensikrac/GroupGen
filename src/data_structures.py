@@ -35,7 +35,6 @@ class Participant:
         return "Name: " + self.__name + " Attribute: " + str(self.attributes)
 
 
-
 type Group = set[Participant]
-type Round = list[Group]
-type Assignment = list[Round]
+type Iteration = list[Group]
+type Assignment = list[Iteration]
