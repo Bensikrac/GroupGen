@@ -1,5 +1,5 @@
-import openpyxl as opxl
 import os
+import openpyxl as opxl
 from data_structures import Participant
 
 
