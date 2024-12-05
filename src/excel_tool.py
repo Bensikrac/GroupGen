@@ -1,18 +1,25 @@
 import openpyxl as opxl
+import os
 from data_structures import Participant
 
 
 class Reader:
     """class that reads excel sheets and turns the table into a list of participants"""
 
-    __filepath: str
+    __filepath: os.PathLike
 
-    def set_filepath(self, path: str) -> None:
-        """sets the filepath to the given path in the reader"""
+    def __init__(self, path: os.PathLike) -> None:
+        """create a new reader with the given path
+
+        :param path: filepath used for reading the excel sheet
+        """
         self.__filepath = path
 
     def read(self) -> list[Participant]:
-        """main read function, returns the parsed list of participants"""
+        """main read function, returns the parsed list of participants
+
+        :return: a list of Participants found in the excel file with teir attributes
+        """
 
         participant_list: list[Participant] = list()
 
