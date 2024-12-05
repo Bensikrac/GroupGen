@@ -1,12 +1,17 @@
+"""Data structures module"""
+
+
 class Participant:
-    """data structure, which represents a participant by storing name and attribute list of an individual participant"""
+    """data structure, which represents a participant by storing name and attribute list"""
 
     __name: str
     attributes: dict[str, str]
     """attributes are mapped using attribute name ex. 'course' -> 'math' """
 
-    def __init__(self, name: str, attributes: dict[str, str] = dict()):
+    def __init__(self, name: str, attributes: dict[str, str] = None):
         """Creates a participant with the name set. For groups Names should be unique"""
+        if attributes is None:
+            attributes = {}
         self.__name = name
         self.attributes = attributes
 
@@ -24,32 +29,12 @@ class Participant:
 
     def __eq__(self, other) -> bool:
         """Compares if two participants are equal, based on their name"""
-        return self.__name == other.__name
+        return self.__name == other.get_name()
 
     def __repr__(self) -> str:
         return "Name: " + self.__name + " Attribute: " + str(self.attributes)
 
 
-class Group:
-    """data structure which represents a group of participants"""
-
-    __members: list[Participant]
-
-    def __init__(self):
-        """creates an empty group"""
-
-    def __init__(self, members: list[Participant]):
-        """creates a group with the given participants"""
-        self.__members = members
-
-    def get_members(self) -> list[Participant]:
-        """returns all participants of the given group"""
-        return self.__members
-
-    def add_participant(self, participant: Participant):
-        """adds the given participant to the group"""
-        self.__members.append(participant)
-
-    def remove_participant(self, participant: Participant):
-        """removes the given participant from the group"""
-        self.__members.remove(participant)
+type Group = set[Participant]
+type Iteration = list[Group]
+type Assignment = list[Iteration]
