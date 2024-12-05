@@ -41,7 +41,7 @@ class RandomAlgorithm:
             for j in range(groups_per_iteration):
                 group: Group = set()
                 for k in range(max_group_size):
-                    if len(remaining_participants) is 0:
+                    if len(remaining_participants) == 0:
                         break
                     participant: Participant = self.__random.choice(
                         tuple(remaining_participants)
