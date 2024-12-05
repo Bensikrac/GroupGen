@@ -13,7 +13,7 @@ class Participant:
     attributes: dict[str, str]
     # attributes are mapped using attribute name ex. 'course' -> 'math'
 
-    def __init__(self, uid: str, attributes: dict[str, str] = None):
+    def __init__(self, uid: int, attributes: dict[str, str] = None):
         if attributes is None:
             attributes = {}
         self.__uid = uid
