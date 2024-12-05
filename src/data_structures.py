@@ -19,7 +19,7 @@ class Participant:
         self.__uid = uid
         self.attributes = attributes
 
-    def get_uid(self) -> str:
+    def get_uid(self) -> int:
         """Returns the uid of the participant.
 
         :return: unique id of the participant
@@ -44,7 +44,7 @@ class Participant:
         self.attributes[attribute] = value
 
     def __eq__(self, other) -> bool:
-        return self.__uid == other.__uid
+        return isinstance(other, Participant) and self.get_uid() == other.get_uid()
 
     def __repr__(self) -> str:
         return "Participant(" + self.__uid + ", " + str(self.attributes) + ")"
@@ -53,7 +53,7 @@ class Participant:
         return "Name: " + self.__uid + " Attribute: " + str(self.attributes)
 
     def __hash__(self) -> int:
-        return self.__uid
+        return hash(self.__uid)
 
 
 type Group = set[Participant]
