@@ -4,8 +4,8 @@ from copy import copy
 from math import exp
 from random import Random
 from typing import Any
-from algorithm.objective_function import ObjectiveFunction
-from algorithm.random_algorithm import RandomAlgorithm
+from objective_function import ObjectiveFunction
+from random_algorithm import RandomAlgorithm
 from data_structures import Assignment, Iteration, Group, Participant
 
 
@@ -54,8 +54,8 @@ class SimulatedAnnealingAlgorithm:
             neighbor: Assignment = self.find_neighbor(assignment)
             if (
                 self.get_step_probability(
-                    objective.calculate_mix_cost(assignment),
-                    objective.calculate_mix_cost(neighbor),
+                    objective.calculate_weighted_cost(assignment),
+                    objective.calculate_weighted_cost(neighbor),
                     temperature,
                 )
                 >= self.__random.random()
@@ -89,7 +89,7 @@ class SimulatedAnnealingAlgorithm:
 
         group_index_2: int = -1
         participant_index_2: int = -1
-        while (group_index_2 is -1) or (group_index_1 is group_index_2):
+        while (group_index_2 == -1) or (group_index_1 == group_index_2):
             group_index_2 = self.__random.randrange(len(iteration))
             participant_index_2 = self.__random.randrange(
                 len(iteration[group_index_2].get_members)
