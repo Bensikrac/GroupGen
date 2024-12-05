@@ -1,4 +1,5 @@
 """Module which handles reading and writing of excel files"""
+
 import os
 import openpyxl as opxl
 from data_structures import Participant
