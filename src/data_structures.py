@@ -43,7 +43,7 @@ class Participant:
         """
         self.attributes[attribute] = value
 
-    def __eq__(self, other: Participant) -> bool:
+    def __eq__(self, other: "Participant") -> bool:
         return self.__uid == other.uid
 
     def __repr__(self) -> str:

@@ -1,5 +1,5 @@
-import os
-from collections import Iterable
+"""Dataset module."""
+
 from excel_tool import read_excel
 from data_structures import Participant
 
@@ -19,7 +19,7 @@ class Dataset:
 
     @staticmethod
     def __parse_participant(
-        uid: int, attribute_classes: Iterable[str], attribute_values: Iterable[str]
+        uid: int, attribute_classes: iterable[str], attribute_values: iterable[str]
     ) -> Participant:
         """Convert a UID, a list of attribute classes and
         a list of attribute values to a :class:`Participant`.
@@ -41,13 +41,14 @@ class Dataset:
         if location.endswith(".xlsx") or location.endswith(".xls"):
             # Excel
             self.__raw_data = read_excel(location)
+            # pylint: disable=W0511
             # TODO: add normalization
             self.__normalized_data = self.__raw_data
         else:
             # ...
             raise NotImplementedError
 
-        self.participants = {}
+        self.__participants = {}
 
         for i, row in enumerate(self.__normalized_data):
             if i == 0:
