@@ -21,7 +21,8 @@ class Dataset:
     def __parse_participant(
         uid: int, attribute_classes: Iterable[str], attribute_values: Iterable[str]
     ) -> Participant:
-        """Convert a UID, a list of attribute classes and a list of attribute values to a :class:`Participant`.
+        """Convert a UID, a list of attribute classes and
+        a list of attribute values to a :class:`Participant`.
 
         :param uid: UID for the new :class:`Participant`
         :param attribute_classes: List of attribute classes for the new :class:`Participant`
@@ -46,6 +47,8 @@ class Dataset:
             # ...
             raise NotImplementedError
 
+        self.participants = {}
+
         for i, row in enumerate(self.__normalized_data):
             if i == 0:
                 # first row is the attribute classes
@@ -60,10 +63,12 @@ class Dataset:
 
     @property
     def raw(self) -> list[list[str]]:
+        """Raw base data"""
         return self.__raw_data
 
     @property
     def normalized(self) -> list[list[str]]:
+        """Normalized base data"""
         return self.__normalized_data
 
     @property

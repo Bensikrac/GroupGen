@@ -2,7 +2,7 @@
 
 from math import comb, sqrt
 from dataset import Dataset
-from data_structures import Participant, Group, Assignment
+from data_structures import Group, Assignment
 
 
 class ObjectiveFunction:
@@ -51,10 +51,20 @@ class ObjectiveFunction:
           holds for all assignments of the same shape
         """
         if self.__cached_mix_cost_max < 0:
-            self.__cached_mix_cost_max = (
-                comb(len(sample_assignment), 2) * self.__dataset.number_of_participants
+            self.__cached_mix_cost_max = self.__calculate_mix_cost_max(
+                sample_assignment
             )
         return self.__cached_mix_cost_max
+
+    def __calculate_mix_cost_max(self, sample_assignment: Assignment) -> float:
+        """Calculate an upper bound for the unnormalized mix cost
+
+        :param sample_assignment: a sample assignment
+
+        :return: the upper bound,
+          holds for all assignments of the same shape
+        """
+        return comb(len(sample_assignment), 2) * self.__dataset.number_of_participants
 
     def calculate_diversity_cost(self, assignment: Assignment) -> float:
         """Calculate a score between 0 and 1 based on how diverse groups are, the lower the better.
@@ -134,13 +144,23 @@ class ObjectiveFunction:
         holds for all assignments of the same shape that contain the same participants
         """
         if self.__cached_diversity_cost_max < 0:
-            self.__cached_diversity_cost_max = (
-                self.__calculate_total_group_diversity_cost(
-                    sample_assignment, self.__dataset.participants
-                )
+            self.__cached_diversity_cost_max = self.__calculate_diversity_cost_max(
+                sample_assignment
             )
 
         return self.__cached_diversity_cost_max
+
+    def __calculate_diversity_cost_max(self, sample_assignment: Assignment) -> float:
+        """Calculate an upper bound for the unnormalized diversity cost.
+
+        :param sample_assignment: a sample assignment
+
+        :return: the upper bound,
+        holds for all assignments of the same shape that contain the same participants
+        """
+        return self.__calculate_total_group_diversity_cost(
+            sample_assignment, self.__dataset.participants
+        )
 
     def recalculate_bounds(self, sample_assignment: Assignment) -> None:
         """Recalculate the bounds based on a given sample assignment
@@ -148,10 +168,10 @@ class ObjectiveFunction:
         :param sample_assignment: the sample assignment,
         a list of lists each representing a round and containing a number of groups
         """
-        self.__diversity_cost_max = self.__calculate_diversity_cost_max(
+        self.__cached_diversity_cost_max = self.__calculate_diversity_cost_max(
             sample_assignment
         )
-        self.__mix_cost_max = self.__calculate_mix_cost_max(sample_assignment)
+        self.__cached_mix_cost_max = self.__calculate_mix_cost_max(sample_assignment)
 
     def calculate_weighted_cost(
         self,

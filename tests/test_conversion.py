@@ -4,6 +4,7 @@ from excel_tool import write_excel
 
 
 def test_assignment_conversion() -> None:
+    """Test the conversion of :class:`Assignment` to a matrix of strings."""
     attributes = {"class": "value"}
     assignment = [
         [

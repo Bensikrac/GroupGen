@@ -5,6 +5,7 @@ from openpyxl.styles import PatternFill
 
 
 class FillColours(Enum):
+    # pylint: disable=R0903
     GREEN = PatternFill(start_color="00CCFFCC", fill_type="solid")
     VIOLET = PatternFill(start_color="00CC99FF", fill_type="solid")
 
@@ -19,7 +20,7 @@ def read_excel(path: os.PathLike, worksheet_name: str | None = None) -> list[lis
     """
 
     workbook = opxl.load_workbook(path)
-    worksheet: opxl.Worksheet
+    worksheet: opxl.worksheet.worksheet.Worksheet
     if worksheet_name is None:
         worksheet = workbook.active
     else:
