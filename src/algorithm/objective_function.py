@@ -30,11 +30,11 @@ class ObjectiveFunction:
         # flatten assignment:
         for iteration in assignment:
             for group in iteration:
-                groups += group
+                groups.append(group)
 
         for i, group in enumerate(groups):
-            for j in range(i, len(groups)):
-                cost += len(group.intersection(groups[j]))
+            for j in range(i + 1, len(groups)):
+                cost += max(len(group.intersection(groups[j])) - 1, 0)
 
         return cost / self.__get_mix_cost_max(assignment)
 
@@ -78,7 +78,7 @@ class ObjectiveFunction:
         ) / self.__get_diversity_cost_max(assignment)
 
     def __calculate_total_group_diversity_cost(
-        self, assignment: Assignment, match_group=None
+        self, assignment: Assignment, match_group: Group = None
     ) -> float:
         """Calculate the summed unnormalized diversity cost of all groups in an assignment.
 
@@ -129,6 +129,7 @@ class ObjectiveFunction:
 
         :return: the calculated cost contribution
         """
+        count: int = 0
         for participant in group:
             if participant.get_attribute(attribute) == value:
                 count += 1
@@ -160,7 +161,7 @@ class ObjectiveFunction:
         participants: set[Participant] = set()
 
         for group in sample_assignment[0]:
-            participants &= group
+            participants = participants.union(group)
 
         return self.__calculate_total_group_diversity_cost(
             sample_assignment, participants

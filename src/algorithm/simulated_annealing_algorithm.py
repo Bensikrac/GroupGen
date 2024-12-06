@@ -33,6 +33,8 @@ class SimulatedAnnealingAlgorithm:
         groups_per_iteration: int,
         iterations: int,
         max_cycles: int,
+        intitial_temperature: float,
+        temperature_scaling: float,
     ) -> Assignment:
         """Return a group assignment generated using simulated annealing.
 
@@ -41,6 +43,8 @@ class SimulatedAnnealingAlgorithm:
         :param iterations: The total number of iterations
         :param max_cycles: The maximum number of times
         the algorithm will iteratively improve the assignment
+        :param intitial_temperature: The initial Temperature
+        :param temperature_scaling: Controls the rate of temperature decay, higher means quicker
 
         :return: the generated assignment
         """
@@ -50,7 +54,9 @@ class SimulatedAnnealingAlgorithm:
         )
         objective: ObjectiveFunction = ObjectiveFunction(self.attributes)
         for i in range(max_cycles):
-            temperature: int = self.get_temperature(1 - (i + 1) / max_cycles)
+            temperature: int = self.get_temperature(
+                1 - (i + 1) / max_cycles, intitial_temperature, temperature_scaling
+            )
             neighbor: Assignment = self.find_neighbor(assignment)
             if (
                 self.get_step_probability(
@@ -63,14 +69,20 @@ class SimulatedAnnealingAlgorithm:
                 assignment = neighbor
         return assignment
 
-    def get_temperature(self, progress: float) -> float:
+    def get_temperature(
+        self, progress: float, intitial_temperature: float, scaling: float
+    ) -> float:
         """Calculate the temperature for a given progress through the annealing process.
 
         :param progress: The fraction of the maximum cycles for the process that has passed
+        :param intitial_temperature: The initial temperature
+        :param scaling: Controls the rate of exponential decay, higher means quicker decay
 
         :return: The temperature value
         """
-        return 100 * 0.1 ** (progress) - 10
+        intitial_temperature: float = 10
+        scaling: float = 0.9
+        return intitial_temperature * (1 - progress) * exp(-scaling * progress)
 
     def find_neighbor(self, assignment: Assignment) -> Assignment:
         """Return a random group assignment that is one swap removed from the given assignment.
@@ -79,24 +91,22 @@ class SimulatedAnnealingAlgorithm:
 
         :return: The found neighbor
         """
-        neighbor = self.__half_deep_copy(assignment)
+        neighbor: Assignment = self.__half_deep_copy(assignment)
         index = self.__random.randrange(len(assignment))
         iteration: Iteration = assignment[index]
-        group_index_1: int = self.__random.randrange(len(assignment[iteration]))
+        group_index_1: int = self.__random.randrange(len(assignment[index]))
         participant_index_1: int = self.__random.randrange(
-            len(iteration[group_index_1].get_members)
+            len(iteration[group_index_1])
         )
 
         group_index_2: int = -1
         participant_index_2: int = -1
         while (group_index_2 == -1) or (group_index_1 == group_index_2):
             group_index_2 = self.__random.randrange(len(iteration))
-            participant_index_2 = self.__random.randrange(
-                len(iteration[group_index_2].get_members)
-            )
+            participant_index_2 = self.__random.randrange(len(iteration[group_index_2]))
 
-        participant_1: Participant = iteration[group_index_1][participant_index_1]
-        participant_2: Participant = iteration[group_index_2][participant_index_2]
+        participant_1: Participant = list(iteration[group_index_1])[participant_index_1]
+        participant_2: Participant = list(iteration[group_index_2])[participant_index_2]
         neighbor[index][group_index_1].discard(participant_1)
         neighbor[index][group_index_1].add(participant_2)
         neighbor[index][group_index_2].discard(participant_2)
@@ -112,8 +122,10 @@ class SimulatedAnnealingAlgorithm:
 
         :return: The copy
         """
-        if isinstance(object, list) or isinstance(object, set):
+        if isinstance(object, list):
             return [self.__half_deep_copy(item) for item in object]
+        if isinstance(object, set):
+            return set([self.__half_deep_copy(item) for item in object])
         else:
             return copy(object)
 
