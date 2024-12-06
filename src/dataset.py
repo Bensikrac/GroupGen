@@ -19,7 +19,7 @@ class Dataset:
 
     @staticmethod
     def __parse_participant(
-        uid: int, attribute_classes: iterable[str], attribute_values: iterable[str]
+        uid: int, attribute_classes: list[str], attribute_values: list[str]
     ) -> Participant:
         """Convert a UID, a list of attribute classes and
         a list of attribute values to a :class:`Participant`.
