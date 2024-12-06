@@ -1,22 +1,25 @@
 """Module containing the objective function."""
 
 from math import comb, sqrt
+from dataset import Dataset
 from data_structures import Participant, Group, Assignment
 
 
 class ObjectiveFunction:
     """Contains all calculations necessary to evaluate the quality of a group assignment"""
 
-    attributes: list[str]
+    __dataset: Dataset
+    __attributes: list[str]
     __mix_cost_max: float = -1
     __diversity_cost_max: float = -1
 
-    def __init__(self, attributes: list[str]) -> None:
+    def __init__(self, dataset: Dataset) -> None:
         """Set attributes to the given list
 
         :param attributes: a list of attributes
         """
-        self.attributes = attributes
+        self.__dataset = dataset
+        self.__attributes = dataset.attribute_classes
 
     def calculate_mix_cost(self, assignment: Assignment) -> float:
         """Calculate a score based on the number of different participants each participant meets
@@ -36,9 +39,9 @@ class ObjectiveFunction:
             for j in range(i, len(groups)):
                 cost += len(group.intersection(groups[j]))
 
-        return cost / self.__get_mix_cost_max(assignment)
+        return cost / self.__mix_cost_max(assignment)
 
-    def __get_mix_cost_max(self, sample_assignment: Assignment) -> float:
+    def __mix_cost_max(self, sample_assignment: Assignment) -> float:
         """Return an upper bound for the unnormalized mix cost,
           using the stored value when possible
 
@@ -48,23 +51,10 @@ class ObjectiveFunction:
           holds for all assignments of the same shape
         """
         if self.__mix_cost_max < 0:
-            self.__mix_cost_max = self.__calculate_mix_cost_max(sample_assignment)
+            self.__mix_cost_max = (
+                comb(len(sample_assignment), 2) * self.__dataset.number_of_participants
+            )
         return self.__mix_cost_max
-
-    def __calculate_mix_cost_max(self, sample_assignment: Assignment) -> float:
-        """Calculate an upper bound for the unnormalized mix cost
-
-        :param sample_assignment: a sample assignment
-
-        :return: the upper bound,
-          holds for all assignments of the same shape
-        """
-        participant_count: int = 0
-
-        for group in sample_assignment[0]:
-            participant_count += len(group)
-
-        return comb(len(sample_assignment), 2) * participant_count
 
     def calculate_diversity_cost(self, assignment: Assignment) -> float:
         """Calculate a score between 0 and 1 based on how diverse groups are, the lower the better.
@@ -75,7 +65,7 @@ class ObjectiveFunction:
         """
         return self.__calculate_total_group_diversity_cost(
             assignment
-        ) / self.__get_diversity_cost_max(assignment)
+        ) / self.__diversity_cost_max(assignment)
 
     def __calculate_total_group_diversity_cost(
         self, assignment: Assignment, match_group=None
@@ -107,7 +97,7 @@ class ObjectiveFunction:
         if match_group is None:
             match_group = group
         group_cost: int = 0
-        for attribute in self.attributes:
+        for attribute in self.__attributes:
             values_checked: set[str] = set()
             for participant in group:
                 value: str = participant.get_attribute(attribute)
@@ -134,7 +124,7 @@ class ObjectiveFunction:
                 count += 1
         return count**2
 
-    def __get_diversity_cost_max(self, sample_assignment: Assignment) -> float:
+    def __diversity_cost_max(self, sample_assignment: Assignment) -> float:
         """Return an upper bound for the unnormalized diversity cost,
         using the stored value when possible.
 
@@ -144,27 +134,11 @@ class ObjectiveFunction:
         holds for all assignments of the same shape that contain the same participants
         """
         if self.__diversity_cost_max < 0:
-            self.__diversity_cost_max = self.__calculate_diversity_cost_max(
-                sample_assignment
+            self.__diversity_cost_max = self.__calculate_total_group_diversity_cost(
+                sample_assignment, self.__dataset.participants
             )
+
         return self.__diversity_cost_max
-
-    def __calculate_diversity_cost_max(self, sample_assignment: Assignment) -> float:
-        """Calculate an upper bound for the unnormalized diversity cost.
-
-        :param sample_assignment: a sample assignment
-
-        :return: the upper bound,
-        holds for all assignments of the same shape that contain the same participants
-        """
-        participants: set[Participant] = set()
-
-        for group in sample_assignment[0]:
-            participants &= group
-
-        return self.__calculate_total_group_diversity_cost(
-            sample_assignment, participants
-        )
 
     def recalculate_bounds(self, sample_assignment: Assignment) -> None:
         """Recalculate the bounds based on a given sample assignment

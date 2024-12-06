@@ -57,5 +57,21 @@ class Participant:
 
 
 type Group = set[Participant]
+
+
+def group_to_str_matrix(group: Group) -> list[list[str]]:
+    pass
+
+
 type Iteration = list[Group]
+
+
+def iteration_to_str_matrix(iteration: Iteration) -> list[list[str]]:
+    pass
+
+
 type Assignment = list[Iteration]
+
+
+def assignment_to_str_matrix(assignment: Assignment) -> list[list[str]]:
+    pass

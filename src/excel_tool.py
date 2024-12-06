@@ -1,48 +1,47 @@
-"""Module which handles reading and writing of excel files"""
-
 import os
 import openpyxl as opxl
-from data_structures import Participant
 
 
-class Reader:
-    """class that reads excel sheets and turns the table into a list of participants"""
+def read_excel(path: os.PathLike, worksheet_name: str | None = None) -> list[list[str]]:
+    """Read an Excel workbook
 
-    __filepath: os.PathLike
+    :param path: Path to the Excel file to be read
+    :param worksheet_name: Name of the worksheet to load or `None` to auto-select
 
-    def __init__(self, path: os.PathLike) -> None:
-        """create a new reader with the given path
+    :return: A list of rows of the worksheet
+    """
 
-        :param path: filepath used for reading the excel sheet
-        """
-        self.__filepath = path
+    workbook = opxl.load_workbook(path)
+    worksheet: opxl.Worksheet
+    if worksheet_name is None:
+        worksheet = workbook.active
+    else:
+        worksheet = workbook.get_sheet_by_name(worksheet_name)
 
-    def read(self) -> list[Participant]:
-        """main read function, returns the parsed list of participants
+    retval: list[list[str]] = []
 
-        :return: a list of Participants found in the excel file with teir attributes
-        """
+    for i in range(worksheet.max_row):
+        retval.append([])
+        for j in range(worksheet.max_column):
+            retval[i].append(str(worksheet.cell(i, j)))
 
-        participant_list: list[Participant] = []
-
-        dataframe = opxl.load_workbook(self.__filepath)
-        dataframe_active = dataframe.active
-
-        header_list: dict[int, str] = {}
-
-        header_row = next(dataframe_active.rows)
-
-        for i, entry in enumerate(header_row):
-            header_list[i] = entry.value
+    return retval
 
 
-        for i in range(2, dataframe_active.max_row):
-            p: Participant = Participant(i)
+def write_excel(
+    path: os.PathLike, data: list[list[str]], worksheet_name: str | None = None
+) -> None:
+    """Write data to an Excel file
 
+    :param path: Path to write the Excel file to (will overwrite)
+    :param data: List of rows of elements
+    :param worksheet_name: Optional name for the new Worksheet
+    """
+    workbook = opxl.Workbook(write_only=True)
+    workbook.create_sheet(worksheet_name)
+    worksheet = workbook.active
+    for i, row in enumerate(data):
+        for j, element in enumerate(row):
+            worksheet.cell(i, j, element)
 
-            for j in range(0, dataframe_active.max_column):
-                p.set_attribute(header_list[j], dataframe_active[i][j].value)
-
-            participant_list.append(p)
-
-        return participant_list
+    workbook.save(path)
