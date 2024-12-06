@@ -10,8 +10,8 @@ class ObjectiveFunction:
 
     __dataset: Dataset
     __attributes: list[str]
-    __mix_cost_max: float = -1
-    __diversity_cost_max: float = -1
+    __cached_mix_cost_max: float = -1
+    __cached_diversity_cost_max: float = -1
 
     def __init__(self, dataset: Dataset) -> None:
         """Set attributes to the given list
@@ -50,11 +50,11 @@ class ObjectiveFunction:
         :return: the upper bound,
           holds for all assignments of the same shape
         """
-        if self.__mix_cost_max < 0:
-            self.__mix_cost_max = (
+        if self.__cached_mix_cost_max < 0:
+            self.__cached_mix_cost_max = (
                 comb(len(sample_assignment), 2) * self.__dataset.number_of_participants
             )
-        return self.__mix_cost_max
+        return self.__cached_mix_cost_max
 
     def calculate_diversity_cost(self, assignment: Assignment) -> float:
         """Calculate a score between 0 and 1 based on how diverse groups are, the lower the better.
@@ -133,12 +133,14 @@ class ObjectiveFunction:
         :return: the upper bound,
         holds for all assignments of the same shape that contain the same participants
         """
-        if self.__diversity_cost_max < 0:
-            self.__diversity_cost_max = self.__calculate_total_group_diversity_cost(
-                sample_assignment, self.__dataset.participants
+        if self.__cached_diversity_cost_max < 0:
+            self.__cached_diversity_cost_max = (
+                self.__calculate_total_group_diversity_cost(
+                    sample_assignment, self.__dataset.participants
+                )
             )
 
-        return self.__diversity_cost_max
+        return self.__cached_diversity_cost_max
 
     def recalculate_bounds(self, sample_assignment: Assignment) -> None:
         """Recalculate the bounds based on a given sample assignment

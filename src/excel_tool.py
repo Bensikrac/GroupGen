@@ -1,5 +1,12 @@
 import os
+from enum import Enum
 import openpyxl as opxl
+from openpyxl.styles import PatternFill
+
+
+class FillColours(Enum):
+    GREEN = PatternFill(start_color="00CCFFCC", fill_type="solid")
+    VIOLET = PatternFill(start_color="00CC99FF", fill_type="solid")
 
 
 def read_excel(path: os.PathLike, worksheet_name: str | None = None) -> list[list[str]]:
@@ -40,8 +47,7 @@ def write_excel(
     workbook = opxl.Workbook(write_only=True)
     workbook.create_sheet(worksheet_name)
     worksheet = workbook.active
-    for i, row in enumerate(data):
-        for j, element in enumerate(row):
-            worksheet.cell(i, j, element)
+    for row in data:
+        worksheet.append(row)
 
     workbook.save(path)
