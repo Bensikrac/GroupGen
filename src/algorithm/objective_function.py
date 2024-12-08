@@ -95,7 +95,7 @@ class ObjectiveFunction:
         :return: the calculated diversity cost (or bound on diversity cost)
         """
         group_cost: float = 0.0
-        for attribute in dataset.attribute_classes:
+        for attribute in self.__dataset.attribute_classes:
             values_checked: set[str] = set()
             for participant in group:
                 value: str = participant.get_attribute(attribute)
