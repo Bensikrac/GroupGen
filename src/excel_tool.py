@@ -9,7 +9,7 @@ from openpyxl.styles import PatternFill
 class FillColours(Enum):
     """Enum for some fill colours of openpyxl"""
 
-    # pylint: disable=R0903
+    # pylint: disable=too-few-public-methods
     GREEN = PatternFill(start_color="00CCFFCC", fill_type="solid")
     VIOLET = PatternFill(start_color="00CC99FF", fill_type="solid")
 

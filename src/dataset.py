@@ -41,12 +41,13 @@ class Dataset:
         if location.endswith(".xlsx") or location.endswith(".xls"):
             # Excel
             self.__raw_data = read_excel(location)
-            # pylint: disable=W0511
-            # TODO: add normalization
-            self.__normalized_data = self.__raw_data
         else:
             # ...
             raise NotImplementedError
+
+        # pylint: disable=W0511
+        # TODO: add normalization
+        self.__normalized_data = self.__raw_data
 
         self.__participants = {}
 

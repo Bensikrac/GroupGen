@@ -12,7 +12,7 @@ class Participant:
     attributes: dict[str, str]
     # attributes from attribute to it's value
 
-    def __init__(self, uid: str, attributes: dict[str, str] = None) -> None:
+    def __init__(self, uid: str, attributes: dict[str, str] | None = None) -> None:
         if attributes is None:
             attributes = {}
         self.__uid = uid
@@ -61,7 +61,7 @@ type Iteration = list[Group]
 type Assignment = list[Iteration]
 
 
-def combine_outer[T](x: list[list[T]], y: list[list[T]]) -> list[list[T]]:
+def combine_outer(x: list[list[str]], y: list[list[str]]) -> list[list[str]]:
     """Combine 2 2-dimensional lists by the outer lists.
 
     Outer-list-wise appending :param:`y` to :param:`x`
@@ -74,7 +74,7 @@ def combine_outer[T](x: list[list[T]], y: list[list[T]]) -> list[list[T]]:
     return x + y
 
 
-def combine_inner[T](x: list[list[T]], y: list[list[T]]) -> list[list[T]]:
+def combine_inner(x: list[list[str]], y: list[list[str]]) -> list[list[str]]:
     """Combine 2 2-dimensional lists by their inner lists.
 
     Inner-list-wise appending :param:`y` to :param:`x`
@@ -84,10 +84,12 @@ def combine_inner[T](x: list[list[T]], y: list[list[T]]) -> list[list[T]]:
 
     :return: Combined list
     """
+    # make x and y same sized
     if len(x) < len(y):
         x += [[str()]] * (len(y) - len(x))
     elif len(y) < len(x):
-        y += [[]] * (len(x) - len(y))
+        y += [[str()]] * (len(x) - len(y))
+
     retval: list[list[str]] = []
     for a, b in zip(x, y):
         retval.append(a + b)
