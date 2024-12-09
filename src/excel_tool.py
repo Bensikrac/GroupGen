@@ -47,10 +47,25 @@ def write_excel(
     :param data: List of rows of elements
     :param worksheet_name: Optional name for the new Worksheet
     """
-    workbook = opxl.Workbook(write_only=True)
+    # workbook = opxl.Workbook(write_only=True)
+    workbook = opxl.Workbook()
     workbook.create_sheet(worksheet_name)
     worksheet = workbook.active
     for row in data:
         worksheet.append(row)
+
+    # resize column widths
+    # https://stackoverflow.com/a/39530676
+    for col in worksheet.columns:
+        max_length = 0
+        column = col[0].column_letter  # Get the column name
+        for cell in col:
+            try:  # Necessary to avoid error on empty cells
+                if len(str(cell.value)) > max_length:
+                    max_length = len(str(cell.value))
+            except:
+                pass
+        adjusted_width = (max_length + 2) * 1.0
+        worksheet.column_dimensions[column].width = adjusted_width
 
     workbook.save(path)
