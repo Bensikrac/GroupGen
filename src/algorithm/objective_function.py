@@ -137,14 +137,17 @@ class ObjectiveFunction:
 
         return self.__cached_diversity_cost_max
 
-    def recalculate_bounds_lazy(self) -> None:
+    def recalculate_bounds(self, sample_assignment: Assignment) -> None:
         """Recalculate the bounds based on a given sample assignment
 
         :param sample_assignment: the sample assignment,
         a list of lists each representing a round and containing a number of groups
         """
         self.__cached_diversity_cost_max = -1.0
+        self.__diversity_cost_max(sample_assignment)
+
         self.__cached_mix_cost_max = -1.0
+        self.__mix_cost_max(sample_assignment)
 
     def calculate_weighted_cost(
         self,
