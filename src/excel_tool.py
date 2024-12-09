@@ -60,6 +60,7 @@ def write_excel(
         max_length = 0
         column = col[0].column_letter  # Get the column name
         for cell in col:
+            # pylint: disable=broad-exception-caught
             try:  # Necessary to avoid error on empty cells
                 max_length = max(max_length, len(str(cell.value)))
             except Exception:
