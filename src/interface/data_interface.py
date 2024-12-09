@@ -1,6 +1,6 @@
 """Data interface module."""
 
-# pylint disable=too-few-public-methods,unnecessary-pass
+# pylint: disable=too-few-public-methods,unnecessary-pass,invalid-name,too-many-ancestors
 
 from abc import abstractmethod
 from typing import Protocol, TypeVar
@@ -183,7 +183,7 @@ type P = TypeVar("P")
 type E = TypeVar("E")
 
 
-class ISymmetricTransformedDataIO[P, E](ITransformedDataIO[E, P, P, E]):
+class ISymmetricTransformedDataIO[P, E](ITransformedDataIO[E, P, P, E], Protocol):
     """Convenience Protocol for symmetric transformed data input/output."""
 
     pass
