@@ -1,5 +1,13 @@
+"""Data interface module."""
+
+# pylint disable=too-few-public-methods,unnecessary-pass
+
 from abc import abstractmethod
-from typing import Protocol
+from typing import Protocol, TypeVar
+
+
+#: Generic type variable
+type T = TypeVar("T")
 
 
 class IDataInput[T](Protocol):
@@ -26,10 +34,24 @@ class IDataOutput[T](Protocol):
         pass
 
 
+#: Input type
+type I = TypeVar("I")
+
+#: Output type
+type O = TypeVar("O")
+
+
 class IDataIO[I, O](IDataInput[I], IDataOutput[O], Protocol):
     """Combined Protocol for data input/output."""
 
     pass
+
+
+#: Type to convert from
+type From = TypeVar("From")
+
+#: Type to convert to
+type To = TypeVar("To")
 
 
 class IDataInputTransformer[From, To](Protocol):
@@ -37,7 +59,7 @@ class IDataInputTransformer[From, To](Protocol):
 
     @staticmethod
     @abstractmethod
-    def transform_get(self, x: From) -> To:
+    def transform_get(x: From) -> To:
         """Transform arbitrary data of :class:`From` to :class:`To`.
 
         :param x: Arbitrary data
@@ -52,7 +74,7 @@ class IDataOutputTransformer[From, To](Protocol):
 
     @staticmethod
     @abstractmethod
-    def transform_put(self, x: From) -> To:
+    def transform_put(x: From) -> To:
         """Transform arbitrary data of :class:`From` to :class:`To`.
 
         :param x: Arbitrary data
@@ -104,6 +126,19 @@ class ITransformedDataOutput[From, To](
         return self.__data_output.put(self.transform_put(x))
 
 
+#: Type to convert input from
+type IFrom = TypeVar("IFrom")
+
+#: Type to convert input to
+type ITo = TypeVar("ITo")
+
+#: Type to convert output from
+type OFrom = TypeVar("OFrom")
+
+#: Type to convert output to
+type OTo = TypeVar("OTo")
+
+
 class ITransformedDataIO[IFrom, ITo, OFrom, OTo](
     IDataIO[ITo, OFrom],
     IDataInputTransformer[IFrom, ITo],
@@ -112,7 +147,7 @@ class ITransformedDataIO[IFrom, ITo, OFrom, OTo](
 ):
     """Combined Protocol for transformed data input/output.
 
-    :param data_io: The underlying :class:`IDataIO` to which :func:`get` and :func:`put` is forwarded
+    :param data_io: The underlying :class:`IDataIO`
     """
 
     __data_io: type[IDataIO[IFrom, OTo]]
@@ -139,6 +174,13 @@ class ISymmetricDataIO[T](IDataIO[T, T], Protocol):
     """Convenience Protocol for symmetric data input/output."""
 
     pass
+
+
+#: Process-facing type
+type P = TypeVar("P")
+
+#: Extern-facing type
+type E = TypeVar("E")
 
 
 class ISymmetricTransformedDataIO[P, E](ITransformedDataIO[E, P, P, E]):
