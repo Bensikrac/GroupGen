@@ -30,9 +30,11 @@ def read_excel(path: os.PathLike, worksheet_name: str | None = None) -> list[lis
     else:
         worksheet = workbook.get_sheet_by_name(worksheet_name)
 
+    # `worksheet.iter_rows(values_only=True)` yields rows in form of `tuple[str|None]`
+    # so we convert them to `list[str]` and collect them in a list -> `list[list[str]]`
     return [
-        [str(e) if not e is None else str() for e in r]
-        for r in worksheet.iter_rows(values_only=True)
+        [str(element) if not element is None else str() for element in row]
+        for row in worksheet.iter_rows(values_only=True)
     ]
 
 
