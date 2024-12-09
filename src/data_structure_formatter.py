@@ -1,3 +1,5 @@
+"""Module providing formatting functions for data structures."""
+
 from data_structures import Participant, Group, Iteration, Assignment, ListOfRowLists
 
 
