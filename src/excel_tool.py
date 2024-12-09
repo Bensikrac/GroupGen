@@ -30,14 +30,10 @@ def read_excel(path: os.PathLike, worksheet_name: str | None = None) -> list[lis
     else:
         worksheet = workbook.get_sheet_by_name(worksheet_name)
 
-    retval: list[list[str]] = []
-
-    for i in range(worksheet.max_row):
-        retval.append([])
-        for j in range(worksheet.max_column):
-            retval[i].append(str(worksheet.cell(i, j)))
-
-    return retval
+    return [
+        [str(e) if not e is None else str() for e in r]
+        for r in worksheet.iter_rows(values_only=True)
+    ]
 
 
 def write_excel(

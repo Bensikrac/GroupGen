@@ -49,7 +49,7 @@ class Dataset:
         # TODO: add normalization
         self.__normalized_data = self.__raw_data
 
-        self.__participants = {}
+        self.__participants = set()
 
         for i, row in enumerate(self.__normalized_data):
             if i == 0:
@@ -58,9 +58,9 @@ class Dataset:
                 self.__number_of_attribute_classes = len(self.__attribute_classes)
             else:
                 # other rows are the :class:`Participant`s
-                self.__participants &= {
+                self.__participants.add(
                     self.__parse_participant(i, self.__attribute_classes, row)
-                }
+                )
         self.__number_of_participants = len(self.__participants)
 
     @property

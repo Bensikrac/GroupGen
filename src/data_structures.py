@@ -12,9 +12,7 @@ class Participant:
     attributes: dict[str, str]
     # attributes from attribute to it's value
 
-    def __init__(self, uid: str, attributes: dict[str, str] | None = None) -> None:
-        if attributes is None:
-            attributes = {}
+    def __init__(self, uid: str, attributes: dict[str, str]) -> None:
         self.__uid = uid
         self.attributes = attributes
 
@@ -50,7 +48,7 @@ class Participant:
         return f"Participant({self.__uid}, {self.attributes})"
 
     def __str__(self) -> str:
-        return f"Name: {self.__uid} Attributes: {self.attributes}"
+        return f"UID: {self.__uid} Attributes: {self.attributes}"
 
     def __hash__(self) -> int:
         return self.__uid
