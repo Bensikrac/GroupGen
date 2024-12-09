@@ -61,9 +61,8 @@ def write_excel(
         column = col[0].column_letter  # Get the column name
         for cell in col:
             try:  # Necessary to avoid error on empty cells
-                if len(str(cell.value)) > max_length:
-                    max_length = len(str(cell.value))
-            except:
+                max_length = max(max_length, len(str(cell.value)))
+            except Exception:
                 pass
         adjusted_width = (max_length + 2) * 1.0
         worksheet.column_dimensions[column].width = adjusted_width
