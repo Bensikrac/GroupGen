@@ -5,6 +5,7 @@ from math import ceil
 from random import Random
 import random
 from data_structures import Assignment, Group, Participant
+from objective_function import ObjectiveFunction
 
 
 class RandomAlgorithm:
@@ -52,3 +53,38 @@ class RandomAlgorithm:
             assignment.append(round)
 
         return assignment
+
+    def brute_force_assignment(
+        self,
+        participants: set[Participant],
+        groups_per_iteration: int,
+        iterations: int,
+        max_cycles: int,
+    ) -> Assignment:
+        """Generates a number of random assignments and returns the best.
+
+        :param participants: The set of participants to distribute into groups
+        :param groups_per_round: The number of goups per iteration
+        :param iterations: The number of iterations to generate groups for
+        :param max_cycles: The number of assignments to generate
+
+        :return: The best assignment
+        """
+        best: Assignment = self.find_assignment(
+            participants, groups_per_iteration, iterations
+        )
+
+        attributes: set[str] = list(participants)[0].attributes.keys()
+        objective: ObjectiveFunction = ObjectiveFunction(list(attributes))
+
+        best_score: float = objective.calculate_weighted_cost(best)
+
+        for i in range(max_cycles):
+            new: Assignment = self.find_assignment(
+                participants, groups_per_iteration, iterations
+            )
+            new_score: float = objective.calculate_weighted_cost(new)
+            if new_score < best_score:
+                best = new
+                best_score = new_score
+        return best

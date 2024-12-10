@@ -190,7 +190,7 @@ class ObjectiveFunction:
         :param assignment: the Assignment to calculate the cost for
         :param mix_weight: the weight of the mix cost,
         only the size of this number compared to the diversity weight matters, defaults to 1
-        :param diversity_weight: the weight of the mix cost, defaults to 1
+        :param diversity_weight: the weight of the diversity cost, defaults to 1
 
         :return: the weighted cost, between 0 and 1, lower is better
         """

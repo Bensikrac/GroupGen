@@ -20,6 +20,9 @@ class SimulatedAnnealingAlgorithm:
     __random: Random
     attributes: list[str]
 
+    temperatures: list[float] = []
+    scores: list[float] = []
+
     def __init__(self, attributes: list[str], random: Random = None):
         if random is None:
             self.__random = Random()
@@ -33,18 +36,23 @@ class SimulatedAnnealingAlgorithm:
         groups_per_iteration: int,
         iterations: int,
         max_cycles: int,
-        intitial_temperature: float,
-        temperature_scaling: float,
+        intitial_temperature: float = 1,
+        temperature_scaling: float = 15,
+        mix_weight: float = 1,
+        diversity_weight: float = 1,
     ) -> Assignment:
         """Return a group assignment generated using simulated annealing.
 
-        :param participants: The set of participants to distribute into groups
+        :param participants: the set of participants to distribute into groups
         :param groups_per_iteration: the number of groups in each iteration
-        :param iterations: The total number of iterations
-        :param max_cycles: The maximum number of times
+        :param iterations: the total number of iterations
+        :param max_cycles: the maximum number of times
         the algorithm will iteratively improve the assignment
-        :param intitial_temperature: The initial Temperature
-        :param temperature_scaling: Controls the rate of temperature decay, higher means quicker
+        :param intitial_temperature: the initial Temperature
+        :param temperature_scaling: controls the rate of temperature decay, higher means quicker
+        :param mix_weight: the weight of the mix cost when evaluating assignments,
+        only the size of this number compared to the diversity weight matters, defaults to 1
+        :param diversity_weight: the weight of the diversity cost, defaults to 1
 
         :return: the generated assignment
         """
@@ -55,18 +63,27 @@ class SimulatedAnnealingAlgorithm:
         objective: ObjectiveFunction = ObjectiveFunction(self.attributes)
         for i in range(max_cycles):
             temperature: int = self.get_temperature(
-                1 - (i + 1) / max_cycles, intitial_temperature, temperature_scaling
+                (i + 1) / max_cycles, intitial_temperature, temperature_scaling
             )
             neighbor: Assignment = self.find_neighbor(assignment)
             if (
                 self.get_step_probability(
-                    objective.calculate_weighted_cost(assignment),
-                    objective.calculate_weighted_cost(neighbor),
+                    objective.calculate_weighted_cost(
+                        assignment, mix_weight, diversity_weight
+                    ),
+                    objective.calculate_weighted_cost(
+                        neighbor, mix_weight, diversity_weight
+                    ),
                     temperature,
                 )
                 >= self.__random.random()
             ):
                 assignment = neighbor
+            self.scores.append(
+                objective.calculate_weighted_cost(
+                    assignment, mix_weight, diversity_weight
+                )
+            )
         return assignment
 
     def get_temperature(
@@ -80,9 +97,14 @@ class SimulatedAnnealingAlgorithm:
 
         :return: The temperature value
         """
-        intitial_temperature: float = 10
-        scaling: float = 0.9
-        return intitial_temperature * (1 - progress) * exp(-scaling * progress)
+
+        temperature: float = (
+            intitial_temperature * (1 - progress) * exp(-scaling * progress)
+        )
+
+        self.temperatures.append(temperature)
+
+        return temperature
 
     def find_neighbor(self, assignment: Assignment) -> Assignment:
         """Return a random group assignment that is one swap removed from the given assignment.
@@ -142,5 +164,7 @@ class SimulatedAnnealingAlgorithm:
         """
         if energy_new < energy_old:
             return 1
+        elif temperature <= 0:
+            return 0
         else:
             return exp(-(energy_new - energy_old) / temperature)
