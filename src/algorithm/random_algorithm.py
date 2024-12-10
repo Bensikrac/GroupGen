@@ -38,10 +38,9 @@ class RandomAlgorithm:
         assignment: Assignment = list()
         for i in range(iterations):
             remaining_participants: set[Participant] = copy(participants)
-            round: list[Group] = list()
-            for j in range(groups_per_iteration):
-                group: Group = set()
-                for k in range(max_group_size):
+            round: list[Group] = [set() for _ in range(groups_per_iteration)]
+            for j in range(max_group_size):
+                for group in round:
                     if len(remaining_participants) == 0:
                         break
                     participant: Participant = self.__random.choice(
@@ -49,7 +48,6 @@ class RandomAlgorithm:
                     )
                     group.add(participant)
                     remaining_participants.discard(participant)
-                round.append(group)
             assignment.append(round)
 
         return assignment
