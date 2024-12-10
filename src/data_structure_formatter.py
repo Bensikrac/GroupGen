@@ -62,50 +62,84 @@ def empty_column(n: int) -> ListOfRowLists[str]:
     return list([[str()]] * n)
 
 
-def participant_to_str_matrix(participant: Participant) -> ListOfRowLists[str]:
+def participant_to_str_matrix(
+    participant: Participant, attributes_to_print: list[str] | None = None
+) -> ListOfRowLists[str]:
     """Convert a :class:`Participant` to a string matrix.
 
     :param participant: :class:`Participant` to convert
+    :param attributes_to_print: Optionally only print attribute values for these attribute classes
+    (uses :func:`__str__` of :class:`Participant` when `None`)
 
     :return: String matrix of converted :class:`Participant`
     """
-    return [[str(participant)]]
+    return (
+        [
+            [
+                "_".join(
+                    [
+                        value
+                        for key, value in participant.attributes.items()
+                        if key in attributes_to_print
+                    ]
+                )
+            ]
+        ]
+        if not attributes_to_print is None
+        else [[str(participant)]]
+    )
 
 
-def group_to_str_matrix(group: Group) -> ListOfRowLists[str]:
+def group_to_str_matrix(
+    group: Group, attributes_to_print: list[str] | None = None
+) -> ListOfRowLists[str]:
     """Convert a :class:`Group` to a string matrix.
 
     :param group: :class:`Group` to convert
+    :param attributes_to_print: Optionally only print these attribute classes
+    (forwarded to :func:`participant_to_str_matrix`)
 
     :return: String matrix of converted :class:`Group`
     """
     retval: ListOfRowLists[str] = []
     for participant in group:
-        retval = combine_outer(retval, participant_to_str_matrix(participant))
+        retval = combine_outer(
+            retval, participant_to_str_matrix(participant, attributes_to_print)
+        )
     return retval
 
 
-def iteration_to_str_matrix(iteration: Iteration) -> ListOfRowLists[str]:
+def iteration_to_str_matrix(
+    iteration: Iteration, attributes_to_print: list[str] | None = None
+) -> ListOfRowLists[str]:
     """Convert a :class:`Iteration` to a string matrix.
 
     :param iteration: :class:`Iteration` to convert
+    :param attributes_to_print: Optionally only print these attribute classes
+    (forwarded to :func:`participant_to_str_matrix`)
 
     :return: String matrix of converted :class:`Iteration`
     """
     retval: ListOfRowLists[str] = []
     for i, group in enumerate(iteration):
         if i == 0:
-            retval = group_to_str_matrix(group)
+            retval = group_to_str_matrix(group, attributes_to_print)
         else:
             retval = combine_inner(retval, empty_column(len(group)))
-            retval = combine_inner(retval, group_to_str_matrix(group))
+            retval = combine_inner(
+                retval, group_to_str_matrix(group, attributes_to_print)
+            )
     return retval
 
 
-def assignment_to_str_matrix(assignment: Assignment) -> ListOfRowLists[str]:
+def assignment_to_str_matrix(
+    assignment: Assignment, attributes_to_print: list[str] | None = None
+) -> ListOfRowLists[str]:
     """Convert a :class:`Assignment` to a string matrix.
 
     :param assignment: :class:`Assignment` to convert
+    :param attributes_to_print: Optionally only print these attribute classes
+    (forwarded to :func:`participant_to_str_matrix`)
 
     :return: String matrix of converted :class:`Assignment`
     """
@@ -114,7 +148,9 @@ def assignment_to_str_matrix(assignment: Assignment) -> ListOfRowLists[str]:
         if i != 0:
             retval = combine_outer(retval, empty_row(len(retval[-1])))
         retval = combine_outer(retval, [[f"Iteration {i+1}"]])
-        retval = combine_outer(retval, iteration_to_str_matrix(iteration))
+        retval = combine_outer(
+            retval, iteration_to_str_matrix(iteration, attributes_to_print)
+        )
     return retval
 
 
