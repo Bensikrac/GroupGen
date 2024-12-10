@@ -6,7 +6,7 @@ from random import Random
 from typing import Any
 from objective_function import ObjectiveFunction
 from random_algorithm import RandomAlgorithm
-from data_structures import Assignment, Iteration, Group, Participant
+from data_structures import Assignment, Iteration, Participant
 
 
 class SimulatedAnnealingAlgorithm:
@@ -123,7 +123,7 @@ class SimulatedAnnealingAlgorithm:
 
         group_index_2: int = -1
         participant_index_2: int = -1
-        while (group_index_2 == -1) or (group_index_1 == group_index_2):
+        while group_index_2 in (-1, group_index_1):
             group_index_2 = self.__random.randrange(len(iteration))
             participant_index_2 = self.__random.randrange(len(iteration[group_index_2]))
 
@@ -136,20 +136,19 @@ class SimulatedAnnealingAlgorithm:
 
         return neighbor
 
-    def __half_deep_copy(self, object: Any) -> Any:
+    def __half_deep_copy(self, obj: Any) -> Any:
         """Return a recursive deep copy of the given object
         that stops at any element that isn't a set or list.
 
-        :param object: The object to copy
+        :param obj: The object to copy
 
         :return: The copy
         """
-        if isinstance(object, list):
-            return [self.__half_deep_copy(item) for item in object]
-        if isinstance(object, set):
-            return set([self.__half_deep_copy(item) for item in object])
-        else:
-            return copy(object)
+        if isinstance(obj, list):
+            return [self.__half_deep_copy(item) for item in obj]
+        if isinstance(obj, set):
+            return {self.__half_deep_copy(item) for item in obj}
+        return copy(obj)
 
     def get_step_probability(
         self, energy_old: float, energy_new: float, temperature: float
@@ -164,7 +163,7 @@ class SimulatedAnnealingAlgorithm:
         """
         if energy_new < energy_old:
             return 1
-        elif temperature <= 0:
+        if temperature <= 0:
             return 0
         else:
             return exp(-(energy_new - energy_old) / temperature)
