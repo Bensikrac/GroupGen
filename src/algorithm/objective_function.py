@@ -69,9 +69,8 @@ class ObjectiveFunction:
             assignment
         ) / self.__diversity_cost_max(assignment)
 
-    def __calculate_total_group_diversity_cost(
+    def __total_group_diversity_cost(
         self, assignment: Assignment, match_group: Group = None
-
     ) -> float:
         """Calculate the summed unnormalized diversity cost of all groups in an assignment.
 
@@ -135,20 +134,16 @@ class ObjectiveFunction:
         :return: the upper bound,
         holds for all assignments of the same shape that contain the same participants
         """
+        participants: set[Participant] = set()
+        for group in sample_assignment[0]:
+            participants = participants.union(group)
+
         if self.__cached_diversity_cost_max < 0.0:
-            participants: set[Participants] = set()
-            for group in sample_assignment[0]:
-                participants &= group
             self.__cached_diversity_cost_max = self.__total_group_diversity_cost(
                 sample_assignment, participants
             )
 
-        for group in sample_assignment[0]:
-            participants = participants.union(group)
-
-        return self.__calculate_total_group_diversity_cost(
-            sample_assignment, participants
-        )
+        return self.__cached_diversity_cost_max
 
     def recalculate_bounds(self, sample_assignment: Assignment) -> None:
         """Recalculate the bounds based on a given sample assignment
