@@ -28,11 +28,9 @@ class ObjectiveFunction:
         :return: a score between 0 and 1, the lower the better
         """
         cost: float = 0.0
-        groups: list[Group] = []
-        # flatten assignment:
-        for iteration in assignment:
-            for group in iteration:
-                groups.append(group)
+        groups: list[Group] = [
+            group for iteration in assignment for group in iteration
+        ]  # list of all groups in assignment
 
         for i, group in enumerate(groups):
             for j in range(i + 1, len(groups)):
@@ -70,7 +68,7 @@ class ObjectiveFunction:
         ) / self.__diversity_cost_max(assignment)
 
     def __total_group_diversity_cost(
-        self, assignment: Assignment, match_group: Group = None
+        self, assignment: Assignment, match_group: Group | None = None
     ) -> float:
         """Calculate the summed unnormalized diversity cost of all groups in an assignment.
 

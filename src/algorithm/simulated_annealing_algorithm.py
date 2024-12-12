@@ -48,8 +48,9 @@ class SimulatedAnnealingAlgorithm:
         :param iterations: the total number of iterations
         :param max_cycles: the maximum number of times
         the algorithm will iteratively improve the assignment
-        :param intitial_temperature: the initial Temperature
-        :param temperature_scaling: controls the rate of temperature decay, higher means quicker
+        :param intitial_temperature: the initial Temperature, deafults to 1
+        :param temperature_scaling: controls the rate of temperature decay, higher means quicker,
+        defaults to 15
         :param mix_weight: the weight of the mix cost when evaluating assignments,
         only the size of this number compared to the diversity weight matters, defaults to 1
         :param diversity_weight: the weight of the diversity cost, defaults to 1
