@@ -7,7 +7,7 @@ def test_file_read():
     reader = excel_tool.Reader("test_data/excel_reader_test_0.xlsx")
     list = reader.read()
     testobject1 = Participant(
-        2,
+        1,
         {
             "Angemeldet": "Ye",
             "Status": "Ne",
@@ -24,11 +24,11 @@ def test_file_read():
         },
     )
     testobject2 = Participant(
-        3,
+        2,
         {
             "Angemeldet": "Non",
-            "Status": "TRUE",
-            "Form of address": "FALSE",
+            "Status": True,
+            "Form of address": False,
             "Title": "D3",
             "First name": "erster Name",
             "Last name": "F",
@@ -71,7 +71,7 @@ def test_file_read():
         "Department",
         "Institute / Graduate School / Research Training Group",
     ]:
-        assert list[1].get_attribute(attrib) == testobject1.get_attribute(attrib)
+        assert list[1].get_attribute(attrib) == testobject2.get_attribute(attrib)
 
 
 def test_errors():
