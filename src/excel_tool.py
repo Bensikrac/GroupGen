@@ -35,10 +35,8 @@ class Reader:
         for i, entry in enumerate(header_row):
             header_list[i] = entry.value
 
-
         for i in range(2, dataframe_active.max_row):
             p: Participant = Participant(i)
-
 
             for j in range(0, dataframe_active.max_column):
                 p.set_attribute(header_list[j], dataframe_active[i][j].value)
