@@ -15,8 +15,7 @@ license = {file = "COPYING"}
 requires-python = ">= 3.12"
 
 dependencies = [
-  "openpyxl",
-  "PyQt6"
+  "openpyxl"
 ]
 
 [project.optional-dependencies]
@@ -24,11 +23,11 @@ gui = [
   "PyQt6"
 ]
 dev = [
-  "black>=24.8.0",
+  "black==24.8.0",
   "pytest",
-  "pylint"
+  "pylint",
+  "mypy"
 ]
-
 
 [project.gui-scripts]
 hello_window = "group_gen:hello_window"
