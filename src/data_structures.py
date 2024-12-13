@@ -1,8 +1,21 @@
 """Data structures module"""
 
 from typing import TypeVar
+from dataclasses import dataclass
 
 
+@dataclass(
+    init=True,
+    repr=True,
+    eq=False,
+    order=False,
+    unsafe_hash=False,
+    frozen=True,
+    match_args=True,
+    kw_only=False,
+    slots=False,
+    weakref_slot=False,
+)
 class Participant:
     """Structure representing a participant
 
@@ -11,12 +24,12 @@ class Participant:
     """
 
     __uid: int
-    attributes: dict[str, str]
-    # attributes from attribute to it's value
+    __attributes: dict[str, str]
+    # attributes maps from attribute class to attribute value
 
     def __init__(self, uid: str, attributes: dict[str, str]) -> None:
         self.__uid = uid
-        self.attributes = attributes
+        self.__attributes = attributes
 
     @property
     def uid(self) -> int:
@@ -26,6 +39,17 @@ class Participant:
         """
         return self.__uid
 
+    @property
+    def attributes(self) -> dict[str, str]:
+        """Attributes of the :class:`Participant`.
+
+        :return: Attributes of the :class:`Participant`
+        """
+        return self.__attributes
+
+    def __getitem__(self, attribute: str) -> str:
+        return self.attributes[attribute]
+
     def get_attribute(self, attribute: str) -> str:
         """Return the attribute value of the given attribute for the :class:`Participant`.
 
@@ -34,14 +58,6 @@ class Participant:
         :return: Attribute value of the given attribut for the :class:`Participant`
         """
         return self.attributes[attribute]
-
-    def set_attribute(self, attribute: str, value: str) -> None:
-        """Set the given attribute to the given value for the :class:`Participant`.
-
-        :param attribute: Attribute to be set (already existing)
-        :param value: Value for the attribute
-        """
-        self.attributes[attribute] = value
 
     def __eq__(self, other: "Participant") -> bool:
         return self.__uid == other.uid
