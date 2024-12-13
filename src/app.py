@@ -3,7 +3,7 @@
 import os
 import sys
 from PyQt6 import uic
-from PyQt6.QtWidgets import QApplication, QMainWindow, QPushButton, QFileDialog
+from PyQt6.QtWidgets import QApplication, QMainWindow, QFileDialog
 from excel_tool import Reader, Writer
 from data_structures import Participant, Assignment
 from algorithm.simulated_annealing_algorithm import SimulatedAnnealingAlgorithm
@@ -11,6 +11,8 @@ from algorithm.simulated_annealing_algorithm import SimulatedAnnealingAlgorithm
 
 class MainWindow(QMainWindow):
     """Main Window class"""
+
+    # pylint: disable=too-few-public-methods
 
     __input_path: os.PathLike | None = None
     __output_path: os.PathLike | None = None
@@ -33,30 +35,23 @@ class MainWindow(QMainWindow):
 
         self.state_label.setText("Status: Preparing...")
 
-        participant_list: list[Participant]
-        algorithm_instance: SimulatedAnnealingAlgorithm
-        final_assignment: Assignment
+        participant_list: list[Participant] = Reader(self.__input_path).read()
+        participant_set: set[Participant] = set(self.participant_list)
 
-        excel_reader: Reader = Reader(self.__input_path)
-        self.participant_list = excel_reader.read()
-
-        p_set = set(self.participant_list)
-
-        self.algorithm_instance = SimulatedAnnealingAlgorithm(
-            list(self.participant_list[0].attributes.keys())
+        algorithm_instance: SimulatedAnnealingAlgorithm = SimulatedAnnealingAlgorithm(
+            list(participant_list[0].attributes.keys())
         )
 
         self.state_label.setText("Status: Calculating...")
 
-        self.final_assignment = self.algorithm_instance.find_assignment(
+        final_assignment: Assignment = algorithm_instance.find_assignment(
             p_set,
             int(self.groups_spinbox.value()),
             int(self.iterations_spinbox.value()),
             50,
         )
 
-        excel_writer: Writer = Writer(self.__output_path)
-        excel_writer.write_file(self.final_assignment)
+        Writer(self.__output_path).write_file(self.final_assignment)
 
         self.state_label.setText("Status: Finished!")
 
