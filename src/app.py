@@ -62,20 +62,30 @@ class MainWindow(QMainWindow):
 
     def __input_file_picker(self) -> None:
         self.__input_path = QFileDialog.getOpenFileName(
-            caption="pick file", directory="/home", filter="Excel Files (*.xls *.xlsx)"
+            caption="pick file", directory="/home", filter="Excel Files (*.xlsx *.xls)"
         )[0]
         self.input_file_path_line_edit.setText(self.__input_path)
 
     def __output_file_picker(self) -> None:
         self.__output_path = QFileDialog.getSaveFileName(
-            caption="pick file", directory="/home", filter="Excel Files (*.xls *.xlsx)"
+            caption="pick file",
+            directory="/home",
+            filter="Excel Files (*.xlsx *.xls)",
         )[0]
+        if not (
+            self.__output_path.endswith(".xlsx") or self.__output_path.endswith(".xls")
+        ):
+            self.__output_path += ".xlsx"
         self.output_file_path_line_edit.setText(self.__output_path)
 
 
 if __name__ == "__main__":
     app: QApplication = QApplication(sys.argv)
-    window: MainWindow = MainWindow("assets/main_window.ui")
+    window: MainWindow
+    if len(sys.argv) < 2:
+        window = MainWindow("assets/main_window.ui")
+    else:
+        window = MainWindow(*sys.argv[1:])
     window.show()
 
     app.exec()
