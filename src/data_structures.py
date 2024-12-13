@@ -27,10 +27,6 @@ class Participant:
     __attributes: dict[str, str]
     # attributes maps from attribute class to attribute value
 
-    def __init__(self, uid: str, attributes: dict[str, str]) -> None:
-        self.__uid = uid
-        self.__attributes = attributes
-
     @property
     def uid(self) -> int:
         """UID of the :class:`Participant`.
@@ -62,8 +58,7 @@ class Participant:
     def __eq__(self, other: object) -> bool:
         if isinstance(other, Participant):
             return self.__uid == other.uid
-        else:
-            return False
+        return False
 
     def __str__(self) -> str:
         return f"UID: {self.__uid} Attributes: {self.attributes}"
@@ -79,7 +74,7 @@ type Assignment = list[Iteration]
 
 # pylint: disable=invalid-name
 #: Generic type variable
-type T = TypeVar("T")
+T = TypeVar("T")
 
 type ListOfRowLists[T] = list[list[T]]
 type ListOfColumnLists[T] = list[list[T]]
