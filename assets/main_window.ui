@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>650</width>
-    <height>279</height>
+    <width>681</width>
+    <height>392</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,7 +17,7 @@
    <widget class="QPushButton" name="input_pick_button">
     <property name="geometry">
      <rect>
-      <x>450</x>
+      <x>60</x>
       <y>60</y>
       <width>161</width>
       <height>31</height>
@@ -30,7 +30,7 @@
    <widget class="QPushButton" name="output_pick_button">
     <property name="geometry">
      <rect>
-      <x>450</x>
+      <x>60</x>
       <y>110</y>
       <width>161</width>
       <height>31</height>
@@ -43,8 +43,8 @@
    <widget class="QPushButton" name="run_workflow_button">
     <property name="geometry">
      <rect>
-      <x>450</x>
-      <y>160</y>
+      <x>60</x>
+      <y>260</y>
       <width>161</width>
       <height>31</height>
      </rect>
@@ -56,7 +56,7 @@
    <widget class="QLineEdit" name="input_file_path_line_edit">
     <property name="geometry">
      <rect>
-      <x>60</x>
+      <x>230</x>
       <y>60</y>
       <width>381</width>
       <height>31</height>
@@ -66,11 +66,85 @@
    <widget class="QLineEdit" name="output_file_path_line_edit">
     <property name="geometry">
      <rect>
-      <x>60</x>
+      <x>230</x>
       <y>110</y>
       <width>381</width>
       <height>31</height>
      </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="state_label">
+    <property name="geometry">
+     <rect>
+      <x>230</x>
+      <y>260</y>
+      <width>381</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Status: Waiting...</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QSpinBox" name="groups_spinbox">
+    <property name="geometry">
+     <rect>
+      <x>230</x>
+      <y>160</y>
+      <width>41</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="value">
+     <number>4</number>
+    </property>
+   </widget>
+   <widget class="QSpinBox" name="iterations_spinbox">
+    <property name="geometry">
+     <rect>
+      <x>230</x>
+      <y>210</y>
+      <width>41</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="value">
+     <number>3</number>
+    </property>
+   </widget>
+   <widget class="QLabel" name="groups_label">
+    <property name="geometry">
+     <rect>
+      <x>60</x>
+      <y>160</y>
+      <width>161</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Anzahl Gruppen:</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="iterations_label">
+    <property name="geometry">
+     <rect>
+      <x>60</x>
+      <y>210</y>
+      <width>161</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Anzahl Iterationen: </string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
     </property>
    </widget>
   </widget>
@@ -79,7 +153,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>650</width>
+     <width>681</width>
      <height>22</height>
     </rect>
    </property>
