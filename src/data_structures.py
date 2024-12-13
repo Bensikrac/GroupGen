@@ -62,9 +62,6 @@ class Participant:
     def __eq__(self, other: "Participant") -> bool:
         return self.__uid == other.uid
 
-    def __repr__(self) -> str:
-        return f"Participant({self.__uid}, {self.attributes})"
-
     def __str__(self) -> str:
         return f"UID: {self.__uid} Attributes: {self.attributes}"
 
