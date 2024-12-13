@@ -21,16 +21,12 @@ class MainWindow(QMainWindow):
 
         self.setWindowTitle("GroupGen")
 
-        # input_pick_button: QPushButton = QPushButton("Wähle Eingabedatei aus", self)
         self.input_pick_button.clicked.connect(self.__input_file_picker)
 
-        # output_pick_button: QPushButton = QPushButton("Wähle Ausgabedatei aus", self)
         self.output_pick_button.clicked.connect(self.__output_file_picker)
 
-        # run_workflow_button: QPushButton = QPushButton("Start!", self)
         self.run_workflow_button.clicked.connect(self.__run_workflow)
 
-        # self.setCentralWidget(input_button)
 
     def __run_workflow(self) -> None:
         participant_list: list[Participant]
@@ -79,7 +75,7 @@ class MainWindow(QMainWindow):
 
 if __name__ == "__main__":
     app: QApplication = QApplication(sys.argv)
-    window: MainWindow = MainWindow("assets/untitled.ui")
+    window: MainWindow = MainWindow("assets/main_window.ui")
     window.show()
 
     app.exec()
