@@ -144,16 +144,17 @@ class SimulatedAnnealingAlgorithm:
         neighbor: Assignment = self.__half_deep_copy(assignment)
         index = self.__random.randrange(len(assignment))
         iteration: Iteration = assignment[index]
-        group_index_1: int = self.__random.randrange(len(assignment[index]))
+        group_index_1: int = self.__random.randrange(len(iteration))
         participant_index_1: int = self.__random.randrange(
             len(iteration[group_index_1])
         )
 
         group_index_2: int = -1
-        participant_index_2: int = -1
         while group_index_2 in (-1, group_index_1):
             group_index_2 = self.__random.randrange(len(iteration))
-            participant_index_2 = self.__random.randrange(len(iteration[group_index_2]))
+        participant_index_2: int = self.__random.randrange(
+            len(iteration[group_index_2])
+        )
 
         self.__swap_between_sets(
             neighbor[index][group_index_1],
