@@ -17,10 +17,7 @@ class RandomAlgorithm:
     __random: Random
 
     def __init__(self, random_instance: Random = None):
-        if random_instance is None:
-            self.__random = Random()
-        else:
-            self.__random = random_instance
+        self.__random = Random() if random_instance is None else random_instance
 
     def find_assignment(
         self, participants: set[Participant], groups_per_iteration: int, iterations: int

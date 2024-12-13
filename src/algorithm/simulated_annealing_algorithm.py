@@ -13,7 +13,7 @@ class SimulatedAnnealingAlgorithm:
     """Contains the calculations for generating group assignments using simulated annealing.
 
     :param attributes: A list of attributes that are considered for optimization
-    :param random: An instance of Random that will be used
+    :param random_instance: An instance of Random that will be used
     instead of an automatically generated one as a source or randomness, defaults to None
     """
 
@@ -23,11 +23,8 @@ class SimulatedAnnealingAlgorithm:
     temperatures: list[float] = []
     scores: list[float] = []
 
-    def __init__(self, attributes: list[str], random: Random = None):
-        if random is None:
-            self.__random = Random()
-        else:
-            self.__random = random
+    def __init__(self, attributes: list[str], random_instance: Random = None):
+        self.__random = Random() if random_instance is None else random_instance
         self.attributes = attributes
 
     def find_assignment(
@@ -62,22 +59,18 @@ class SimulatedAnnealingAlgorithm:
             participants, groups_per_iteration, iterations
         )
         objective: ObjectiveFunction = ObjectiveFunction(self.attributes)
-        for i in range(max_cycles):
+        for i in range(1, max_cycles + 1):
             temperature: int = self.get_temperature(
-                (i + 1) / max_cycles, intitial_temperature, temperature_scaling
+                i / max_cycles, intitial_temperature, temperature_scaling
             )
             neighbor: Assignment = self.find_neighbor(assignment)
-            if (
-                self.get_step_probability(
-                    objective.calculate_weighted_cost(
-                        assignment, mix_weight, diversity_weight
-                    ),
-                    objective.calculate_weighted_cost(
-                        neighbor, mix_weight, diversity_weight
-                    ),
-                    temperature,
-                )
-                >= self.__random.random()
+            if self.__should_take_step(
+                assignment,
+                neighbor,
+                temperature,
+                objective,
+                mix_weight,
+                diversity_weight,
             ):
                 assignment = neighbor
             self.scores.append(
@@ -86,6 +79,40 @@ class SimulatedAnnealingAlgorithm:
                 )
             )
         return assignment
+
+    def __should_take_step(
+        self,
+        assignment: Assignment,
+        neighbor: Assignment,
+        temperature: float,
+        objective: ObjectiveFunction,
+        mix_weight: float,
+        diversity_weight: float,
+    ) -> bool:
+        """Determines whether the algorithm takes the step to a given neighbor.
+
+        :param assignment: the current assignment
+        :param neighbor: the neighboring assignment
+        :param temperature: the current temperature
+        :param objective: the objective function to use
+        :param mix_weight: the weight of the mix cost when evaluating assignments,
+        only the size of this number compared to the diversity weight matters
+        :param diversity_weight: the weight of the diversity cost
+
+        :return: true if the steep should be taken, false otherwise
+        """
+        return (
+            self.get_step_probability(
+                objective.calculate_weighted_cost(
+                    assignment, mix_weight, diversity_weight
+                ),
+                objective.calculate_weighted_cost(
+                    neighbor, mix_weight, diversity_weight
+                ),
+                temperature,
+            )
+            >= self.__random.random()
+        )
 
     def get_temperature(
         self, progress: float, intitial_temperature: float, scaling: float
@@ -128,14 +155,28 @@ class SimulatedAnnealingAlgorithm:
             group_index_2 = self.__random.randrange(len(iteration))
             participant_index_2 = self.__random.randrange(len(iteration[group_index_2]))
 
-        participant_1: Participant = list(iteration[group_index_1])[participant_index_1]
-        participant_2: Participant = list(iteration[group_index_2])[participant_index_2]
-        neighbor[index][group_index_1].discard(participant_1)
-        neighbor[index][group_index_1].add(participant_2)
-        neighbor[index][group_index_2].discard(participant_2)
-        neighbor[index][group_index_2].add(participant_1)
-
+        self.__swap_between_sets(
+            neighbor[index][group_index_1],
+            neighbor[index][group_index_2],
+            list(iteration[group_index_1])[participant_index_1],
+            list(iteration[group_index_2])[participant_index_2],
+        )
         return neighbor
+
+    def __swap_between_sets(
+        self, set_1: set, set_2: set, element_1: Any, element_2: Any
+    ) -> None:
+        """Swaps two elements between two sets.
+
+        :param set_1: the first set
+        :param set_2: the second set
+        :param element_1: the first element, initially in set_1
+        :param element_2: the second element, initially in set_2
+        """
+        set_1.discard(element_1)
+        set_2.add(element_1)
+        set_2.discard(element_2)
+        set_1.add(element_2)
 
     def __half_deep_copy(self, obj: Any) -> Any:
         """Return a recursive deep copy of the given object
