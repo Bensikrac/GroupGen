@@ -4,8 +4,8 @@ from copy import copy
 from math import exp
 from random import Random
 from typing import Any
-from objective_function import ObjectiveFunction
-from random_algorithm import RandomAlgorithm
+from algorithm.objective_function import ObjectiveFunction
+from algorithm.random_algorithm import RandomAlgorithm
 from data_structures import Assignment, Iteration, Participant
 
 

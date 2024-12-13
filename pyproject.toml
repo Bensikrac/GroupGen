@@ -15,11 +15,11 @@ license = {file = "COPYING"}
 requires-python = ">= 3.12"
 
 dependencies = [
-  "openpyxl",
-  "PyQt6"
+  "openpyxl"
 ]
 
 [project.optional-dependencies]
+cli = []
 gui = [
   "PyQt6"
 ]
@@ -29,9 +29,8 @@ dev = [
   "pylint"
 ]
 
-
 [project.gui-scripts]
-hello_window = "group_gen:hello_window"
+group_gen = "group_gen:app"
 
 [tool.black]
 target-version = ["py312"]
