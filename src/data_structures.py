@@ -48,7 +48,7 @@ class Participant:
         return self.__attributes
 
     def __getitem__(self, attribute: str) -> str:
-        return self.attributes[attribute]
+        return self.__attributes[attribute]
 
     def get_attribute(self, attribute: str) -> str:
         """Return the attribute value of the given attribute for the :class:`Participant`.
@@ -57,10 +57,13 @@ class Participant:
 
         :return: Attribute value of the given attribut for the :class:`Participant`
         """
-        return self.attributes[attribute]
+        return self.__attributes[attribute]
 
-    def __eq__(self, other: "Participant") -> bool:
-        return self.__uid == other.uid
+    def __eq__(self, other: object) -> bool:
+        if isinstance(other, Participant):
+            return self.__uid == other.uid
+        else:
+            return False
 
     def __str__(self) -> str:
         return f"UID: {self.__uid} Attributes: {self.attributes}"
