@@ -40,7 +40,7 @@ def read_excel(
     # `worksheet.iter_rows(values_only=True)` yields rows in form of `tuple[str|None]`
     # so we convert them to `list[str]` and collect them in a list -> `list[list[str]]`
     return [
-        [str(element) if not element is None else str() for element in row]
+        [str(element) if element is not None else str() for element in row]
         for row in worksheet.iter_rows(values_only=True)
     ]
 

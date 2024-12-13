@@ -3,9 +3,7 @@
 from data_structures import Participant, Group, Iteration, Assignment, ListOfRowLists
 
 
-def combine_outer(
-    x: ListOfRowLists[str], y: ListOfRowLists[str]
-) -> ListOfRowLists[str]:
+def append_rows(x: ListOfRowLists[str], y: ListOfRowLists[str]) -> ListOfRowLists[str]:
     """Combine 2 2-dimensional lists by the outer lists.
 
     Outer-list-wise appending :param:`y` to :param:`x`
@@ -18,7 +16,7 @@ def combine_outer(
     return x + y
 
 
-def combine_inner(
+def append_columns(
     x: ListOfRowLists[str], y: ListOfRowLists[str]
 ) -> ListOfRowLists[str]:
     """Combine 2 2-dimensional lists by their inner lists.
@@ -86,12 +84,12 @@ def participant_to_str_matrix(
                         value
                         for key, value in participant.attributes.items()
                         if key in attributes_to_print
-                    ]
-                )
-            ]
+                    ]  # get attribute values of selected classes
+                )  # put `delimiter` in-between
+            ]  # wrap in double list for format
         ]
-        if not attributes_to_print is None
-        else [[str(participant)]]
+        if attributes_to_print is not None
+        else [[str(participant)]]  # just use string representation
     )
 
 
@@ -112,7 +110,7 @@ def group_to_str_matrix(
     """
     retval: ListOfRowLists[str] = []
     for participant in group:
-        retval = combine_outer(
+        retval = append_rows(
             retval,
             participant_to_str_matrix(participant, attributes_to_print, delimiter),
         )
@@ -139,8 +137,8 @@ def iteration_to_str_matrix(
         if i == 0:
             retval = group_to_str_matrix(group, attributes_to_print, delimiter)
         else:
-            retval = combine_inner(retval, empty_column(len(group)))
-            retval = combine_inner(
+            retval = append_columns(retval, empty_column(len(group)))
+            retval = append_columns(
                 retval, group_to_str_matrix(group, attributes_to_print, delimiter)
             )
     return retval
@@ -164,9 +162,9 @@ def assignment_to_str_matrix(
     retval: ListOfRowLists[str] = [["Assignment"]]
     for i, iteration in enumerate(assignment):
         if i != 0:
-            retval = combine_outer(retval, empty_row(len(retval[-1])))
-        retval = combine_outer(retval, [[f"Iteration {i+1}"]])
-        retval = combine_outer(
+            retval = append_rows(retval, empty_row(len(retval[-1])))
+        retval = append_rows(retval, [[f"Iteration {i+1}"]])
+        retval = append_rows(
             retval, iteration_to_str_matrix(iteration, attributes_to_print, delimiter)
         )
     return retval
