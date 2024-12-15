@@ -133,7 +133,7 @@ class ObjectiveFunction:
         holds for all assignments of the same shape that contain the same participants
         """
         if self.__cached_diversity_cost_max < 0.0:
-            participants: set[Participants] = set()
+            participants: set[Participant] = set()
             for group in sample_assignment[0]:
                 participants &= group
             self.__cached_diversity_cost_max = self.__total_group_diversity_cost(
