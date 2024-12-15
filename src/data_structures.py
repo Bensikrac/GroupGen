@@ -44,7 +44,7 @@ class Participant:
         self.attributes[attribute] = value
 
     def __eq__(self, other) -> bool:
-        return self.__uid == other.__uid
+        return self.__uid == other.get_uid()
 
     def __repr__(self) -> str:
         return "Participant(" + self.__uid + ", " + str(self.attributes) + ")"
