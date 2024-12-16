@@ -24,9 +24,10 @@ gui = [
   "PyQt6"
 ]
 dev = [
-  "black>=24.8.0",
+  "black==24.8.0",
   "pytest",
-  "pylint"
+  "pylint",
+  "mypy"
 ]
 
 [project.gui-scripts]

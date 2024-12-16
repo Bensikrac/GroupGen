@@ -32,10 +32,10 @@ class RandomAlgorithm:
         """
         max_group_size: int = ceil(len(participants) / groups_per_iteration)
         assignment: Assignment = []
-        for i in range(iterations):
+        for _ in range(iterations):
             remaining_participants: set[Participant] = copy(participants)
             iteration: list[Group] = [set() for _ in range(groups_per_iteration)]
-            for j in range(max_group_size):
+            for _ in range(max_group_size):
                 for group in iteration:
                     if len(remaining_participants) == 0:
                         break
@@ -73,7 +73,7 @@ class RandomAlgorithm:
 
         best_score: float = objective.calculate_weighted_cost(best)
 
-        for i in range(max_cycles):
+        for _ in range(max_cycles):
             new: Assignment = self.find_assignment(
                 participants, groups_per_iteration, iterations
             )
