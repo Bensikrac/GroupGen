@@ -4,7 +4,7 @@ from copy import copy
 from math import ceil
 from random import Random
 from data_structures import Assignment, Group, Participant
-from objective_function import ObjectiveFunction
+from algorithm.objective_function import ObjectiveFunction
 
 
 class RandomAlgorithm:
