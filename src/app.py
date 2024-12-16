@@ -45,10 +45,10 @@ class MainWindow(QMainWindow):
         self.state_label.setText("Status: Calculating...")
 
         final_assignment: Assignment = algorithm_instance.find_assignment(
-            p_set,
+            participant_set,
             int(self.groups_spinbox.value()),
             int(self.iterations_spinbox.value()),
-            50,
+            1000,
         )
 
         Writer(self.__output_path).write_file(final_assignment)
