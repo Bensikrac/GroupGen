@@ -60,7 +60,7 @@ class SimulatedAnnealingAlgorithm:
         )
         objective: ObjectiveFunction = ObjectiveFunction(self.attributes)
         for i in range(1, max_cycles + 1):
-            temperature: int = self.get_temperature(
+            temperature: float = self.get_temperature(
                 i / max_cycles, intitial_temperature, temperature_scaling
             )
             neighbor: Assignment = self.find_neighbor(assignment)
@@ -208,5 +208,4 @@ class SimulatedAnnealingAlgorithm:
             return 1
         if temperature <= 0:
             return 0
-        else:
-            return exp(-(energy_new - energy_old) / temperature)
+        return exp(-(energy_new - energy_old) / temperature)
