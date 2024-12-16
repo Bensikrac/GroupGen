@@ -21,7 +21,7 @@ class Reader:
     def read(self) -> list[Participant]:
         """main read function, returns the parsed list of participants
 
-        :return: a list of Participants found in the excel file with teir attributes
+        :return: a list of Participants found in the excel file with their attributes
         """
 
         participant_list: list[Participant] = []
@@ -81,7 +81,7 @@ class Writer:
         ws.cell(self.__row_index, 1).value = "GroupNr"
 
         for i, attribute in enumerate(attribute_list):
-            ws.cell(self.__row_index, 1 + i).value = attribute
+            ws.cell(self.__row_index, 2 + i).value = attribute
 
     def __write_participant(
         self,
