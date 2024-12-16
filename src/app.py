@@ -36,7 +36,7 @@ class MainWindow(QMainWindow):
         self.state_label.setText("Status: Preparing...")
 
         participant_list: list[Participant] = Reader(self.__input_path).read()
-        participant_set: set[Participant] = set(self.participant_list)
+        participant_set: set[Participant] = set(participant_list)
 
         algorithm_instance: SimulatedAnnealingAlgorithm = SimulatedAnnealingAlgorithm(
             list(participant_list[0].attributes.keys())
@@ -51,7 +51,7 @@ class MainWindow(QMainWindow):
             50,
         )
 
-        Writer(self.__output_path).write_file(self.final_assignment)
+        Writer(self.__output_path).write_file(final_assignment)
 
         self.state_label.setText("Status: Finished!")
 
