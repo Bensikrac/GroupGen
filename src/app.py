@@ -108,9 +108,14 @@ class MainWindow(QMainWindow):
 
     def __input_file_picker(self) -> None:
         """Select Input File Button Function"""
-        self.__input_path = QFileDialog.getOpenFileName(
-            caption="pick file", directory="/home", filter="Excel Files (*.xlsx *.xls)"
+        selectedPath = QFileDialog.getOpenFileName(
+            caption="select input file",
+            directory=self.__output_path if self.__output_path else "/",
+            filter="Excel Files (*.xlsx *.xls)",
         )[0]
+        if selectedPath:
+            self.__input_path = selectedPath
+
         self.input_file_path_line_edit.setText(self.__input_path)
         self.input_file_path_line_edit.repaint()
 
@@ -183,15 +188,17 @@ class MainWindow(QMainWindow):
 
     def __output_file_picker(self) -> None:
         """Select Output File Button Function"""
-        self.__output_path = QFileDialog.getSaveFileName(
-            caption="pick file",
-            directory="/home",
+        selectedPath = QFileDialog.getSaveFileName(
+            caption="select output file",
+            directory=self.__input_path if self.__input_path else "/",
             filter="Excel Files (*.xlsx *.xls)",
         )[0]
-        if not (
-            self.__output_path.endswith(".xlsx") or self.__output_path.endswith(".xls")
-        ):
-            self.__output_path += ".xlsx"
+
+        if selectedPath:
+            if not (selectedPath.endswith(".xlsx") or selectedPath.endswith(".xls")):
+                selectedPath += ".xlsx"
+            self.__output_path = selectedPath
+
         self.output_file_path_line_edit.setText(self.__output_path)
 
         self.run_algorithm_button.setEnabled(True)
