@@ -3,7 +3,7 @@
 import os
 import sys
 from PyQt6 import uic
-from PyQt6.QtWidgets import QApplication, QMainWindow, QFileDialog
+from PyQt6.QtWidgets import QApplication, QMainWindow, QFileDialog, QTableWidgetItem
 from excel_tool import Reader, Writer
 from data_structures import Participant, Assignment
 from algorithm.simulated_annealing_algorithm import SimulatedAnnealingAlgorithm
@@ -16,6 +16,8 @@ class MainWindow(QMainWindow):
 
     __input_path: os.PathLike | None = None
     __output_path: os.PathLike | None = None
+    __participants_list: list[Participant]
+    __attributes_list: list[str]
 
     def __init__(self, ui_file_path: os.PathLike, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
@@ -24,8 +26,14 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("GroupGen")
 
         self.input_pick_button.clicked.connect(self.__input_file_picker)
+        self.read_input_button.clicked.connect(self.__read_input_file)
         self.output_pick_button.clicked.connect(self.__output_file_picker)
-        self.run_workflow_button.clicked.connect(self.__run_workflow)
+        self.run_algorithm_button.clicked.connect(self.__run_workflow)
+        # self.select_synonym_button.clicked.connect()
+
+        self.read_input_button.setEnabled(False)
+        self.run_algorithm_button.setEnabled(False)
+        self.select_synonym_button.setEnabled(False)
 
     def __run_workflow(self) -> None:
         if self.__input_path is None:
@@ -35,17 +43,14 @@ class MainWindow(QMainWindow):
 
         self.state_label.setText("Status: Preparing...")
 
-        participant_list: list[Participant] = Reader(self.__input_path).read()
-        participant_set: set[Participant] = set(participant_list)
-
         algorithm_instance: SimulatedAnnealingAlgorithm = SimulatedAnnealingAlgorithm(
-            list(participant_list[0].attributes.keys())
+            list(self.__attributes_list)
         )
 
         self.state_label.setText("Status: Calculating...")
 
         final_assignment: Assignment = algorithm_instance.find_assignment(
-            participant_set,
+            set(self.__participants_list),
             int(self.groups_spinbox.value()),
             int(self.iterations_spinbox.value()),
             1000,
@@ -56,12 +61,31 @@ class MainWindow(QMainWindow):
         self.state_label.setText("Status: Finished!")
 
     def __input_file_picker(self) -> None:
+        """Select Input File Button Function"""
         self.__input_path = QFileDialog.getOpenFileName(
             caption="pick file", directory="/home", filter="Excel Files (*.xlsx *.xls)"
         )[0]
         self.input_file_path_line_edit.setText(self.__input_path)
 
+        self.read_input_button.setEnabled(True)
+
+    def __read_input_file(self) -> None:
+        """Read Input File Button Function"""
+
+        self.state_label.setText("Status: Reading...")
+        self.__set_buttons_enabled(False)
+
+        self.__participants_list = Reader(self.__input_path).read()
+        self.__attributes_list = self.__participants_list[0].attributes.keys()
+
+        # Print Table
+        self.__print_attribute_table()
+
+        self.state_label.setText("Status: Finished Reading...")
+        self.__set_buttons_enabled(True)
+
     def __output_file_picker(self) -> None:
+        """Select Output File Button Function"""
         self.__output_path = QFileDialog.getSaveFileName(
             caption="pick file",
             directory="/home",
@@ -72,6 +96,60 @@ class MainWindow(QMainWindow):
         ):
             self.__output_path += ".xlsx"
         self.output_file_path_line_edit.setText(self.__output_path)
+
+    def __print_attribute_table(self) -> None:
+        """Print Attribute Table"""
+        self.attributes_table.setColumnCount(len(self.__attributes_list))
+
+        self.attributes_table.setHorizontalHeaderLabels(self.__attributes_list)
+
+        max_row_count: int = 0
+        for j, attrbutes in enumerate(self.__attributes_list):
+            unique_attributes: list[(str, int)] = self.__calculate_distribution(
+                self.__participants_list, attrbutes
+            )
+
+            if max_row_count < len(unique_attributes):
+                max_row_count = len(unique_attributes)
+                self.attributes_table.setRowCount(max_row_count)
+
+            for i, (attr, nmb) in enumerate(unique_attributes):
+                self.attributes_table.setItem(i, j, QTableWidgetItem(f"{attr}: {nmb}"))
+
+    def __set_buttons_enabled(self, enable: bool) -> None:
+        """Enable/Disable all Buttons of the Main Window
+
+        :param enable: if true all Buttons are enabled, if false all Buttons are disabled
+        """
+        self.input_pick_button.setEnabled(enable)
+        self.read_input_button.setEnabled(enable)
+        self.output_pick_button.setEnabled(enable)
+        self.run_algorithm_button.setEnabled(enable)
+        self.select_synonym_button.setEnabled(enable)
+
+    def __calculate_distribution(
+        self, participants: list[Participant], attribute: str
+    ) -> list[(str, int)]:
+        result: list[(str, int)] = []
+        for participant in participants:
+            temp_value = participant.get_attribute(attribute)
+            if not temp_value:
+                continue
+            temp_bool = False
+            old_temp_value = (str, int)
+            new_temp_value = (str, int)
+            for tuple in result:
+                old_temp_value = tuple
+                if old_temp_value[0] == temp_value:
+                    new_temp_value = (temp_value, old_temp_value[1] + 1)
+                    temp_bool = True
+                    break
+            if not temp_bool:
+                result.append((temp_value, 1))
+            else:
+                result.remove(old_temp_value)
+                result.append(new_temp_value)
+        return result
 
 
 if __name__ == "__main__":

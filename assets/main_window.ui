@@ -209,7 +209,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Select vlaues of attributes that should be treated as synonyms</string>
+     <string>Select values of attributes that should be treated as synonyms</string>
     </property>
    </widget>
   </widget>
