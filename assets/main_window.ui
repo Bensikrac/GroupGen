@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>671</width>
-    <height>360</height>
+    <width>1763</width>
+    <height>1254</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,47 +17,47 @@
    <widget class="QPushButton" name="input_pick_button">
     <property name="geometry">
      <rect>
-      <x>60</x>
-      <y>60</y>
+      <x>10</x>
+      <y>10</y>
       <width>161</width>
       <height>31</height>
      </rect>
     </property>
     <property name="text">
-     <string>Wähle Eingabedatei aus</string>
+     <string>Select Input File</string>
     </property>
    </widget>
    <widget class="QPushButton" name="output_pick_button">
     <property name="geometry">
      <rect>
-      <x>60</x>
-      <y>110</y>
+      <x>1190</x>
+      <y>1020</y>
       <width>161</width>
       <height>31</height>
      </rect>
     </property>
     <property name="text">
-     <string>Wähle Ausgabedatei aus</string>
+     <string>Select Output File</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="run_workflow_button">
+   <widget class="QPushButton" name="run_algorithm_button">
     <property name="geometry">
      <rect>
-      <x>60</x>
-      <y>260</y>
+      <x>1570</x>
+      <y>1170</y>
       <width>161</width>
       <height>31</height>
      </rect>
     </property>
     <property name="text">
-     <string>Start!</string>
+     <string>Start Algorithm</string>
     </property>
    </widget>
    <widget class="QLineEdit" name="input_file_path_line_edit">
     <property name="geometry">
      <rect>
-      <x>230</x>
-      <y>60</y>
+      <x>180</x>
+      <y>10</y>
       <width>381</width>
       <height>31</height>
      </rect>
@@ -66,8 +66,8 @@
    <widget class="QLineEdit" name="output_file_path_line_edit">
     <property name="geometry">
      <rect>
-      <x>230</x>
-      <y>110</y>
+      <x>1360</x>
+      <y>1020</y>
       <width>381</width>
       <height>31</height>
      </rect>
@@ -76,8 +76,8 @@
    <widget class="QLabel" name="state_label">
     <property name="geometry">
      <rect>
-      <x>230</x>
-      <y>260</y>
+      <x>1280</x>
+      <y>1170</y>
       <width>381</width>
       <height>31</height>
      </rect>
@@ -92,8 +92,8 @@
    <widget class="QSpinBox" name="groups_spinbox">
     <property name="geometry">
      <rect>
-      <x>230</x>
-      <y>160</y>
+      <x>1640</x>
+      <y>1070</y>
       <width>41</width>
       <height>31</height>
      </rect>
@@ -105,8 +105,8 @@
    <widget class="QSpinBox" name="iterations_spinbox">
     <property name="geometry">
      <rect>
-      <x>230</x>
-      <y>210</y>
+      <x>1640</x>
+      <y>1120</y>
       <width>41</width>
       <height>31</height>
      </rect>
@@ -118,14 +118,14 @@
    <widget class="QLabel" name="groups_label">
     <property name="geometry">
      <rect>
-      <x>60</x>
-      <y>160</y>
+      <x>1390</x>
+      <y>1070</y>
       <width>161</width>
       <height>31</height>
      </rect>
     </property>
     <property name="text">
-     <string>Anzahl Gruppen:</string>
+     <string>Number of Groups:</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignCenter</set>
@@ -134,17 +134,82 @@
    <widget class="QLabel" name="iterations_label">
     <property name="geometry">
      <rect>
-      <x>60</x>
-      <y>210</y>
+      <x>1390</x>
+      <y>1120</y>
       <width>161</width>
       <height>31</height>
      </rect>
     </property>
     <property name="text">
-     <string>Anzahl Iterationen: </string>
+     <string>Number of Iterations:</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QTableWidget" name="attributes_table">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>130</y>
+      <width>1741</width>
+      <height>851</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="read_input_button">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>50</y>
+      <width>161</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Read Input File</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="select_synonym_button">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>90</y>
+      <width>161</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Select Synonyms</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="read_input_label">
+    <property name="geometry">
+     <rect>
+      <x>190</x>
+      <y>60</y>
+      <width>371</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Read the specified file and show the distribution of attributes</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="select_synonym_label">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>190</x>
+      <y>100</y>
+      <width>371</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Select vlaues of attributes that should be treated as synonyms</string>
     </property>
    </widget>
   </widget>
@@ -153,8 +218,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>671</width>
-     <height>22</height>
+     <width>1763</width>
+     <height>21</height>
     </rect>
    </property>
   </widget>
