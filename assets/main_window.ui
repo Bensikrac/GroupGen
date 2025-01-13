@@ -86,7 +86,7 @@
      <string>Status: Waiting...</string>
     </property>
     <property name="alignment">
-     <set>Qt::AlignCenter</set>
+     <set>Qt::AlignmentFlag::AlignCenter</set>
     </property>
    </widget>
    <widget class="QSpinBox" name="groups_spinbox">
@@ -128,7 +128,7 @@
      <string>Number of Groups:</string>
     </property>
     <property name="alignment">
-     <set>Qt::AlignCenter</set>
+     <set>Qt::AlignmentFlag::AlignCenter</set>
     </property>
    </widget>
    <widget class="QLabel" name="iterations_label">
@@ -144,10 +144,10 @@
      <string>Number of Iterations:</string>
     </property>
     <property name="alignment">
-     <set>Qt::AlignCenter</set>
+     <set>Qt::AlignmentFlag::AlignCenter</set>
     </property>
    </widget>
-   <widget class="QTableWidget" name="attributes_table">
+   <widget class="AttributeMergeTable" name="attributes_table">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -155,6 +155,18 @@
       <width>1741</width>
       <height>851</height>
      </rect>
+    </property>
+    <property name="dragEnabled">
+     <bool>true</bool>
+    </property>
+    <property name="dragDropMode">
+     <enum>QAbstractItemView::DragDropMode::DragDrop</enum>
+    </property>
+    <property name="defaultDropAction">
+     <enum>Qt::DropAction::CopyAction</enum>
+    </property>
+    <property name="selectionMode">
+     <enum>QAbstractItemView::SelectionMode::SingleSelection</enum>
     </property>
    </widget>
    <widget class="QPushButton" name="read_input_button">
@@ -168,19 +180,6 @@
     </property>
     <property name="text">
      <string>Read Input File</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="select_synonym_button">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>90</y>
-      <width>161</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Select Synonyms</string>
     </property>
    </widget>
    <widget class="QLabel" name="read_input_label">
@@ -202,14 +201,14 @@
     </property>
     <property name="geometry">
      <rect>
-      <x>190</x>
+      <x>20</x>
       <y>100</y>
-      <width>371</width>
+      <width>431</width>
       <height>16</height>
      </rect>
     </property>
     <property name="text">
-     <string>Select values of attributes that should be treated as synonyms</string>
+     <string>Drag a value onto another to treat it as a synonym of that value</string>
     </property>
    </widget>
   </widget>
@@ -219,12 +218,19 @@
      <x>0</x>
      <y>0</y>
      <width>1763</width>
-     <height>21</height>
+     <height>25</height>
     </rect>
    </property>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>AttributeMergeTable</class>
+   <extends>QTableWidget</extends>
+   <header>ui.attribute_merge_table.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

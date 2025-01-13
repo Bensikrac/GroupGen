@@ -3,10 +3,17 @@
 import os
 import sys
 from PyQt6 import uic
-from PyQt6.QtWidgets import QApplication, QMainWindow, QFileDialog, QTableWidgetItem
+from PyQt6.QtWidgets import (
+    QApplication,
+    QMainWindow,
+    QFileDialog,
+    QTableWidgetItem,
+)
+from PyQt6.QtCore import Qt
 from excel_tool import Reader, Writer
 from data_structures import Participant, Assignment
 from algorithm.simulated_annealing_algorithm import SimulatedAnnealingAlgorithm
+from ui.attribute_merge_table import MergeableAttributeItem
 
 
 class MainWindow(QMainWindow):
@@ -23,6 +30,8 @@ class MainWindow(QMainWindow):
         super().__init__(*args, **kwargs)
         uic.loadUi(ui_file_path, self)
 
+        self.attributes_table.setMainWindow(self)
+
         self.setWindowTitle("GroupGen")
 
         self.input_pick_button.clicked.connect(self.__input_file_picker)
@@ -33,7 +42,8 @@ class MainWindow(QMainWindow):
 
         self.read_input_button.setEnabled(False)
         self.run_algorithm_button.setEnabled(False)
-        self.select_synonym_button.setEnabled(False)
+        # self.select_synonym_button.setEnabled(False)
+        self.select_synonym_label.setVisible(False)
 
     def __run_workflow(self) -> None:
         if self.__input_path is None:
@@ -46,6 +56,7 @@ class MainWindow(QMainWindow):
         algorithm_instance: SimulatedAnnealingAlgorithm = SimulatedAnnealingAlgorithm(
             list(self.__attributes_list)
         )
+        self.__synonym_filter_participants()
 
         self.state_label.setText("Status: Calculating...")
 
@@ -59,6 +70,16 @@ class MainWindow(QMainWindow):
         Writer(self.__output_path).write_file(final_assignment)
 
         self.state_label.setText("Status: Finished!")
+
+    def __synonym_filter_participants(self):
+        for participant in self.__participants_list:
+            for attribute in participant.attributes:
+                participant.set_attribute(
+                    attribute,
+                    self.attributes_table.find_preferred_synonym(
+                        participant.get_attribute(attribute)
+                    ),
+                )
 
     def __input_file_picker(self) -> None:
         """Select Input File Button Function"""
@@ -79,9 +100,11 @@ class MainWindow(QMainWindow):
         self.__attributes_list = self.__participants_list[0].attributes.keys()
 
         # Print Table
-        self.__print_attribute_table()
+        self.attributes_table.synonyms = []
+        self.print_attribute_table()
 
         self.state_label.setText("Status: Finished Reading...")
+        self.select_synonym_label.setVisible(True)
         self.__set_buttons_enabled(True)
 
     def __output_file_picker(self) -> None:
@@ -97,16 +120,17 @@ class MainWindow(QMainWindow):
             self.__output_path += ".xlsx"
         self.output_file_path_line_edit.setText(self.__output_path)
 
-    def __print_attribute_table(self) -> None:
+        self.run_algorithm_button.setEnabled(True)
+
+    def print_attribute_table(self) -> None:
         """Print Attribute Table"""
         self.attributes_table.setColumnCount(len(self.__attributes_list))
-
         self.attributes_table.setHorizontalHeaderLabels(self.__attributes_list)
 
         max_row_count: int = 0
         for j, attrbutes in enumerate(self.__attributes_list):
             unique_attributes: list[(str, int)] = self.__calculate_distribution(
-                self.__participants_list, attrbutes
+                self.__participants_list, attrbutes, self.attributes_table.synonyms
             )
 
             if max_row_count < len(unique_attributes):
@@ -114,7 +138,7 @@ class MainWindow(QMainWindow):
                 self.attributes_table.setRowCount(max_row_count)
 
             for i, (attr, nmb) in enumerate(unique_attributes):
-                self.attributes_table.setItem(i, j, QTableWidgetItem(f"{attr}: {nmb}"))
+                self.attributes_table.setItem(i, j, MergeableAttributeItem(attr, nmb))
 
     def __set_buttons_enabled(self, enable: bool) -> None:
         """Enable/Disable all Buttons of the Main Window
@@ -125,10 +149,10 @@ class MainWindow(QMainWindow):
         self.read_input_button.setEnabled(enable)
         self.output_pick_button.setEnabled(enable)
         self.run_algorithm_button.setEnabled(enable)
-        self.select_synonym_button.setEnabled(enable)
+        # self.select_synonym_button.setEnabled(enable)
 
     def __calculate_distribution(
-        self, participants: list[Participant], attribute: str
+        self, participants: list[Participant], attribute: str, synonyms: list[list[str]]
     ) -> list[(str, int)]:
         result: list[(str, int)] = []
         for participant in participants:
@@ -140,12 +164,16 @@ class MainWindow(QMainWindow):
             new_temp_value = (str, int)
             for tuple in result:
                 old_temp_value = tuple
-                if old_temp_value[0] == temp_value:
-                    new_temp_value = (temp_value, old_temp_value[1] + 1)
+                if old_temp_value[0] == self.attributes_table.find_preferred_synonym(
+                    temp_value
+                ):
+                    new_temp_value = (old_temp_value[0], old_temp_value[1] + 1)
                     temp_bool = True
                     break
             if not temp_bool:
-                result.append((temp_value, 1))
+                result.append(
+                    (self.attributes_table.find_preferred_synonym(temp_value), 1)
+                )
             else:
                 result.remove(old_temp_value)
                 result.append(new_temp_value)
