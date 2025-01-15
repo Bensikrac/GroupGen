@@ -13,7 +13,6 @@ from PyQt6.QtCore import Qt
 from excel_tool import Reader, Writer
 from data_structures import Participant, Assignment
 from algorithm.simulated_annealing_algorithm import SimulatedAnnealingAlgorithm
-from ui.attribute_merge_table import MergeableAttributeItem
 
 
 class MainWindow(QMainWindow):
@@ -46,6 +45,7 @@ class MainWindow(QMainWindow):
         self.select_synonym_label.setVisible(False)
 
     def __run_workflow(self) -> None:
+        """Executes the algorithm and and writes the output."""
         if self.__input_path is None:
             raise ValueError("Input Path not set")
         if self.__output_path is None:
@@ -72,6 +72,7 @@ class MainWindow(QMainWindow):
         self.state_label.setText("Status: Finished!")
 
     def __synonym_filter_participants(self):
+        """Replaces all attribute values of all Participants with their preferred synonyms."""
         for participant in self.__participants_list:
             for attribute in participant.attributes:
                 participant.set_attribute(
@@ -130,7 +131,7 @@ class MainWindow(QMainWindow):
         max_row_count: int = 0
         for j, attrbutes in enumerate(self.__attributes_list):
             unique_attributes: list[(str, int)] = self.__calculate_distribution(
-                self.__participants_list, attrbutes, self.attributes_table.synonyms
+                self.__participants_list, attrbutes
             )
 
             if max_row_count < len(unique_attributes):
@@ -138,7 +139,7 @@ class MainWindow(QMainWindow):
                 self.attributes_table.setRowCount(max_row_count)
 
             for i, (attr, nmb) in enumerate(unique_attributes):
-                self.attributes_table.setItem(i, j, MergeableAttributeItem(attr, nmb))
+                self.attributes_table.setValue(i, j, attr, nmb)
 
     def __set_buttons_enabled(self, enable: bool) -> None:
         """Enable/Disable all Buttons of the Main Window
@@ -152,8 +153,15 @@ class MainWindow(QMainWindow):
         # self.select_synonym_button.setEnabled(enable)
 
     def __calculate_distribution(
-        self, participants: list[Participant], attribute: str, synonyms: list[list[str]]
+        self, participants: list[Participant], attribute: str
     ) -> list[(str, int)]:
+        """Returns a list of values for the given attribute and how often each value appears.
+
+        :param: participants: The list of participants to search in
+        :param: attribute: The attribute to find values for
+
+        :return: A list of tuples, each containing a value and how many times it appears.
+        """
         result: list[(str, int)] = []
         for participant in participants:
             temp_value = participant.get_attribute(attribute)
