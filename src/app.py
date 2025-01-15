@@ -7,9 +7,10 @@ from PyQt6.QtWidgets import QApplication, QMainWindow, QFileDialog
 from excel_tool import Reader, Writer
 from data_structures import Participant, Assignment
 from algorithm.simulated_annealing_algorithm import SimulatedAnnealingAlgorithm
+from assets.main_window import Ui_MainWindow
 
 
-class MainWindow(QMainWindow):
+class MainWindow(QMainWindow, Ui_MainWindow):
     """Main Window class"""
 
     # pylint: disable=too-few-public-methods
@@ -17,9 +18,9 @@ class MainWindow(QMainWindow):
     __input_path: os.PathLike | None = None
     __output_path: os.PathLike | None = None
 
-    def __init__(self, ui_file_path: os.PathLike, *args, **kwargs) -> None:
+    def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
-        uic.loadUi(ui_file_path, self)
+        self.setupUi(self)
 
         self.setWindowTitle("GroupGen")
 
@@ -74,13 +75,16 @@ class MainWindow(QMainWindow):
         self.output_file_path_line_edit.setText(self.__output_path)
 
 
-if __name__ == "__main__":
+def main():
     app: QApplication = QApplication(sys.argv)
     window: MainWindow
     if len(sys.argv) < 2:
-        window = MainWindow("assets/main_window.ui")
+        window = MainWindow()
     else:
         window = MainWindow(*sys.argv[1:])
     window.show()
-
     app.exec()
+
+
+if __name__ == "__main__":
+    main()
