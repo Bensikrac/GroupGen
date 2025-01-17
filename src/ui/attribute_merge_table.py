@@ -60,6 +60,7 @@ class AttributeMergeTable(QTableWidget):
             target_cell is not None
             and isinstance(target_cell, MergeableAttributeItem)
             and target_cell.value != self.dragged_item.value
+            and self.column(target_cell) == self.column(self.dragged_item)
         ):
             target_list: list[str] | None = None
             for synonym_list in self.synonyms:
