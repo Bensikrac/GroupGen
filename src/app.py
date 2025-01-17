@@ -164,14 +164,14 @@ class MainWindow(QMainWindow):
         """
         result: list[(str, int)] = []
         for participant in participants:
-            temp_value = participant.get_attribute(attribute)
+            temp_value: str = participant.get_attribute(attribute)
             if not temp_value:
                 continue
-            temp_bool = False
-            old_temp_value = (str, int)
-            new_temp_value = (str, int)
-            for tuple in result:
-                old_temp_value = tuple
+            temp_bool: bool = False
+            old_temp_value: tuple[str, int] = (str, int)
+            new_temp_value: tuple[str, int] = (str, int)
+            for entry in result:
+                old_temp_value = entry
                 if old_temp_value[0] == self.attributes_table.find_preferred_synonym(
                     temp_value
                 ):

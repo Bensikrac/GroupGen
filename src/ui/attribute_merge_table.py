@@ -38,8 +38,6 @@ class AttributeMergeTable(QTableWidget):
         """
         self.main_window = main_window
 
-    # def print_table(self):
-
     def mousePressEvent(self, event: QMouseEvent) -> None:
         """Starts a drag and saves the original dragged item.
 
@@ -83,7 +81,6 @@ class AttributeMergeTable(QTableWidget):
             self.clearContents()
             self.main_window.print_attribute_table()
             event.accept()
-            print(self.synonyms)
         self.dragged_item = None
 
     def find_synonyms_for_value(self, value: str) -> list[str]:
