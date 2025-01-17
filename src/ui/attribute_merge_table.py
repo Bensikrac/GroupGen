@@ -2,7 +2,8 @@
 
 from PyQt6.QtWidgets import QTableWidget, QTableWidgetItem, QApplication
 from PyQt6.QtGui import QMouseEvent, QDrag
-from PyQt6.QtCore import Qt, QMimeData, QPoint, QPointF
+from PyQt6.QtCore import Qt, QMimeData
+from app import MainWindow
 
 
 class MergeableAttributeItem(QTableWidgetItem):
@@ -23,15 +24,13 @@ class MergeableAttributeItem(QTableWidgetItem):
 class AttributeMergeTable(QTableWidget):
     """A QtableWidtet to display attribute value frequencies that can be merged via drag and drop"""
 
-    from app import MainWindow
-
     frequencies: list[(str, int)] = []
     synonyms: list[list[str]] = []
     values: list[list[str]] = []
     dragged_item: MergeableAttributeItem | None
     main_window: MainWindow
 
-    def setMainWindow(self, main_window: MainWindow) -> None:
+    def set_main_window(self, main_window: MainWindow) -> None:
         """Sets the table's connected main window to a given value.
 
         :param main_window: The main window to set as this table's main window
@@ -58,11 +57,10 @@ class AttributeMergeTable(QTableWidget):
         """
         target_cell: QTableWidgetItem = self.itemAt(event.position().toPoint())
         if (
-            target_cell != None
+            target_cell is not None
             and isinstance(target_cell, MergeableAttributeItem)
             and target_cell.value != self.dragged_item.value
         ):
-            found_list: bool = False
             target_list: list[str] | None = None
             for synonym_list in self.synonyms:
                 if (
@@ -71,7 +69,7 @@ class AttributeMergeTable(QTableWidget):
                 ):
                     target_list = synonym_list
                     break
-            if target_list == None:
+            if target_list is None:
                 target_list = [target_cell.value]
                 self.synonyms.append(target_list)
             old_list: list[str] = self.find_synonyms_for_value(self.dragged_item.value)
@@ -119,7 +117,7 @@ class AttributeMergeTable(QTableWidget):
         """
         event.accept()
 
-    def setValue(self, row: int, column: int, value: str, count: int) -> None:
+    def set_value(self, row: int, column: int, value: str, count: int) -> None:
         """Sets the item at a given row and column to a MergeableAttributeItem with given parameters
 
         :param row: The row to set the item in

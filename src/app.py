@@ -29,7 +29,7 @@ class MainWindow(QMainWindow):
         super().__init__(*args, **kwargs)
         uic.loadUi(ui_file_path, self)
 
-        self.attributes_table.setMainWindow(self)
+        self.attributes_table.set_main_window(self)
 
         self.setWindowTitle("GroupGen")
 
@@ -139,7 +139,7 @@ class MainWindow(QMainWindow):
                 self.attributes_table.setRowCount(max_row_count)
 
             for i, (attr, nmb) in enumerate(unique_attributes):
-                self.attributes_table.setValue(i, j, attr, nmb)
+                self.attributes_table.set_value(i, j, attr, nmb)
 
     def __set_buttons_enabled(self, enable: bool) -> None:
         """Enable/Disable all Buttons of the Main Window
@@ -168,8 +168,8 @@ class MainWindow(QMainWindow):
             if not temp_value:
                 continue
             temp_bool: bool = False
-            old_temp_value: tuple[str, int] = (str, int)
-            new_temp_value: tuple[str, int] = (str, int)
+            old_temp_value: tuple[str, int]
+            new_temp_value: tuple[str, int]
             for entry in result:
                 old_temp_value = entry
                 if old_temp_value[0] == self.attributes_table.find_preferred_synonym(
