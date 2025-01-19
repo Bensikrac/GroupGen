@@ -151,9 +151,9 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>130</y>
+      <y>160</y>
       <width>1741</width>
-      <height>851</height>
+      <height>821</height>
      </rect>
     </property>
     <property name="dragEnabled">

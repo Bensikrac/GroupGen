@@ -8,8 +8,10 @@ from PyQt6.QtWidgets import (
     QMainWindow,
     QFileDialog,
     QTableWidgetItem,
+    QCheckBox,
+    QWidget,
 )
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import Qt, QRect, QModelIndex
 from excel_tool import Reader, Writer
 from data_structures import Participant, Assignment
 from algorithm.simulated_annealing_algorithm import SimulatedAnnealingAlgorithm
@@ -24,6 +26,8 @@ class MainWindow(QMainWindow):
     __output_path: os.PathLike | None = None
     __participants_list: list[Participant]
     __attributes_list: list[str]
+    __checkboxes: list[QCheckBox] = []
+    __central_widget: QWidget
 
     def __init__(self, ui_file_path: os.PathLike, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
@@ -54,7 +58,7 @@ class MainWindow(QMainWindow):
         self.state_label.setText("Status: Preparing...")
 
         algorithm_instance: SimulatedAnnealingAlgorithm = SimulatedAnnealingAlgorithm(
-            list(self.__attributes_list)
+            self.__filter_enabled_attributes()
         )
         self.__synonym_filter_participants()
 
@@ -140,6 +144,48 @@ class MainWindow(QMainWindow):
 
             for i, (attr, nmb) in enumerate(unique_attributes):
                 self.attributes_table.set_value(i, j, attr, nmb)
+
+            if len(self.__checkboxes) <= j:
+                print("did box?")
+                print(self.centralWidget())
+                self.__central_widget = self.centralWidget()
+                checkbox: QCheckBox = QCheckBox(parent=self.centralWidget())
+                checkbox.setText("")
+                # ref: QRect = self.attributes_table.visualItemRect(
+                #    self.attributes_table.horizontalHeaderItem(j)
+                # )
+                reference_item: QTableWidgetItem = self.attributes_table.item(0, j)
+                reference_index: QModelIndex = self.attributes_table.indexFromItem(
+                    reference_item
+                )
+                ref: QRect = self.attributes_table.visualRect(reference_index)
+                print(ref.left() + int(0.5 * ref.width()))
+                print(ref.top() - 30)
+                checkbox.setGeometry(
+                    QRect(ref.left() + int(0.5 * ref.width() + 15), 130, 30, 30)
+                )
+                checkbox.setVisible(True)
+                checkbox.setChecked(False)
+                if attrbutes.lower() not in [
+                    "name",
+                    "first name",
+                    "last name",
+                    "vorname",
+                    "nachname",
+                    "angemeldet",
+                    "status",
+                    "title",
+                    "titel",
+                ]:
+                    checkbox.setChecked(True)
+                self.__checkboxes.append(checkbox)
+
+    def __filter_enabled_attributes(self) -> list[str]:
+        enabled_attributes: list[str] = []
+        for i in range(len(self.__attributes_list)):
+            if self.__checkboxes[i].isChecked():
+                enabled_attributes.append(list(self.__attributes_list)[i])
+        return enabled_attributes
 
     def __set_buttons_enabled(self, enable: bool) -> None:
         """Enable/Disable all Buttons of the Main Window
