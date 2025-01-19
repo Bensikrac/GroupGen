@@ -1,8 +1,6 @@
 """Module containing tests for attribute_merge_table.py."""
 
-import sys
 from unittest.mock import patch
-from PyQt6.QtWidgets import QApplication, QMainWindow
 from PyQt6.QtGui import QMouseEvent, QDrag, QDropEvent, QDragEnterEvent
 from PyQt6.QtCore import Qt, QEvent, QPointF, QPoint, QMimeData
 
@@ -27,6 +25,7 @@ def test_mouse_press_event(app_fixture):
         with patch.object(AttributeMergeTable, "itemAt", return_value=test_item):
             test_table.mousePressEvent(test_event)
     assert test_table.dragged_item == test_item
+    test_window.close()
 
 
 def test_drop_event_new_synonym(app_fixture):
@@ -54,6 +53,7 @@ def test_drop_event_new_synonym(app_fixture):
     assert test_table.dragged_item == None
     assert test_table.synonyms == [["foo", "bar"], ["ipsum", "lorem"]]
     mock.assert_called()
+    test_window.close()
 
 
 def test_drop_event_merge_synonym(app_fixture):
@@ -81,6 +81,7 @@ def test_drop_event_merge_synonym(app_fixture):
     assert test_table.dragged_item == None
     test_table.synonyms = [["ipsum", "bar", "lorem", "foo"]]
     mock.assert_called()
+    test_window.close()
 
 
 def test_find_preferred_synonym(app_fixture):
@@ -91,6 +92,7 @@ def test_find_preferred_synonym(app_fixture):
     assert test_table.find_preferred_synonym("foo") == "lorem"
     assert test_table.find_preferred_synonym("ipsum") == "ipsum"
     assert test_table.find_preferred_synonym("42") == "42"
+    test_window.close()
 
 
 def test_accept_events(app_fixture):
@@ -106,3 +108,4 @@ def test_accept_events(app_fixture):
     )
     test_table.dragEnterEvent(test_enter_event)
     test_table.dragMoveEvent(test_enter_event)
+    test_window.close()

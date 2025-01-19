@@ -9,9 +9,8 @@ from PyQt6.QtWidgets import (
     QFileDialog,
     QTableWidgetItem,
     QCheckBox,
-    QWidget,
 )
-from PyQt6.QtCore import Qt, QRect, QModelIndex
+from PyQt6.QtCore import QRect, QModelIndex
 from excel_tool import Reader, Writer
 from data_structures import Participant, Assignment
 from algorithm.simulated_annealing_algorithm import SimulatedAnnealingAlgorithm
@@ -147,13 +146,7 @@ class MainWindow(QMainWindow):
             if len(self.__checkboxes) <= j:
                 checkbox: QCheckBox = QCheckBox()
                 checkbox.setParent(self.centralWidget())
-                # checkbox.destroyed.connect(
-                #    lambda: print(f"{checkbox.text()} destroyed")
-                # )
                 checkbox.setText("")
-                # ref: QRect = self.attributes_table.visualItemRect(
-                #    self.attributes_table.horizontalHeaderItem(j)
-                # )
                 reference_item: QTableWidgetItem = self.attributes_table.item(0, j)
                 reference_index: QModelIndex = self.attributes_table.indexFromItem(
                     reference_item
