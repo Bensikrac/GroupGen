@@ -132,7 +132,7 @@ class MainWindow(QMainWindow):
 
         max_row_count: int = 0
         for j, attrbutes in enumerate(self.__attributes_list):
-            unique_attributes: list[(str, int)] = self.__calculate_distribution(
+            unique_attributes: list[tuple[str, int]] = self.__calculate_distribution(
                 self.__participants_list, attrbutes
             )
 
@@ -191,7 +191,7 @@ class MainWindow(QMainWindow):
 
     def __calculate_distribution(
         self, participants: list[Participant], attribute: str
-    ) -> list[(str, int)]:
+    ) -> list[tuple[str, int]]:
         """Returns a list of values for the given attribute and how often each value appears.
 
         :param: participants: The list of participants to search in
@@ -199,7 +199,7 @@ class MainWindow(QMainWindow):
 
         :return: A list of tuples, each containing a value and how many times it appears.
         """
-        result: list[(str, int)] = []
+        result: list[tuple[str, int]] = []
         for participant in participants:
             temp_value: str = participant.get_attribute(attribute)
             if not temp_value:

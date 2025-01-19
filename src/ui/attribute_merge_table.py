@@ -1,6 +1,6 @@
 """Module containing the classes for the attribute frequency table and cells within that table."""
 
-from PyQt6.QtWidgets import QTableWidget, QTableWidgetItem, QApplication
+from PyQt6.QtWidgets import QTableWidget, QTableWidgetItem
 from PyQt6.QtGui import QMouseEvent, QDrag
 from PyQt6.QtCore import Qt, QMimeData
 from app import MainWindow
@@ -24,7 +24,7 @@ class MergeableAttributeItem(QTableWidgetItem):
 class AttributeMergeTable(QTableWidget):
     """A QtableWidtet to display attribute value frequencies that can be merged via drag and drop"""
 
-    frequencies: list[(str, int)] = []
+    frequencies: list[tuple[str, int]] = []
     synonyms: list[list[str]] = []
     values: list[list[str]] = []
     dragged_item: MergeableAttributeItem | None
