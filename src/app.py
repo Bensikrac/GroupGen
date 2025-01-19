@@ -27,7 +27,6 @@ class MainWindow(QMainWindow):
     __participants_list: list[Participant]
     __attributes_list: list[str]
     __checkboxes: list[QCheckBox] = []
-    __central_widget: QWidget
 
     def __init__(self, ui_file_path: os.PathLike, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
@@ -146,10 +145,11 @@ class MainWindow(QMainWindow):
                 self.attributes_table.set_value(i, j, attr, nmb)
 
             if len(self.__checkboxes) <= j:
-                print("did box?")
-                print(self.centralWidget())
-                self.__central_widget = self.centralWidget()
-                checkbox: QCheckBox = QCheckBox(parent=self.centralWidget())
+                checkbox: QCheckBox = QCheckBox()
+                checkbox.setParent(self.centralWidget())
+                # checkbox.destroyed.connect(
+                #    lambda: print(f"{checkbox.text()} destroyed")
+                # )
                 checkbox.setText("")
                 # ref: QRect = self.attributes_table.visualItemRect(
                 #    self.attributes_table.horizontalHeaderItem(j)
@@ -159,8 +159,6 @@ class MainWindow(QMainWindow):
                     reference_item
                 )
                 ref: QRect = self.attributes_table.visualRect(reference_index)
-                print(ref.left() + int(0.5 * ref.width()))
-                print(ref.top() - 30)
                 checkbox.setGeometry(
                     QRect(ref.left() + int(0.5 * ref.width() + 15), 130, 30, 30)
                 )

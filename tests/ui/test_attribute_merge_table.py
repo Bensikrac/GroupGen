@@ -10,9 +10,8 @@ from app import MainWindow
 from ui.attribute_merge_table import AttributeMergeTable, MergeableAttributeItem
 
 
-def test_mouse_press_event():
+def test_mouse_press_event(app_fixture):
     """Tests if a QMouseEvent correctly sets the dragged item."""
-    app = QApplication.instance() or QApplication(sys.argv)
     test_window: MainWindow = MainWindow("assets/main_window.ui")
     test_table: AttributeMergeTable = test_window.attributes_table
     test_item = MergeableAttributeItem("test", 2)
@@ -30,9 +29,8 @@ def test_mouse_press_event():
     assert test_table.dragged_item == test_item
 
 
-def test_drop_event_new_synonym():
+def test_drop_event_new_synonym(app_fixture):
     """Tests if a QDropEvent is correctly handled if all synonyms that need to be created are new."""
-    app = QApplication.instance() or QApplication(sys.argv)
     test_window: MainWindow = MainWindow("assets/main_window.ui")
     test_table: AttributeMergeTable = test_window.attributes_table
     drag_item = MergeableAttributeItem("lorem", 2)
@@ -58,9 +56,8 @@ def test_drop_event_new_synonym():
     mock.assert_called()
 
 
-def test_drop_event_merge_synonym():
+def test_drop_event_merge_synonym(app_fixture):
     """Tests if a QDropEvent is correctly handled if synonyms need to be merged."""
-    app = QApplication.instance() or QApplication(sys.argv)
     test_window: MainWindow = MainWindow("assets/main_window.ui")
     test_table: AttributeMergeTable = test_window.attributes_table
     drag_item = MergeableAttributeItem("lorem", 2)
@@ -86,9 +83,8 @@ def test_drop_event_merge_synonym():
     mock.assert_called()
 
 
-def test_find_preferred_synonym():
+def test_find_preferred_synonym(app_fixture):
     """Tests if find_preferred_synonym returns correct values."""
-    app = QApplication.instance() or QApplication(sys.argv)
     test_window: MainWindow = MainWindow("assets/main_window.ui")
     test_table: AttributeMergeTable = test_window.attributes_table
     test_table.synonyms = [["lorem", "foo"], ["ipsum", "bar"], ["a", "b", "c"]]
@@ -97,9 +93,8 @@ def test_find_preferred_synonym():
     assert test_table.find_preferred_synonym("42") == "42"
 
 
-def test_accept_events():
+def test_accept_events(app_fixture):
     """Tests if QDragMoveEvents are accepted without issue."""
-    app = QApplication.instance() or QApplication(sys.argv)
     test_window: MainWindow = MainWindow("assets/main_window.ui")
     test_table: AttributeMergeTable = test_window.attributes_table
     test_enter_event = QDragEnterEvent(

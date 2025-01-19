@@ -13,9 +13,8 @@ from PyQt6.QtWidgets import (
 from excel_tool import Writer
 
 
-def test_input_file_picker():
+def test_input_file_picker(app_fixture):
     """Tests if the imput file picker correctly sets the file path internally and visually."""
-    app = QApplication.instance() or QApplication(sys.argv)
     test_window: MainWindow = MainWindow("assets/main_window.ui")
     with patch.object(
         QFileDialog,
@@ -33,9 +32,8 @@ def test_input_file_picker():
     assert test_window._MainWindow__input_path == ("test_data/excel_reader_test_0.xlsx")
 
 
-def test_output_file_picker():
+def test_output_file_picker(app_fixture):
     """Tests if the output file picker correctly sets the file path internally and visually."""
-    app = QApplication.instance() or QApplication(sys.argv)
     test_window: MainWindow = MainWindow("assets/main_window.ui")
     with patch.object(
         QFileDialog,
@@ -50,9 +48,8 @@ def test_output_file_picker():
     assert test_window._MainWindow__output_path == ("test_data/test_output.xlsx")
 
 
-def test_read_input_file():
+def test_read_input_file(app_fixture):
     """Tests if read_input_file reads the correct number of entries into the participant list and sets the status."""
-    app = QApplication.instance() or QApplication(sys.argv)
     test_window: MainWindow = MainWindow("assets/main_window.ui")
     test_window._MainWindow__input_path = "test_data/excel_reader_test_0.xlsx"
     test_window._MainWindow__read_input_file()
@@ -61,9 +58,8 @@ def test_read_input_file():
     assert test_window.state_label.text() == "Status: Finished Reading..."
 
 
-def test_run_workflow():
+def test_run_workflow(app_fixture):
     """Tests if run_workflow runs without issue and sets the status correctly."""
-    app = QApplication.instance() or QApplication(sys.argv)
     test_window: MainWindow = MainWindow("assets/main_window.ui")
     test_window._MainWindow__input_path = "test_data/test_data_short_1.xlsx"
     test_window._MainWindow__output_path = "test_data/test_output.xlsx"
@@ -76,9 +72,8 @@ def test_run_workflow():
     assert test_window.state_label.text() == "Status: Finished!"
 
 
-def test_run_workflow_path_errors():
+def test_run_workflow_path_errors(app_fixture):
     """Tests if run_workflow handles missing paths correctly."""
-    app = QApplication.instance() or QApplication(sys.argv)
     test_window: MainWindow = MainWindow("assets/main_window.ui")
     test_window._MainWindow__output_path = "test_data/test_output.xlsx"
     with pytest.raises(ValueError) as error:
