@@ -68,13 +68,12 @@ class MainWindow(QMainWindow):
         algorithm_instance: SimulatedAnnealingAlgorithm = SimulatedAnnealingAlgorithm(
             self.__filter_enabled_attributes()
         )
-        self.__synonym_filter_participants()
 
         self.state_label.setText("Status: Calculating...")
         self.state_label.repaint()
 
         final_assignment: Assignment = algorithm_instance.find_assignment(
-            set(self.__participants_list),
+            self.__synonym_filter_participants(),
             int(self.groups_spinbox.value()),
             int(self.iterations_spinbox.value()),
             1000,
@@ -85,16 +84,22 @@ class MainWindow(QMainWindow):
         self.state_label.setText("Status: Finished!")
         self.state_label.repaint()
 
-    def __synonym_filter_participants(self) -> None:
-        """Replaces all attribute values of all Participants with their preferred synonyms."""
+    def __synonym_filter_participants(self) -> set[Participant]:
+        """Returns a set of partcicpants that are each equivalent to one of the stored participants,
+        but have all attribute values replaced with their preferred synonyms.
+
+        :return: A set containing the filtered participants
+        """
+        filtered_participants: set[Participant] = set()
         for participant in self.__participants_list:
+            attributes: dict[str, str] = {}
             for attribute in participant.attributes:
-                participant.set_attribute(
-                    attribute,
-                    self.attributes_table.find_preferred_synonym(
-                        participant.get_attribute(attribute)
-                    ),
+                attributes[attribute] = self.attributes_table.find_preferred_synonym(
+                    participant.get_attribute(attribute)
                 )
+            # filtered_participants.add(Participant(attributes))
+            filtered_participants.add(Participant(participant.get_uid(), attributes))
+        return filtered_participants
 
     def __input_file_picker(self) -> None:
         """Select Input File Button Function"""
