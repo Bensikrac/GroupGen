@@ -1,0 +1,26 @@
+What to look for in a code Review:
+
+1. Design:
+	- The Design of the changelist (CL) integrates well within the rest of the program
+
+2. Functionality:
+	- The CL does what the developer intended
+	- The Functionality of this code improves the functionality of the program or user experience
+	- If necessary, run the program to see if it does what it's intended to do
+
+3. Complexity:
+	- The CL is not more complex than necessary
+	- The CL can be understood by other developers without the help of the developer of this CL
+
+4. Tests:
+	- Tests are included in the CL and newly added features are tested adequately
+	- Important edge cases are tested
+
+5. Naming:
+	- Names of new variables and functions are long enough that they communicate what they do and short enough that the code does not become hard to read. They enforce the rules of the styleguide
+
+6. Comments:
+	- Comments have been written, that help developers to understand the code and the intention of the developer of this CL
+
+7. Styleguide
+	- The styleguide has not been violated
