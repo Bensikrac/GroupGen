@@ -78,10 +78,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 def main():
     app: QApplication = QApplication(sys.argv)
     window: MainWindow
-    if len(sys.argv) < 2:
-        window = MainWindow()
-    else:
-        window = MainWindow(*sys.argv[1:])
+    window = MainWindow(*sys.argv[1:])
     window.show()
     app.exec()
 
