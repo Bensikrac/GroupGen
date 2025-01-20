@@ -13,7 +13,7 @@ What to look for in a code Review:
 	- The CL can be understood by other developers without the help of the developer of this CL
 
 4. Tests:
-	- Tests are included in the CL and have 100% code coverage
+	- Tests are included in the CL and newly added features are tested adequately
 	- Important edge cases are tested
 
 5. Naming:
