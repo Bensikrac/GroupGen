@@ -76,7 +76,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 def main():
     app: QApplication = QApplication(sys.argv)
-    window:MainWindow = MainWindow()
+    window: MainWindow = MainWindow()
     window.show()
     app.exec()
 
