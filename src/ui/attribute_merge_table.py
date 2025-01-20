@@ -1,5 +1,6 @@
 """Module containing the classes for the attribute frequency table and cells within that table."""
 
+import copy
 from PyQt6.QtWidgets import QTableWidget, QTableWidgetItem
 from PyQt6.QtGui import QMouseEvent, QDrag, QDropEvent, QDragEnterEvent, QDragMoveEvent
 from PyQt6.QtCore import Qt, QMimeData
@@ -62,6 +63,8 @@ class AttributeMergeTable(QTableWidget):
             and target_cell.value != self.dragged_item.value
             and self.column(target_cell) == self.column(self.dragged_item)
         ):
+            # self.main_window.add_state_to_history(copy.deepcopy(self.synonyms))
+
             target_list: list[str] | None = None
             for synonym_list in self.synonyms:
                 if (
@@ -80,6 +83,7 @@ class AttributeMergeTable(QTableWidget):
             self.clearContents()
             self.main_window.print_attribute_table()
             event.accept()
+            self.main_window.add_state_to_history(copy.deepcopy(self.synonyms))
         self.dragged_item = None
 
     def find_synonyms_for_value(self, value: str) -> list[str]:

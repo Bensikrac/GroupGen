@@ -67,7 +67,7 @@ def test_run_workflow(main_window_fixture):
     main_window_fixture.iterations_spinbox.setValue(2)
 
     with patch.object(Writer, "write_file", return_value=None):
-        main_window_fixture._MainWindow__run_workflow()
+        main_window_fixture._MainWindow__run_algorithm()
     assert main_window_fixture.state_label.text() == "Status: Finished!"
 
 
@@ -76,13 +76,13 @@ def test_run_workflow_path_errors(app_fixture):
     test_window: MainWindow = MainWindow("assets/main_window.ui")
     test_window._MainWindow__output_path = "test_data/test_output.xlsx"
     with pytest.raises(ValueError) as error:
-        test_window._MainWindow__run_workflow()
+        test_window._MainWindow__run_algorithm()
     assert "Input Path not set" in str(error.value)
     test_window.close()
 
     test_window_2: MainWindow = MainWindow("assets/main_window.ui")
     test_window_2._MainWindow__input_path = "test_data/test_data_short_1.xlsx"
     with pytest.raises(ValueError) as error:
-        test_window_2._MainWindow__run_workflow()
+        test_window_2._MainWindow__run_algorithm()
     assert "Output Path not set" in str(error.value)
     test_window_2.close()

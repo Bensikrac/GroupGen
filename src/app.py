@@ -1,5 +1,6 @@
 """Main app to be launched"""
 
+import copy
 import os
 import sys
 from PyQt6 import uic
@@ -26,6 +27,8 @@ class MainWindow(QMainWindow):
     __participants_list: list[Participant]
     __attributes_list: list[str]
     __checkboxes: list[QCheckBox] = []
+    __history: list[list[list[str]] | QCheckBox] = [[]]
+    __history_index: int = 0
 
     def __init__(self, ui_file_path: os.PathLike, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
@@ -36,15 +39,21 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("GroupGen")
 
         self.input_pick_button.clicked.connect(self.__input_file_picker)
-        self.read_input_button.clicked.connect(self.__read_input_file)
+        # self.read_input_button.clicked.connect(self.__read_input_file)
         self.output_pick_button.clicked.connect(self.__output_file_picker)
         self.run_algorithm_button.clicked.connect(self.__run_algorithm)
         # self.select_synonym_button.clicked.connect()
+        self.reset_synonyms_button.clicked.connect(self.__reset_synonyms)
+        self.undo_button.clicked.connect(self.__undo)
+        self.redo_button.clicked.connect(self.__redo)
 
-        self.read_input_button.setEnabled(False)
+        # self.read_input_button.setEnabled(False)
         self.run_algorithm_button.setEnabled(False)
         # self.select_synonym_button.setEnabled(False)
         self.select_synonym_label.setVisible(False)
+        self.undo_button.setEnabled(False)
+        self.redo_button.setEnabled(False)
+        self.reset_synonyms_button.setEnabled(False)
 
     def __run_algorithm(self) -> None:
         """Executes the algorithm and and writes the output."""
@@ -93,8 +102,10 @@ class MainWindow(QMainWindow):
             caption="pick file", directory="/home", filter="Excel Files (*.xlsx *.xls)"
         )[0]
         self.input_file_path_line_edit.setText(self.__input_path)
+        self.input_file_path_line_edit.repaint()
 
-        self.read_input_button.setEnabled(True)
+        # self.read_input_button.setEnabled(True)
+        self.__read_input_file()
 
     def __read_input_file(self) -> None:
         """Read Input File Button Function"""
@@ -108,12 +119,67 @@ class MainWindow(QMainWindow):
 
         # Print Table
         self.attributes_table.synonyms = []
+        for checkbox in self.__checkboxes:
+            checkbox.deleteLater()
+        self.__checkboxes = []
         self.print_attribute_table()
 
         self.state_label.setText("Status: Finished Reading...")
         self.state_label.repaint()
         self.select_synonym_label.setVisible(True)
         self.__set_buttons_enabled(True)
+        self.__update_undo_redo()
+
+    def __reset_synonyms(self) -> None:
+        """Reset Synonyms button function."""
+        self.attributes_table.synonyms = []
+        self.add_state_to_history([])
+        self.print_attribute_table()
+
+    def __undo(self) -> None:
+        """Move back one step in the history."""
+        if self.__history_index > 0:
+            self.__history_index -= 1
+            self.__step_to_history_state(self.__history[self.__history_index])
+            self.print_attribute_table()
+        self.__update_undo_redo()
+
+    def __redo(self) -> None:
+        """Move forward one step in the history."""
+        if self.__history_index < len(self.__history) - 1:
+            self.__history_index += 1
+            self.__step_to_history_state(self.__history[self.__history_index])
+            self.print_attribute_table()
+        self.__update_undo_redo()
+
+    def __update_undo_redo(self) -> None:
+        """Set the undo and redo buttons as enabled or disabled appropriately."""
+        self.undo_button.setEnabled(self.__history_index > 0)
+        self.redo_button.setEnabled(self.__history_index < len(self.__history) - 1)
+
+    def __step_to_history_state(self, state: list[list[str]] | QCheckBox) -> None:
+        """Change the state of the table and data to match the given state.
+
+        :param state: The state to step into
+        """
+        if isinstance(state, QCheckBox):
+            state.setChecked(state.isChecked)
+        else:
+            self.attributes_table.synonyms = copy.deepcopy(state)
+
+    def add_state_to_history(self, state: list[list[str]] | QCheckBox) -> None:
+        """Add a state to the end of the history and deal with redunndant entries if appropriate.
+
+        :param state: The state to add
+        """
+        if self.__history_index < len(self.__history) - 1:
+            self.__history = copy.deepcopy(self.__history[0 : self.__history_index + 1])
+            self.__history_index = self.__history_index + 1
+        if self.__history_index < len(self.__history):
+            self.__history_index += 1
+        self.__history.append(state)
+
+        self.__update_undo_redo()
 
     def __output_file_picker(self) -> None:
         """Select Output File Button Function"""
@@ -132,6 +198,7 @@ class MainWindow(QMainWindow):
 
     def print_attribute_table(self) -> None:
         """Print Attribute Table"""
+        self.attributes_table.clearContents()
         self.attributes_table.setColumnCount(len(self.__attributes_list))
         self.attributes_table.setHorizontalHeaderLabels(self.__attributes_list)
 
@@ -175,6 +242,7 @@ class MainWindow(QMainWindow):
                 ]:
                     checkbox.setChecked(True)
                 self.__checkboxes.append(checkbox)
+            self.attributes_table.repaint()
 
     def __filter_enabled_attributes(self) -> list[str]:
         enabled_attributes: list[str] = []
@@ -189,10 +257,13 @@ class MainWindow(QMainWindow):
         :param enable: if true all Buttons are enabled, if false all Buttons are disabled
         """
         self.input_pick_button.setEnabled(enable)
-        self.read_input_button.setEnabled(enable)
+        # self.read_input_button.setEnabled(enable)
         self.output_pick_button.setEnabled(enable)
         self.run_algorithm_button.setEnabled(enable)
         # self.select_synonym_button.setEnabled(enable)
+        self.undo_button.setEnabled(enable)
+        self.redo_button.setEnabled(enable)
+        self.reset_synonyms_button.setEnabled(enable)
 
     def __calculate_distribution(
         self, participants: list[Participant], attribute: str

@@ -58,7 +58,7 @@
      <rect>
       <x>180</x>
       <y>10</y>
-      <width>381</width>
+      <width>551</width>
       <height>31</height>
      </rect>
     </property>
@@ -169,7 +169,7 @@
      <enum>QAbstractItemView::SelectionMode::SingleSelection</enum>
     </property>
    </widget>
-   <widget class="QPushButton" name="read_input_button">
+   <widget class="QPushButton" name="reset_synonyms_button">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -179,20 +179,20 @@
      </rect>
     </property>
     <property name="text">
-     <string>Read Input File</string>
+     <string>Reset Synonyms</string>
     </property>
    </widget>
-   <widget class="QLabel" name="read_input_label">
+   <widget class="QLabel" name="reset_synonyms_label">
     <property name="geometry">
      <rect>
-      <x>190</x>
+      <x>180</x>
       <y>60</y>
-      <width>371</width>
+      <width>411</width>
       <height>16</height>
      </rect>
     </property>
     <property name="text">
-     <string>Read the specified file and show the distribution of attributes</string>
+     <string>Undo any synonym merging</string>
     </property>
    </widget>
    <widget class="QLabel" name="select_synonym_label">
@@ -203,12 +203,38 @@
      <rect>
       <x>20</x>
       <y>100</y>
-      <width>431</width>
+      <width>921</width>
       <height>16</height>
      </rect>
     </property>
     <property name="text">
-     <string>Drag a value onto another to treat it as a synonym of that value</string>
+     <string>Drag a value onto another to treat it as a synonym of that value, uncheck the checkmark above a column to exclude it from the algorithm</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="undo_button">
+    <property name="geometry">
+     <rect>
+      <x>400</x>
+      <y>50</y>
+      <width>161</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Undo</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="redo_button">
+    <property name="geometry">
+     <rect>
+      <x>570</x>
+      <y>50</y>
+      <width>161</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Redo</string>
     </property>
    </widget>
   </widget>
@@ -218,7 +244,7 @@
      <x>0</x>
      <y>0</y>
      <width>1763</width>
-     <height>21</height>
+     <height>25</height>
     </rect>
    </property>
   </widget>
