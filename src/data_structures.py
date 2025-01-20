@@ -6,15 +6,7 @@ from dataclasses import dataclass
 
 @dataclass(
     init=False,
-    repr=True,
     eq=False,
-    order=False,
-    unsafe_hash=False,
-    frozen=False,
-    match_args=True,
-    kw_only=False,
-    slots=False,
-    weakref_slot=False,
 )
 class Participant:
     """Structure representing a participant.
@@ -24,27 +16,31 @@ class Participant:
     Keyword arguments will be added to the Attributes.
     """
 
-    current_uid: int = 0
-
     __uid: int
     __attributes: dict[str, str]
     # attributes maps from attribute class to attribute value
 
+    current_uid: int = 0
+
     def __init__(self, *args, **kwargs) -> None:
-        self.__uid = None
-        self.__attributes = None
+        uid = None
+        attributes = None
         for arg in args:
             if isinstance(arg, int):
-                self.__uid = arg
+                uid = arg
             if isinstance(arg, dict):
-                self.__attributes = arg | kwargs
+                attributes = arg | kwargs
 
-        if self.__uid is None:
+        if uid is None:
             self.__uid = Participant.current_uid
             Participant.current_uid += 1
+        else:
+            self.__uid = uid
 
-        if self.__attributes is None:
+        if attributes is None:
             self.__attributes = kwargs
+        else:
+            self.__attributes = attributes
 
     @property
     def uid(self) -> int:
@@ -63,7 +59,7 @@ class Participant:
         return self.__attributes
 
     def __getitem__(self, attribute: str) -> str:
-        return self.attributes[attribute]
+        return self.__attributes[attribute]
 
     def get_attribute(self, attribute: str) -> str:
         """Return the attribute value of the given attribute for the :class:`Participant`.
@@ -80,7 +76,7 @@ class Participant:
         return False
 
     def __str__(self) -> str:
-        return f"UID: {self.__uid} Attributes: {self.attributes}"
+        return f"UID: {self.uid} Attributes: {self.attributes}"
 
     def __hash__(self) -> int:
         return self.uid
