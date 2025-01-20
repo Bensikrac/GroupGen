@@ -76,9 +76,9 @@
    <widget class="QLabel" name="state_label">
     <property name="geometry">
      <rect>
-      <x>1280</x>
+      <x>1240</x>
       <y>1170</y>
-      <width>381</width>
+      <width>311</width>
       <height>31</height>
      </rect>
     </property>
@@ -86,7 +86,7 @@
      <string>Status: Waiting...</string>
     </property>
     <property name="alignment">
-     <set>Qt::AlignmentFlag::AlignCenter</set>
+     <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
     </property>
    </widget>
    <widget class="QSpinBox" name="groups_spinbox">
@@ -218,7 +218,7 @@
      <x>0</x>
      <y>0</y>
      <width>1763</width>
-     <height>25</height>
+     <height>21</height>
     </rect>
    </property>
   </widget>
