@@ -2,7 +2,6 @@
 
 import os
 import sys
-from PyQt6 import uic
 from PyQt6.QtWidgets import QApplication, QMainWindow, QFileDialog
 from excel_tool import Reader, Writer
 from data_structures import Participant, Assignment
