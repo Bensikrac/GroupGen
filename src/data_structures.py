@@ -5,27 +5,46 @@ from dataclasses import dataclass
 
 
 @dataclass(
-    init=True,
+    init=False,
     repr=True,
     eq=False,
     order=False,
     unsafe_hash=False,
-    frozen=True,
+    frozen=False,
     match_args=True,
     kw_only=False,
     slots=False,
     weakref_slot=False,
 )
 class Participant:
-    """Structure representing a participant
+    """Structure representing a participant.
 
-    :param uid: unique id for participant
-    :param attributes: list of attributes for participants
+    Initializer uses unnamed `int`s as UID and unnamed `dict`s as Attributes.
+    Not passing a UID will cause it to assign a running number.
+    Keyword arguments will be added to the Attributes.
     """
+
+    current_uid: int = 0
 
     __uid: int
     __attributes: dict[str, str]
     # attributes maps from attribute class to attribute value
+
+    def __init__(self, *args, **kwargs) -> None:
+        self.__uid = None
+        self.__attributes = None
+        for arg in args:
+            if isinstance(arg, int):
+                self.__uid = arg
+            if isinstance(arg, dict):
+                self.__attributes = arg | kwargs
+
+        if self.__uid is None:
+            self.__uid = Participant.current_uid
+            Participant.current_uid += 1
+
+        if self.__attributes is None:
+            self.__attributes = kwargs
 
     @property
     def uid(self) -> int:
@@ -44,7 +63,7 @@ class Participant:
         return self.__attributes
 
     def __getitem__(self, attribute: str) -> str:
-        return self.__attributes[attribute]
+        return self.attributes[attribute]
 
     def get_attribute(self, attribute: str) -> str:
         """Return the attribute value of the given attribute for the :class:`Participant`.
@@ -57,14 +76,14 @@ class Participant:
 
     def __eq__(self, other: object) -> bool:
         if isinstance(other, Participant):
-            return self.__uid == other.uid
+            return self.uid == other.uid
         return False
 
     def __str__(self) -> str:
         return f"UID: {self.__uid} Attributes: {self.attributes}"
 
     def __hash__(self) -> int:
-        return self.__uid
+        return self.uid
 
 
 type Group = set[Participant]
