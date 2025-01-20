@@ -38,7 +38,7 @@ class MainWindow(QMainWindow):
         self.input_pick_button.clicked.connect(self.__input_file_picker)
         self.read_input_button.clicked.connect(self.__read_input_file)
         self.output_pick_button.clicked.connect(self.__output_file_picker)
-        self.run_algorithm_button.clicked.connect(self.__run_workflow)
+        self.run_algorithm_button.clicked.connect(self.__run_algorithm)
         # self.select_synonym_button.clicked.connect()
 
         self.read_input_button.setEnabled(False)
@@ -46,7 +46,7 @@ class MainWindow(QMainWindow):
         # self.select_synonym_button.setEnabled(False)
         self.select_synonym_label.setVisible(False)
 
-    def __run_workflow(self) -> None:
+    def __run_algorithm(self) -> None:
         """Executes the algorithm and and writes the output."""
         if self.__input_path is None:
             raise ValueError("Input Path not set")
@@ -54,6 +54,7 @@ class MainWindow(QMainWindow):
             raise ValueError("Output Path not set")
 
         self.state_label.setText("Status: Preparing...")
+        self.state_label.repaint()
 
         algorithm_instance: SimulatedAnnealingAlgorithm = SimulatedAnnealingAlgorithm(
             self.__filter_enabled_attributes()
@@ -61,6 +62,7 @@ class MainWindow(QMainWindow):
         self.__synonym_filter_participants()
 
         self.state_label.setText("Status: Calculating...")
+        self.state_label.repaint()
 
         final_assignment: Assignment = algorithm_instance.find_assignment(
             set(self.__participants_list),
@@ -72,8 +74,9 @@ class MainWindow(QMainWindow):
         Writer(self.__output_path).write_file(final_assignment)
 
         self.state_label.setText("Status: Finished!")
+        self.state_label.repaint()
 
-    def __synonym_filter_participants(self):
+    def __synonym_filter_participants(self) -> None:
         """Replaces all attribute values of all Participants with their preferred synonyms."""
         for participant in self.__participants_list:
             for attribute in participant.attributes:
@@ -97,6 +100,7 @@ class MainWindow(QMainWindow):
         """Read Input File Button Function"""
 
         self.state_label.setText("Status: Reading...")
+        self.state_label.repaint()
         self.__set_buttons_enabled(False)
 
         self.__participants_list = Reader(self.__input_path).read()
@@ -107,6 +111,7 @@ class MainWindow(QMainWindow):
         self.print_attribute_table()
 
         self.state_label.setText("Status: Finished Reading...")
+        self.state_label.repaint()
         self.select_synonym_label.setVisible(True)
         self.__set_buttons_enabled(True)
 
@@ -201,27 +206,27 @@ class MainWindow(QMainWindow):
         """
         result: list[tuple[str, int]] = []
         for participant in participants:
-            temp_value: str = participant.get_attribute(attribute)
-            if not temp_value:
+            attribute_value: str = participant.get_attribute(attribute)
+            if not attribute_value:
                 continue
-            temp_bool: bool = False
-            old_temp_value: tuple[str, int]
-            new_temp_value: tuple[str, int]
+            found_synonym: bool = False
+            old_entry: tuple[str, int]
+            new_entry: tuple[str, int]
             for entry in result:
-                old_temp_value = entry
-                if old_temp_value[0] == self.attributes_table.find_preferred_synonym(
-                    temp_value
+                old_entry = entry
+                if old_entry[0] == self.attributes_table.find_preferred_synonym(
+                    attribute_value
                 ):
-                    new_temp_value = (old_temp_value[0], old_temp_value[1] + 1)
-                    temp_bool = True
+                    new_entry = (old_entry[0], old_entry[1] + 1)
+                    found_synonym = True
                     break
-            if not temp_bool:
+            if not found_synonym:
                 result.append(
-                    (self.attributes_table.find_preferred_synonym(temp_value), 1)
+                    (self.attributes_table.find_preferred_synonym(attribute_value), 1)
                 )
             else:
-                result.remove(old_temp_value)
-                result.append(new_temp_value)
+                result.remove(old_entry)
+                result.append(new_entry)
         return result
 
 

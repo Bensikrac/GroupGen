@@ -1,7 +1,7 @@
 """Module containing the classes for the attribute frequency table and cells within that table."""
 
 from PyQt6.QtWidgets import QTableWidget, QTableWidgetItem
-from PyQt6.QtGui import QMouseEvent, QDrag
+from PyQt6.QtGui import QMouseEvent, QDrag, QDropEvent, QDragEnterEvent, QDragMoveEvent
 from PyQt6.QtCore import Qt, QMimeData
 from app import MainWindow
 
@@ -11,7 +11,7 @@ class MergeableAttributeItem(QTableWidgetItem):
 
     value: str
 
-    def __init__(self, value: str, count):
+    def __init__(self, value: str, count: int) -> None:
         """Initializes the item with the given value and count
 
         :param value: The value for the item
@@ -50,7 +50,7 @@ class AttributeMergeTable(QTableWidget):
             drag.setMimeData(mime_data)
             drag.exec()
 
-    def dropEvent(self, event) -> None:
+    def dropEvent(self, event: QDropEvent) -> None:
         """Accepts the drop if it is valid cell and updates the synonyms and table accordingly
 
         :param event: The triggering event
@@ -104,14 +104,14 @@ class AttributeMergeTable(QTableWidget):
                 return synonym_list[0]
         return value
 
-    def dragEnterEvent(self, event) -> None:
+    def dragEnterEvent(self, event: QDragEnterEvent) -> None:
         """Accepts the triggering event.
 
         :param event: The triggering event
         """
         event.accept()
 
-    def dragMoveEvent(self, event) -> None:
+    def dragMoveEvent(self, event: QDragMoveEvent) -> None:
         """Accepts the triggering event.
 
         :param event: The triggering event
