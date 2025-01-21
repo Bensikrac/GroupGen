@@ -16,6 +16,8 @@ from excel_tool import Reader, Writer
 from data_structures import Participant, Assignment
 from algorithm.simulated_annealing_algorithm import SimulatedAnnealingAlgorithm
 
+type HistoryState = list[list[str]]
+
 
 class MainWindow(QMainWindow):
     """Main Window class"""
@@ -27,7 +29,7 @@ class MainWindow(QMainWindow):
     __participants_list: list[Participant]
     __attributes_list: list[str]
     __checkboxes: list[QCheckBox] = []
-    __history: list[list[list[str]] | QCheckBox] = [[]]
+    __history: list[HistoryState] = [[]]
     __history_index: int = 0
 
     def __init__(self, ui_file_path: os.PathLike, *args, **kwargs) -> None:
@@ -162,17 +164,15 @@ class MainWindow(QMainWindow):
         self.undo_button.setEnabled(self.__history_index > 0)
         self.redo_button.setEnabled(self.__history_index < len(self.__history) - 1)
 
-    def __step_to_history_state(self, state: list[list[str]] | QCheckBox) -> None:
+    def __step_to_history_state(self, state: HistoryState) -> None:
         """Change the state of the table and data to match the given state.
 
         :param state: The state to step into
         """
-        if isinstance(state, QCheckBox):
-            state.setChecked(state.isChecked)
-        else:
+        if isinstance(state, list):
             self.attributes_table.synonyms = copy.deepcopy(state)
 
-    def add_state_to_history(self, state: list[list[str]] | QCheckBox) -> None:
+    def add_state_to_history(self, state: HistoryState) -> None:
         """Add a state to the end of the history and deal with redunndant entries if appropriate.
 
         :param state: The state to add

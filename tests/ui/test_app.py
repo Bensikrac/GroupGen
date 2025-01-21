@@ -86,3 +86,82 @@ def test_run_workflow_path_errors(app_fixture):
         test_window_2._MainWindow__run_algorithm()
     assert "Output Path not set" in str(error.value)
     test_window_2.close()
+
+
+def test_reset_synonyms(main_window_fixture):
+    """Tests if clicking the reset synonyms button correctly empties the synonym list."""
+    main_window_fixture.attributes_table.synonyms = [["foo", "bar"], ["ipsum", "lorem"]]
+    main_window_fixture.reset_synonyms_button.click()
+    assert main_window_fixture.attributes_table.synonyms == []
+    main_window_fixture.reset_synonyms_button.click()
+    assert main_window_fixture.attributes_table.synonyms == []
+
+
+def test_undo_redo_branch(main_window_fixture):
+    """Tests if undoing and redoing works correctly before and after the history branches."""
+    main_window_fixture.attributes_table.synonyms = [
+        [],
+        ["foo", "bar"],
+        ["ipsum", "lorem"],
+    ]
+    main_window_fixture._MainWindow__history = [
+        [[]],
+        [[], ["foo", "bar"]],
+        [[], ["foo", "bar"], ["ipsum", "lorem"]],
+    ]
+    main_window_fixture._MainWindow__history_index = 2
+    main_window_fixture._MainWindow__update_undo_redo
+
+    main_window_fixture.undo_button.click()
+    assert main_window_fixture.attributes_table.synonyms == [[], ["foo", "bar"]]
+    assert main_window_fixture._MainWindow__history == [
+        [[]],
+        [[], ["foo", "bar"]],
+        [[], ["foo", "bar"], ["ipsum", "lorem"]],
+    ]
+    assert main_window_fixture._MainWindow__history_index == 1
+
+    main_window_fixture.undo_button.click()
+    assert main_window_fixture.attributes_table.synonyms == [[]]
+    assert main_window_fixture._MainWindow__history == [
+        [[]],
+        [[], ["foo", "bar"]],
+        [[], ["foo", "bar"], ["ipsum", "lorem"]],
+    ]
+    assert main_window_fixture._MainWindow__history_index == 0
+
+    main_window_fixture.redo_button.click()
+    assert main_window_fixture.attributes_table.synonyms == [[], ["foo", "bar"]]
+    assert main_window_fixture._MainWindow__history == [
+        [[]],
+        [[], ["foo", "bar"]],
+        [[], ["foo", "bar"], ["ipsum", "lorem"]],
+    ]
+    assert main_window_fixture._MainWindow__history_index == 1
+
+    main_window_fixture.reset_synonyms_button.click()
+    assert main_window_fixture.attributes_table.synonyms == []
+    assert main_window_fixture._MainWindow__history == [
+        [[]],
+        [[], ["foo", "bar"]],
+        [],
+    ]
+    assert main_window_fixture._MainWindow__history_index == 2
+
+    main_window_fixture.undo_button.click()
+    assert main_window_fixture.attributes_table.synonyms == [[], ["foo", "bar"]]
+    assert main_window_fixture._MainWindow__history == [
+        [[]],
+        [[], ["foo", "bar"]],
+        [],
+    ]
+    assert main_window_fixture._MainWindow__history_index == 1
+
+    main_window_fixture.redo_button.click()
+    assert main_window_fixture.attributes_table.synonyms == []
+    assert main_window_fixture._MainWindow__history == [
+        [[]],
+        [[], ["foo", "bar"]],
+        [],
+    ]
+    assert main_window_fixture._MainWindow__history_index == 2
