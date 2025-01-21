@@ -1,61 +1,95 @@
 """Data structures module"""
 
+from typing import TypeVar
+from dataclasses import dataclass
 
+
+@dataclass(
+    init=False,
+    eq=False,
+)
 class Participant:
-    """data structure, which represents a participant by storing unique id and
-    attribute list of an individual participant
+    """Structure representing a participant.
 
-    :param uid: unique id for participant
-    :param attributes: list of attributes for participants
+    Initializer uses unnamed `int`s as UID and unnamed `dict`s as Attributes.
+    Not passing a UID will cause it to assign a running number.
+    Keyword arguments will be added to the Attributes.
     """
 
     __uid: int
-    attributes: dict[str, str]
-    # attributes are mapped using attribute name ex. 'course' -> 'math'
+    __attributes: dict[str, str]
+    # attributes maps from attribute class to attribute value
 
-    def __init__(self, uid: int, attributes: dict[str, str] = None):
+    current_uid: int = 0
+
+    def __init__(self, *args, **kwargs) -> None:
+        uid = None
+        attributes = None
+        for arg in args:
+            if isinstance(arg, int):
+                uid = arg
+            if isinstance(arg, dict):
+                attributes = arg | kwargs
+
+        if uid is None:
+            self.__uid = Participant.current_uid
+            Participant.current_uid += 1
+        else:
+            self.__uid = uid
+
         if attributes is None:
-            attributes = {}
-        self.__uid = uid
-        self.attributes = attributes
+            self.__attributes = kwargs
+        else:
+            self.__attributes = attributes
 
-    def get_uid(self) -> int:
-        """Returns the uid of the participant.
+    @property
+    def uid(self) -> int:
+        """UID of the :class:`Participant`.
 
-        :return: unique id of the participant
+        :return: UID of the :class:`Participant`
         """
         return self.__uid
 
+    @property
+    def attributes(self) -> dict[str, str]:
+        """Attributes of the :class:`Participant`.
+
+        :return: Attributes of the :class:`Participant`
+        """
+        return self.__attributes
+
+    def __getitem__(self, attribute: str) -> str:
+        return self.__attributes[attribute]
+
     def get_attribute(self, attribute: str) -> str:
-        """Returns the attribute value of the given attribute for the participant.
+        """Return the attribute value of the given attribute for the :class:`Participant`.
 
-        :param attribute: attribute of which the value is returned
+        :param attribute: Attribute of which the value is returned
 
-        :return: attribute value of the given attribut for the participant
+        :return: Attribute value of the given attribut for the :class:`Participant`
         """
-        return self.attributes[attribute]
+        return self.__attributes[attribute]
 
-    def set_attribute(self, attribute: str, value: str) -> None:
-        """Sets the given attribute to the given value for the participant.
-
-        :param attribute: attribute to be set for participant (already existing)
-        :param value: value given to the given attribute
-        """
-        self.attributes[attribute] = value
-
-    def __eq__(self, other) -> bool:
-        return isinstance(other, Participant) and self.get_uid() == other.get_uid()
-
-    def __repr__(self) -> str:
-        return "Participant(" + self.__uid + ", " + str(self.attributes) + ")"
+    def __eq__(self, other: object) -> bool:
+        if isinstance(other, Participant):
+            return self.uid == other.uid
+        return False
 
     def __str__(self) -> str:
-        return "Name: " + self.__uid + " Attribute: " + str(self.attributes)
+        return f"UID: {self.uid} Attributes: {self.attributes}"
 
     def __hash__(self) -> int:
-        return hash(self.__uid)
+        return self.uid
 
 
 type Group = set[Participant]
 type Iteration = list[Group]
 type Assignment = list[Iteration]
+
+
+# pylint: disable=invalid-name
+#: Generic type variable
+T = TypeVar("T")
+
+type ListOfRowLists[T] = list[list[T]]
+type ListOfColumnLists[T] = list[list[T]]
