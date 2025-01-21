@@ -28,15 +28,13 @@ class ObjectiveFunction:
         :return: a score between 0 and 1, the lower the better
         """
         cost: float = 0.0
-        groups: list[Group] = []
-        # flatten assignment:
-        for iteration in assignment:
-            for group in iteration:
-                groups += group
+        groups: list[Group] = [
+            group for iteration in assignment for group in iteration
+        ]  # list of all groups in assignment
 
         for i, group in enumerate(groups):
-            for j in range(i, len(groups)):
-                cost += len(group.intersection(groups[j]))
+            for j in range(i + 1, len(groups)):
+                cost += max(len(group.intersection(groups[j])) - 1, 0)
 
         return cost / self.__mix_cost_max(assignment)
 
@@ -117,7 +115,9 @@ class ObjectiveFunction:
 
         :return: the calculated cost contribution
         """
+
         count: float = 0.0
+
         for participant in group:
             if participant.get_attribute(attribute) == value:
                 count += 1.0
@@ -132,10 +132,11 @@ class ObjectiveFunction:
         :return: the upper bound,
         holds for all assignments of the same shape that contain the same participants
         """
+        participants: set[Participant] = set()
+        for group in sample_assignment[0]:
+            participants = participants.union(group)
+
         if self.__cached_diversity_cost_max < 0.0:
-            participants: set[Participants] = set()
-            for group in sample_assignment[0]:
-                participants &= group
             self.__cached_diversity_cost_max = self.__total_group_diversity_cost(
                 sample_assignment, participants
             )
@@ -166,7 +167,7 @@ class ObjectiveFunction:
         :param assignment: the Assignment to calculate the cost for
         :param mix_weight: the weight of the mix cost,
         only the size of this number compared to the diversity weight matters, defaults to 1
-        :param diversity_weight: the weight of the mix cost, defaults to 1
+        :param diversity_weight: the weight of the diversity cost, defaults to 1
 
         :return: the weighted cost, between 0 and 1, lower is better
         """

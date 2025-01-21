@@ -19,6 +19,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+cli = []
 gui = [
   "PyQt6"
 ]
@@ -30,7 +31,7 @@ dev = [
 ]
 
 [project.gui-scripts]
-hello_window = "group_gen:hello_window"
+group_gen = "group_gen:app"
 
 [tool.black]
 target-version = ["py312"]

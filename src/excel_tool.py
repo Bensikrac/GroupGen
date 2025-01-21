@@ -21,7 +21,7 @@ class Reader:
     def read(self) -> list[Participant]:
         """main read function, returns the parsed list of participants
 
-        :return: a list of Participants found in the excel file with teir attributes
+        :return: a list of Participants found in the excel file with their attributes
         """
 
         participant_list: list[Participant] = []
@@ -36,11 +36,11 @@ class Reader:
         for i, entry in enumerate(header_row):
             header_list[i] = entry.value
 
-        for i in range(2, dataframe_active.max_row):
+        for i in range(1, dataframe_active.max_row):
             p: Participant = Participant(i)
 
             for j in range(0, dataframe_active.max_column):
-                p.set_attribute(header_list[j], dataframe_active[i][j].value)
+                p.set_attribute(header_list[j], list(dataframe_active)[i][j].value)
 
             participant_list.append(p)
 
@@ -81,7 +81,7 @@ class Writer:
         ws.cell(self.__row_index, 1).value = "GroupNr"
 
         for i, attribute in enumerate(attribute_list):
-            ws.cell(self.__row_index, 1 + i).value = attribute
+            ws.cell(self.__row_index, 2 + i).value = attribute
 
     def __write_participant(
         self,

@@ -78,7 +78,7 @@ class Participant:
     def __str__(self) -> str:
         return f"UID: {self.uid} Attributes: {self.attributes}"
 
-    def __hash__(self) -> int:
+    def __hash__(self) -> int:#
         return self.uid
 
 
