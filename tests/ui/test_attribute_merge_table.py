@@ -117,6 +117,7 @@ def test_accept_events(app_fixture):
 
 
 def test_header_clicked(app_fixture):
+    """Tests if headers behave correctly when clicked."""
     test_window: MainWindow = MainWindow("assets/main_window.ui")
     test_table: AttributeMergeTable = test_window.attributes_table
     test_table.setColumnCount(2)

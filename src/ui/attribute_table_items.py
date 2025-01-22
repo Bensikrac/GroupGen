@@ -1,9 +1,7 @@
+"""Module containing cells for the attribute table"""
+
 from typing import override
 from PyQt6.QtWidgets import QTableWidget, QTableWidgetItem
-from PyQt6.QtGui import (
-    QMouseEvent,
-    QFont,
-)
 
 
 class MergeableAttributeItem(QTableWidgetItem):
@@ -21,7 +19,11 @@ class MergeableAttributeItem(QTableWidgetItem):
 
 
 class CheckableHeaderItem(QTableWidgetItem):
-    """A QTablewidgetItem that can be checked and unchecked with a click."""
+    """A QTablewidgetItem that can be checked and unchecked with a click.
+
+    :param text: The text the itrem is labeled with, defaults to ""
+    :param checked: Whether the item starts out enabled or not, defaults to False
+    """
 
     checked: bool
 

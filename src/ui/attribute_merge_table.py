@@ -1,4 +1,4 @@
-"""Module containing the classes for the attribute frequency table and cells within that table."""
+"""Module containing the classes for the attribute frequency table."""
 
 import copy
 from typing import override
