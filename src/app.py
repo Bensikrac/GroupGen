@@ -238,7 +238,7 @@ class MainWindow(QMainWindow):
             for i, (attr, nmb) in enumerate(unique_attributes):
                 self.attributes_table.set_value(i, j, attr, nmb)
 
-            self.attributes_table.repaint()
+            self.attributes_table.update()
 
     def __filter_enabled_attributes(self) -> list[str]:
         enabled_attributes: list[str] = []
