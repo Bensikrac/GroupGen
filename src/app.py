@@ -146,18 +146,12 @@ class MainWindow(QMainWindow):
     def __undo(self) -> None:
         """Move back one step in the history."""
         if self.__history_index > 0:
-            self.__history_index -= 1
-            self.__step_to_history_state(self.__history_index)
-            self.construct_attribute_table()
-        self.__update_undo_redo()
+            self.__step_to_history_state(self.__history_index - 1)
 
     def __redo(self) -> None:
         """Move forward one step in the history."""
         if self.__history_index < len(self.__history) - 1:
-            self.__history_index += 1
-            self.__step_to_history_state(self.__history_index)
-            self.construct_attribute_table()
-        self.__update_undo_redo()
+            self.__step_to_history_state(self.__history_index + 1)
 
     def __update_undo_redo(self) -> None:
         """Set the undo and redo buttons as enabled or disabled appropriately."""
@@ -170,8 +164,11 @@ class MainWindow(QMainWindow):
         :param state: The state to step into
         """
         state = self.__history[state_index]
+        self.__history_index = state_index
         if isinstance(state, list):
             self.attributes_table.synonyms = copy.deepcopy(state)
+        self.construct_attribute_table()
+        self.__update_undo_redo()
 
     def add_state_to_history(self, state: HistoryState) -> None:
         """Add a state to the end of the history and deal with redunndant entries if appropriate.
