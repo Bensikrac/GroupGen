@@ -15,17 +15,17 @@ def test_input_file_picker(main_window_fixture):
         QFileDialog,
         "getOpenFileName",
         return_value=(
-            "test_data/excel_reader_test_0.xlsx",
+            "test_data/test_data_short_1.xlsx",
             "Excel Files (*.xlsx *.xls)",
         ),
     ):
         main_window_fixture._MainWindow__input_file_picker()
     assert (
         main_window_fixture.input_file_path_line_edit.text()
-        == "test_data/excel_reader_test_0.xlsx"
+        == "test_data/test_data_short_1.xlsx"
     )
     assert main_window_fixture._MainWindow__input_path == (
-        "test_data/excel_reader_test_0.xlsx"
+        "test_data/test_data_short_1.xlsx"
     )
 
 
@@ -51,10 +51,10 @@ def test_output_file_picker(main_window_fixture):
 
 def test_read_input_file(main_window_fixture):
     """Tests if read_input_file reads the correct number of entries into the participant list and sets the status."""
-    main_window_fixture._MainWindow__input_path = "test_data/excel_reader_test_0.xlsx"
+    main_window_fixture._MainWindow__input_path = "test_data/test_data_short_1.xlsx"
     main_window_fixture._MainWindow__read_input_file()
 
-    assert len(main_window_fixture._MainWindow__participants_list) == 2
+    assert len(main_window_fixture._MainWindow__participants_list) == 18
     assert main_window_fixture.state_label.text() == "Status: Finished Reading..."
 
 

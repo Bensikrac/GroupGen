@@ -6,6 +6,7 @@ from PyQt6.QtCore import Qt, QEvent, QPointF, QPoint, QMimeData
 
 from app import MainWindow
 from ui.attribute_merge_table import AttributeMergeTable, MergeableAttributeItem
+from ui.attribute_table_items import CheckableHeaderItem
 
 
 def test_mouse_press_event(app_fixture):
@@ -47,7 +48,9 @@ def test_drop_event_new_synonym(app_fixture):
     )
     with (
         patch.object(AttributeMergeTable, "itemAt", return_value=target_item),
-        patch.object(MainWindow, "print_attribute_table", return_value=None) as mock,
+        patch.object(
+            MainWindow, "construct_attribute_table", return_value=None
+        ) as mock,
     ):
         test_table.dropEvent(test_event)
     assert test_table.dragged_item == None
@@ -75,7 +78,9 @@ def test_drop_event_merge_synonym(app_fixture):
     )
     with (
         patch.object(AttributeMergeTable, "itemAt", return_value=target_item),
-        patch.object(MainWindow, "print_attribute_table", return_value=None) as mock,
+        patch.object(
+            MainWindow, "construct_attribute_table", return_value=None
+        ) as mock,
     ):
         test_table.dropEvent(test_event)
     assert test_table.dragged_item == None
@@ -109,3 +114,25 @@ def test_accept_events(app_fixture):
     test_table.dragEnterEvent(test_enter_event)
     test_table.dragMoveEvent(test_enter_event)
     test_window.close()
+
+
+def test_header_clicked(app_fixture):
+    test_window: MainWindow = MainWindow("assets/main_window.ui")
+    test_table: AttributeMergeTable = test_window.attributes_table
+    test_table.setColumnCount(2)
+    test_item_1: CheckableHeaderItem = CheckableHeaderItem("lorem", True)
+    test_item_2: CheckableHeaderItem = CheckableHeaderItem("ipsum", True)
+    test_table.setHorizontalHeaderItem(0, test_item_1)
+    test_table.setHorizontalHeaderItem(1, test_item_2)
+
+    test_table._AttributeMergeTable__header_click(0)
+    assert not test_item_1.checked
+    assert test_item_1.font().strikeOut()
+
+    test_table._AttributeMergeTable__header_click(0)
+    assert test_item_1.checked
+    assert not test_item_1.font().strikeOut()
+
+    test_table._AttributeMergeTable__header_click(1)
+    assert not test_item_2.checked
+    assert test_item_2.font().strikeOut()

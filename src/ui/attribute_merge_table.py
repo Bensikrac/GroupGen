@@ -1,56 +1,70 @@
 """Module containing the classes for the attribute frequency table and cells within that table."""
 
 import copy
-from PyQt6.QtWidgets import QTableWidget, QTableWidgetItem
-from PyQt6.QtGui import QMouseEvent, QDrag, QDropEvent, QDragEnterEvent, QDragMoveEvent
+from typing import override
+from PyQt6.QtWidgets import QTableWidget, QTableWidgetItem, QWidget, QHeaderView
+from PyQt6.QtGui import (
+    QMouseEvent,
+    QDrag,
+    QDropEvent,
+    QDragEnterEvent,
+    QDragMoveEvent,
+    QFont,
+)
 from PyQt6.QtCore import Qt, QMimeData
 from app import MainWindow
-
-
-class MergeableAttributeItem(QTableWidgetItem):
-    """A QTableWidgetItem that stores its value while displaying the value with a count."""
-
-    value: str
-
-    def __init__(self, value: str, count: int) -> None:
-        """Initializes the item with the given value and count
-
-        :param value: The value for the item
-        :param count: The count for the item
-        """
-        super().__init__(f"{value}: {count}")
-        self.value = value
+from ui.attribute_table_items import CheckableHeaderItem, MergeableAttributeItem
 
 
 class AttributeMergeTable(QTableWidget):
-    """A QtableWidtet to display attribute value frequencies that can be merged via drag and drop"""
+    """A QtableWidtet to display attribute value frequencies that can be merged via drag and drop."""
 
     frequencies: list[tuple[str, int]] = []
     synonyms: list[list[str]] = []
     values: list[list[str]] = []
     dragged_item: MergeableAttributeItem | None
-    main_window: MainWindow
+    __main_window: MainWindow
+
+    def __init__(self, parent: QWidget | None = None):
+        super().__init__(parent)
+        header = self.horizontalHeader()
+        header.sectionClicked.connect(self.__header_click)
+
+    def __header_click(self, col: int):
+        clicked_item = self.horizontalHeaderItem(col)
+        if isinstance(clicked_item, CheckableHeaderItem):
+            clicked_item.checked = not clicked_item.checked
+            font: QFont = QFont()
+            # font.setBold(clicked_item.checked)
+            font.setStrikeOut(not clicked_item.checked)
+            clicked_item.setFont(font)
+            self.update()
 
     def set_main_window(self, main_window: MainWindow) -> None:
         """Sets the table's connected main window to a given value.
 
         :param main_window: The main window to set as this table's main window
         """
-        self.main_window = main_window
+        self.__main_window = main_window
 
+    @override
     def mousePressEvent(self, event: QMouseEvent) -> None:
         """Starts a drag and saves the original dragged item.
 
         :param event: The triggering event
         """
         if event.button() == Qt.MouseButton.LeftButton:
-            self.dragged_item = self.itemAt(event.pos())
+            clicked_item = self.itemAt(event.pos())
 
-            drag: QDrag = QDrag(self)
-            mime_data: QMimeData = QMimeData()
-            drag.setMimeData(mime_data)
-            drag.exec()
+            if isinstance(clicked_item, MergeableAttributeItem):
+                self.dragged_item = clicked_item
 
+                drag: QDrag = QDrag(self)
+                mime_data: QMimeData = QMimeData()
+                drag.setMimeData(mime_data)
+                drag.exec()
+
+    @override
     def dropEvent(self, event: QDropEvent) -> None:
         """Accepts the drop if it is valid cell and updates the synonyms and table accordingly
 
@@ -65,7 +79,7 @@ class AttributeMergeTable(QTableWidget):
         ):
             # self.main_window.add_state_to_history(copy.deepcopy(self.synonyms))
 
-            target_list: list[str] | None = None
+            target_list: list[str]
             for synonym_list in self.synonyms:
                 if (
                     target_cell.value == synonym_list[0]
@@ -73,17 +87,16 @@ class AttributeMergeTable(QTableWidget):
                 ):
                     target_list = synonym_list
                     break
-            if target_list is None:
+            else:
                 target_list = [target_cell.value]
                 self.synonyms.append(target_list)
             old_list: list[str] = self.find_synonyms_for_value(self.dragged_item.value)
             target_list.extend(old_list)
             if old_list in self.synonyms:
                 self.synonyms.remove(old_list)
-            self.clearContents()
-            self.main_window.print_attribute_table()
+            self.__main_window.construct_attribute_table()
             event.accept()
-            self.main_window.add_state_to_history(copy.deepcopy(self.synonyms))
+            self.__main_window.add_state_to_history(copy.deepcopy(self.synonyms))
         self.dragged_item = None
 
     def find_synonyms_for_value(self, value: str) -> list[str]:
@@ -108,18 +121,12 @@ class AttributeMergeTable(QTableWidget):
                 return synonym_list[0]
         return value
 
+    @override
     def dragEnterEvent(self, event: QDragEnterEvent) -> None:
-        """Accepts the triggering event.
-
-        :param event: The triggering event
-        """
         event.accept()
 
+    @override
     def dragMoveEvent(self, event: QDragMoveEvent) -> None:
-        """Accepts the triggering event.
-
-        :param event: The triggering event
-        """
         event.accept()
 
     def set_value(self, row: int, column: int, value: str, count: int) -> None:

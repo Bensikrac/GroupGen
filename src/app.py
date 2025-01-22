@@ -1,6 +1,7 @@
 """Main app to be launched"""
 
 import copy
+from operator import itemgetter
 import os
 import sys
 from PyQt6 import uic
@@ -9,18 +10,21 @@ from PyQt6.QtWidgets import (
     QMainWindow,
     QFileDialog,
     QTableWidgetItem,
-    QCheckBox,
 )
 from PyQt6.QtCore import QRect, QModelIndex
 from excel_tool import Reader, Writer
 from data_structures import Participant, Assignment
 from algorithm.simulated_annealing_algorithm import SimulatedAnnealingAlgorithm
+from ui.attribute_table_items import CheckableHeaderItem
 
 type HistoryState = list[list[str]]
 
 
 class MainWindow(QMainWindow):
-    """Main Window class"""
+    """Main Window class.
+
+    Takes args and kwargs like :class:`QMainWindow`.
+    """
 
     # pylint: disable=too-few-public-methods
 
@@ -28,7 +32,6 @@ class MainWindow(QMainWindow):
     __output_path: os.PathLike | None = None
     __participants_list: list[Participant]
     __attributes_list: list[str]
-    __checkboxes: list[QCheckBox] = []
     __history: list[HistoryState] = [[]]
     __history_index: int = 0
 
@@ -124,12 +127,9 @@ class MainWindow(QMainWindow):
         self.__participants_list = Reader(self.__input_path).read()
         self.__attributes_list = self.__participants_list[0].attributes.keys()
 
-        # Print Table
+        # Construct Table
         self.attributes_table.synonyms = []
-        for checkbox in self.__checkboxes:
-            checkbox.deleteLater()
-        self.__checkboxes = []
-        self.print_attribute_table()
+        self.construct_attribute_table()
 
         self.state_label.setText("Status: Finished Reading...")
         self.state_label.repaint()
@@ -141,22 +141,22 @@ class MainWindow(QMainWindow):
         """Reset Synonyms button function."""
         self.attributes_table.synonyms = []
         self.add_state_to_history([])
-        self.print_attribute_table()
+        self.construct_attribute_table()
 
     def __undo(self) -> None:
         """Move back one step in the history."""
         if self.__history_index > 0:
             self.__history_index -= 1
-            self.__step_to_history_state(self.__history[self.__history_index])
-            self.print_attribute_table()
+            self.__step_to_history_state(self.__history_index)
+            self.construct_attribute_table()
         self.__update_undo_redo()
 
     def __redo(self) -> None:
         """Move forward one step in the history."""
         if self.__history_index < len(self.__history) - 1:
             self.__history_index += 1
-            self.__step_to_history_state(self.__history[self.__history_index])
-            self.print_attribute_table()
+            self.__step_to_history_state(self.__history_index)
+            self.construct_attribute_table()
         self.__update_undo_redo()
 
     def __update_undo_redo(self) -> None:
@@ -164,11 +164,12 @@ class MainWindow(QMainWindow):
         self.undo_button.setEnabled(self.__history_index > 0)
         self.redo_button.setEnabled(self.__history_index < len(self.__history) - 1)
 
-    def __step_to_history_state(self, state: HistoryState) -> None:
+    def __step_to_history_state(self, state_index: int) -> None:
         """Change the state of the table and data to match the given state.
 
         :param state: The state to step into
         """
+        state = self.__history[state_index]
         if isinstance(state, list):
             self.attributes_table.synonyms = copy.deepcopy(state)
 
@@ -177,11 +178,8 @@ class MainWindow(QMainWindow):
 
         :param state: The state to add
         """
-        if self.__history_index < len(self.__history) - 1:
-            self.__history = copy.deepcopy(self.__history[0 : self.__history_index + 1])
-            self.__history_index = self.__history_index + 1
-        if self.__history_index < len(self.__history):
-            self.__history_index += 1
+        self.__history = self.__history[: self.__history_index + 1]
+        self.__history_index += 1
         self.__history.append(state)
 
         self.__update_undo_redo()
@@ -201,14 +199,34 @@ class MainWindow(QMainWindow):
 
         self.run_algorithm_button.setEnabled(True)
 
-    def print_attribute_table(self) -> None:
-        """Print Attribute Table"""
+    def construct_attribute_table(self) -> None:
+        """Construct Attribute Table"""
         self.attributes_table.clearContents()
         self.attributes_table.setColumnCount(len(self.__attributes_list))
-        self.attributes_table.setHorizontalHeaderLabels(self.__attributes_list)
+        # self.attributes_table.setHorizontalHeaderLabels(self.__attributes_list)
 
         max_row_count: int = 0
         for j, attrbutes in enumerate(self.__attributes_list):
+            should_be_checked: bool = (
+                attrbutes.lower()
+                not in [
+                    "name",
+                    "first name",
+                    "last name",
+                    "vorname",
+                    "nachname",
+                    "angemeldet",
+                    "status",
+                    "title",
+                    "titel",
+                ],
+            )
+
+            self.attributes_table.setHorizontalHeaderItem(
+                j,
+                CheckableHeaderItem(attrbutes, should_be_checked),
+            )
+
             unique_attributes: list[tuple[str, int]] = self.__calculate_distribution(
                 self.__participants_list, attrbutes
             )
@@ -220,40 +238,15 @@ class MainWindow(QMainWindow):
             for i, (attr, nmb) in enumerate(unique_attributes):
                 self.attributes_table.set_value(i, j, attr, nmb)
 
-            if len(self.__checkboxes) <= j:
-                checkbox: QCheckBox = QCheckBox()
-                checkbox.setParent(self.centralWidget())
-                checkbox.setText("")
-                reference_item: QTableWidgetItem = self.attributes_table.item(0, j)
-                reference_index: QModelIndex = self.attributes_table.indexFromItem(
-                    reference_item
-                )
-                ref: QRect = self.attributes_table.visualRect(reference_index)
-                checkbox.setGeometry(
-                    QRect(ref.left() + int(0.5 * ref.width() + 15), 130, 30, 30)
-                )
-                checkbox.setVisible(True)
-                checkbox.setChecked(False)
-                if attrbutes.lower() not in [
-                    "name",
-                    "first name",
-                    "last name",
-                    "vorname",
-                    "nachname",
-                    "angemeldet",
-                    "status",
-                    "title",
-                    "titel",
-                ]:
-                    checkbox.setChecked(True)
-                self.__checkboxes.append(checkbox)
             self.attributes_table.repaint()
 
     def __filter_enabled_attributes(self) -> list[str]:
         enabled_attributes: list[str] = []
         for i in range(len(self.__attributes_list)):
-            if self.__checkboxes[i].isChecked():
+            item: QTableWidgetItem = self.attributes_table.horizontalHeaderItem(i)
+            if isinstance(item, CheckableHeaderItem) and item.checked:
                 enabled_attributes.append(list(self.__attributes_list)[i])
+                print(enabled_attributes)
         return enabled_attributes
 
     def __set_buttons_enabled(self, enable: bool) -> None:
@@ -288,8 +281,7 @@ class MainWindow(QMainWindow):
             found_synonym: bool = False
             old_entry: tuple[str, int]
             new_entry: tuple[str, int]
-            for entry in result:
-                old_entry = entry
+            for old_entry in result:
                 if old_entry[0] == self.attributes_table.find_preferred_synonym(
                     attribute_value
                 ):
@@ -303,7 +295,8 @@ class MainWindow(QMainWindow):
             else:
                 result.remove(old_entry)
                 result.append(new_entry)
-        return result
+
+        return sorted(result, key=itemgetter(0))
 
 
 if __name__ == "__main__":
