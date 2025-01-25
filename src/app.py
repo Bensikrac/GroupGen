@@ -204,25 +204,32 @@ class MainWindow(QMainWindow):
 
         max_row_count: int = 0
         for j, attrbutes in enumerate(self.__attributes_list):
-            should_be_checked: bool = (
-                attrbutes.lower()
-                not in [
-                    "name",
-                    "first name",
-                    "last name",
-                    "vorname",
-                    "nachname",
-                    "angemeldet",
-                    "status",
-                    "title",
-                    "titel",
-                ],
+            headerItem: QTableWidgetItem | None = (
+                self.attributes_table.horizontalHeaderItem(j)
             )
+            if not (
+                isinstance(headerItem, CheckableHeaderItem)
+                and headerItem.text() == attrbutes
+            ):
+                should_be_checked: bool = (
+                    attrbutes.lower()
+                    not in [
+                        "name",
+                        "first name",
+                        "last name",
+                        "vorname",
+                        "nachname",
+                        "angemeldet",
+                        "status",
+                        "title",
+                        "titel",
+                    ],
+                )
 
-            self.attributes_table.setHorizontalHeaderItem(
-                j,
-                CheckableHeaderItem(attrbutes, should_be_checked),
-            )
+                self.attributes_table.setHorizontalHeaderItem(
+                    j,
+                    CheckableHeaderItem(attrbutes, should_be_checked),
+                )
 
             unique_attributes: list[tuple[str, int]] = self.__calculate_distribution(
                 self.__participants_list, attrbutes
