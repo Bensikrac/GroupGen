@@ -243,7 +243,6 @@ class MainWindow(QMainWindow):
             item: QTableWidgetItem = self.attributes_table.horizontalHeaderItem(i)
             if isinstance(item, CheckableHeaderItem) and item.checked:
                 enabled_attributes.append(list(self.__attributes_list)[i])
-                print(enabled_attributes)
         return enabled_attributes
 
     def __set_buttons_enabled(self, enable: bool) -> None:
