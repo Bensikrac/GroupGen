@@ -6,9 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1781</width>
-    <height>996</height>
+    <width>1152</width>
+    <height>648</height>
    </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>1152</width>
+    <height>648</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
@@ -30,8 +36,8 @@
    <widget class="QPushButton" name="output_pick_button">
     <property name="geometry">
      <rect>
-      <x>1070</x>
-      <y>740</y>
+      <x>590</x>
+      <y>460</y>
       <width>161</width>
       <height>31</height>
      </rect>
@@ -43,8 +49,8 @@
    <widget class="QPushButton" name="run_algorithm_button">
     <property name="geometry">
      <rect>
-      <x>1450</x>
-      <y>890</y>
+      <x>980</x>
+      <y>600</y>
       <width>161</width>
       <height>31</height>
      </rect>
@@ -66,8 +72,8 @@
    <widget class="QLineEdit" name="output_file_path_line_edit">
     <property name="geometry">
      <rect>
-      <x>1240</x>
-      <y>740</y>
+      <x>760</x>
+      <y>460</y>
       <width>381</width>
       <height>31</height>
      </rect>
@@ -76,8 +82,8 @@
    <widget class="QLabel" name="state_label">
     <property name="geometry">
      <rect>
-      <x>1120</x>
-      <y>890</y>
+      <x>650</x>
+      <y>600</y>
       <width>311</width>
       <height>31</height>
      </rect>
@@ -92,9 +98,9 @@
    <widget class="QSpinBox" name="groups_spinbox">
     <property name="geometry">
      <rect>
-      <x>1520</x>
-      <y>790</y>
-      <width>41</width>
+      <x>1040</x>
+      <y>510</y>
+      <width>88</width>
       <height>31</height>
      </rect>
     </property>
@@ -105,9 +111,9 @@
    <widget class="QSpinBox" name="iterations_spinbox">
     <property name="geometry">
      <rect>
-      <x>1520</x>
-      <y>840</y>
-      <width>41</width>
+      <x>1040</x>
+      <y>550</y>
+      <width>88</width>
       <height>31</height>
      </rect>
     </property>
@@ -118,8 +124,8 @@
    <widget class="QLabel" name="groups_label">
     <property name="geometry">
      <rect>
-      <x>1270</x>
-      <y>790</y>
+      <x>790</x>
+      <y>510</y>
       <width>161</width>
       <height>31</height>
      </rect>
@@ -134,8 +140,8 @@
    <widget class="QLabel" name="iterations_label">
     <property name="geometry">
      <rect>
-      <x>1270</x>
-      <y>840</y>
+      <x>790</x>
+      <y>550</y>
       <width>161</width>
       <height>31</height>
      </rect>
@@ -151,9 +157,9 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>160</y>
-      <width>1611</width>
-      <height>561</height>
+      <y>130</y>
+      <width>1131</width>
+      <height>311</height>
      </rect>
     </property>
     <property name="dragEnabled">
@@ -247,17 +253,6 @@
     </property>
    </widget>
   </widget>
-  <widget class="QMenuBar" name="menubar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>1781</width>
-     <height>25</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="QStatusBar" name="statusbar"/>
  </widget>
  <customwidgets>
   <customwidget>
