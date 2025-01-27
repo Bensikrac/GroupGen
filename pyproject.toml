@@ -29,9 +29,12 @@ dev = [
   "pylint",
   "mypy"
 ]
+release = [
+  "PyInstaller"
+]
 
 [project.gui-scripts]
-group_gen = "group_gen:app"
+group_gen = "app:main"
 
 [tool.black]
 target-version = ["py312"]

@@ -12,19 +12,20 @@ from PyQt6.QtWidgets import (
     QTableWidgetItem,
 )
 from PyQt6.QtCore import QRect, QModelIndex
+from ui.attribute_table_items import CheckableHeaderItem
 from excel_tool import Reader, Writer
 from data_structures import Participant, Assignment
 from algorithm.simulated_annealing_algorithm import SimulatedAnnealingAlgorithm
-from ui.attribute_table_items import CheckableHeaderItem
+from assets.main_window import Ui_MainWindow
 
 type HistoryState = list[list[str]]
 
-
-class MainWindow(QMainWindow):
-    """Main Window class.
+class MainWindow(QMainWindow, Ui_MainWindow):
+    """Main Window class
 
     Takes args and kwargs like :class:`QMainWindow`.
     """
+
 
     # pylint: disable=too-few-public-methods
 
@@ -35,9 +36,9 @@ class MainWindow(QMainWindow):
     __history: list[HistoryState] = [[]]
     __history_index: int = 0
 
-    def __init__(self, ui_file_path: os.PathLike, *args, **kwargs) -> None:
+    def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
-        uic.loadUi(ui_file_path, self)
+        self.setupUi(self)
 
         self.attributes_table.set_main_window(self)
 
@@ -309,13 +310,12 @@ class MainWindow(QMainWindow):
         return sorted(result, key=itemgetter(0))
 
 
-if __name__ == "__main__":
+def main():
     app: QApplication = QApplication(sys.argv)
-    window: MainWindow
-    if len(sys.argv) < 2:
-        window = MainWindow("assets/main_window.ui")
-    else:
-        window = MainWindow(*sys.argv[1:])
+    window: MainWindow = MainWindow()
     window.show()
-
     app.exec()
+
+
+if __name__ == "__main__":
+    main()
