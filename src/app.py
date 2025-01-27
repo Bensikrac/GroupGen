@@ -309,7 +309,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
 def main():
-    """ Entrypoint """
+    """Entrypoint"""
     app: QApplication = QApplication(sys.argv)
     window: MainWindow = MainWindow()
     window.show()
