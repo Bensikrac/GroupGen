@@ -40,7 +40,7 @@ class Reader:
             p: Participant = Participant(i)
 
             for j in range(0, dataframe_active.max_column):
-                p.set_attribute(header_list[j], list(dataframe_active)[i][j].value)
+                p.attributes[header_list[j]] = list(dataframe_active)[i][j].value
 
             participant_list.append(p)
 

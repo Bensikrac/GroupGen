@@ -102,8 +102,7 @@ class MainWindow(QMainWindow):
                 attributes[attribute] = self.attributes_table.find_preferred_synonym(
                     participant.get_attribute(attribute)
                 )
-            # filtered_participants.add(Participant(attributes))
-            filtered_participants.add(Participant(participant.get_uid(), attributes))
+            filtered_participants.add(Participant(attributes))
         return filtered_participants
 
     def __input_file_picker(self) -> None:
