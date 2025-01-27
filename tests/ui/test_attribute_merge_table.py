@@ -11,7 +11,7 @@ from ui.attribute_table_items import CheckableHeaderItem
 
 def test_mouse_press_event(app_fixture):
     """Tests if a QMouseEvent correctly sets the dragged item."""
-    test_window: MainWindow = MainWindow("assets/main_window.ui")
+    test_window: MainWindow = MainWindow()
     test_table: AttributeMergeTable = test_window.attributes_table
     test_item = MergeableAttributeItem("test", 2)
     test_table.setItem(0, 0, test_item)
@@ -31,7 +31,7 @@ def test_mouse_press_event(app_fixture):
 
 def test_drop_event_new_synonym(app_fixture):
     """Tests if a QDropEvent is correctly handled if all synonyms that need to be created are new."""
-    test_window: MainWindow = MainWindow("assets/main_window.ui")
+    test_window: MainWindow = MainWindow()
     test_table: AttributeMergeTable = test_window.attributes_table
     drag_item = MergeableAttributeItem("lorem", 2)
     target_item = MergeableAttributeItem("ipsum", 3)
@@ -61,7 +61,7 @@ def test_drop_event_new_synonym(app_fixture):
 
 def test_drop_event_merge_synonym(app_fixture):
     """Tests if a QDropEvent is correctly handled if synonyms need to be merged."""
-    test_window: MainWindow = MainWindow("assets/main_window.ui")
+    test_window: MainWindow = MainWindow()
     test_table: AttributeMergeTable = test_window.attributes_table
     drag_item = MergeableAttributeItem("lorem", 2)
     target_item = MergeableAttributeItem("ipsum", 3)
@@ -91,7 +91,7 @@ def test_drop_event_merge_synonym(app_fixture):
 
 def test_find_preferred_synonym(app_fixture):
     """Tests if find_preferred_synonym returns correct values."""
-    test_window: MainWindow = MainWindow("assets/main_window.ui")
+    test_window: MainWindow = MainWindow()
     test_table: AttributeMergeTable = test_window.attributes_table
     test_table.synonyms = [["lorem", "foo"], ["ipsum", "bar"], ["a", "b", "c"]]
     assert test_table.find_preferred_synonym("foo") == "lorem"
@@ -102,7 +102,7 @@ def test_find_preferred_synonym(app_fixture):
 
 def test_accept_events(app_fixture):
     """Tests if QDragMoveEvents are accepted without issue."""
-    test_window: MainWindow = MainWindow("assets/main_window.ui")
+    test_window: MainWindow = MainWindow()
     test_table: AttributeMergeTable = test_window.attributes_table
     test_enter_event = QDragEnterEvent(
         QPoint(0, 0),
@@ -118,7 +118,7 @@ def test_accept_events(app_fixture):
 
 def test_header_clicked(app_fixture):
     """Tests if headers behave correctly when clicked."""
-    test_window: MainWindow = MainWindow("assets/main_window.ui")
+    test_window: MainWindow = MainWindow()
     test_table: AttributeMergeTable = test_window.attributes_table
     test_table.setColumnCount(2)
     test_item_1: CheckableHeaderItem = CheckableHeaderItem("lorem", True)
