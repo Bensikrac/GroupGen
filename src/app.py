@@ -20,12 +20,12 @@ from assets.main_window import Ui_MainWindow
 
 type HistoryState = list[list[str]]
 
+
 class MainWindow(QMainWindow, Ui_MainWindow):
     """Main Window class
 
     Takes args and kwargs like :class:`QMainWindow`.
     """
-
 
     # pylint: disable=too-few-public-methods
 
