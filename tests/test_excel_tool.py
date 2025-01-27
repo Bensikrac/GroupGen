@@ -41,7 +41,7 @@ def test_file_read():
         },
     )
     # Test first entry
-    assert list[0].get_uid() == testobject1.get_uid()
+    assert list[0].uid == testobject1.uid
     for attrib in [
         "Angemeldet",
         "Status",
@@ -57,7 +57,7 @@ def test_file_read():
     ]:
         assert list[0].get_attribute(attrib) == testobject1.get_attribute(attrib)
     # Test second entry
-    assert list[1].get_uid() == testobject2.get_uid()
+    assert list[1].uid == testobject2.uid
     for attrib in [
         "Angemeldet",
         "Status",
