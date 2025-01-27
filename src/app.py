@@ -116,11 +116,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if selectedPath:
             self.__input_path = selectedPath
 
-        self.input_file_path_line_edit.setText(self.__input_path)
-        self.input_file_path_line_edit.repaint()
+            self.input_file_path_line_edit.setText(self.__input_path)
+            self.input_file_path_line_edit.repaint()
 
-        # self.read_input_button.setEnabled(True)
-        self.__read_input_file()
+            # self.read_input_button.setEnabled(True)
+            self.__read_input_file()
 
     def __read_input_file(self) -> None:
         """Read Input File Button Function"""
@@ -197,11 +197,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if selectedPath:
             if not (selectedPath.endswith(".xlsx") or selectedPath.endswith(".xls")):
                 selectedPath += ".xlsx"
+
             self.__output_path = selectedPath
-
-        self.output_file_path_line_edit.setText(self.__output_path)
-
-        self.run_algorithm_button.setEnabled(True)
+            self.output_file_path_line_edit.setText(self.__output_path)
+            self.run_algorithm_button.setEnabled(True)
 
     def construct_attribute_table(self) -> None:
         """Construct Attribute Table"""
