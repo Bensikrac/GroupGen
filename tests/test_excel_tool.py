@@ -1,6 +1,6 @@
 import pytest
-import src.excel_tool as excel_tool
-from src.data_structures import Participant
+import excel_tool as excel_tool
+from data_structures import Participant
 
 
 def test_file_read():
