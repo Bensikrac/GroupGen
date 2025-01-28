@@ -192,11 +192,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             filter="Excel Files (*.xlsx *.xls)",
         )[0]
 
-        if selectedPath:
-            if not (selectedPath.endswith(".xlsx") or selectedPath.endswith(".xls")):
-                selectedPath += ".xlsx"
+        if selected_path:
+            if not (selected_path.endswith(".xlsx") or selected_path.endswith(".xls")):
+                selected_path += ".xlsx"
 
-            self.__output_path = selectedPath
+            self.__output_path = selected_path
             self.output_file_path_line_edit.setText(self.__output_path)
             self.run_algorithm_button.setEnabled(True)
 
