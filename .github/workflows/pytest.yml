@@ -23,6 +23,6 @@ jobs:
         run: |
           python -m venv venv
           source ./venv/bin/activate
-          python -m pip install '.[dev,gui]' --upgrade pip
+          python -m pip install -e '.[dev,gui]' --upgrade pip
           python -m PyQt6.uic.pyuic -o src/assets assets/
           pytest -v -s
