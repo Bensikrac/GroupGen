@@ -101,8 +101,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 attributes[attribute] = self.attributes_table.find_preferred_synonym(
                     participant.get_attribute(attribute)
                 )
-            # filtered_participants.add(Participant(attributes))
-            filtered_participants.add(Participant(participant.get_uid(), attributes))
+            filtered_participants.add(Participant(attributes))
         return filtered_participants
 
     def __input_file_picker(self) -> None:
@@ -115,11 +114,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if selected_path:
             self.__input_path = selected_path
 
-        self.input_file_path_line_edit.setText(self.__input_path)
-        self.input_file_path_line_edit.repaint()
+            self.input_file_path_line_edit.setText(self.__input_path)
+            self.input_file_path_line_edit.repaint()
 
-        # self.read_input_button.setEnabled(True)
-        self.__read_input_file()
+            # self.read_input_button.setEnabled(True)
+            self.__read_input_file()
 
     def __read_input_file(self) -> None:
         """Read Input File Button Function"""
@@ -193,14 +192,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             filter="Excel Files (*.xlsx *.xls)",
         )[0]
 
-        if selected_path:
-            if not (selected_path.endswith(".xlsx") or selected_path.endswith(".xls")):
-                selected_path += ".xlsx"
-            self.__output_path = selected_path
+        if selectedPath:
+            if not (selectedPath.endswith(".xlsx") or selectedPath.endswith(".xls")):
+                selectedPath += ".xlsx"
 
-        self.output_file_path_line_edit.setText(self.__output_path)
-
-        self.run_algorithm_button.setEnabled(True)
+            self.__output_path = selectedPath
+            self.output_file_path_line_edit.setText(self.__output_path)
+            self.run_algorithm_button.setEnabled(True)
 
     def construct_attribute_table(self) -> None:
         """Construct Attribute Table"""
