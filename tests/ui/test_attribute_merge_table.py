@@ -4,9 +4,9 @@ from unittest.mock import patch
 from PyQt6.QtGui import QMouseEvent, QDrag, QDropEvent, QDragEnterEvent
 from PyQt6.QtCore import Qt, QEvent, QPointF, QPoint, QMimeData
 
-from app import MainWindow
-from ui.attribute_merge_table import AttributeMergeTable, MergeableAttributeItem
-from ui.attribute_table_items import CheckableHeaderItem
+from src.app import MainWindow
+from src.ui.attribute_merge_table import AttributeMergeTable, MergeableAttributeItem
+from src.ui.attribute_table_items import CheckableHeaderItem
 
 
 def test_mouse_press_event(app_fixture):

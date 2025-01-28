@@ -1,7 +1,7 @@
 import pytest
 from PyQt6.QtWidgets import QApplication
 
-from app import MainWindow
+from src.app import MainWindow
 
 
 @pytest.fixture(scope="session", autouse=True)

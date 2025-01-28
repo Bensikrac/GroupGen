@@ -1,5 +1,5 @@
 import pytest
-from data_structures import Participant
+from src.data_structures import Participant
 
 
 def test_participant():

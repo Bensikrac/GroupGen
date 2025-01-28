@@ -3,10 +3,10 @@
 from unittest.mock import patch
 
 import pytest
-from app import MainWindow
+from src.app import MainWindow
 from PyQt6.QtWidgets import QFileDialog
 
-from excel_tool import Writer
+from src.excel_tool import Writer
 
 
 def test_input_file_picker(main_window_fixture):
