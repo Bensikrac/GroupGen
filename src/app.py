@@ -106,9 +106,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def __input_file_picker(self) -> None:
         """Select Input File Button Function"""
+        if self.__input_path:
+            preselected_dir = self.__input_path
+        elif self.__output_path:
+            preselected_dir = self.__output_path
+        else:
+            preselected_dir = "/"
+
         selected_path = QFileDialog.getOpenFileName(
             caption="select input file",
-            directory=self.__output_path if self.__output_path else "/",
+            directory=preselected_dir,
             filter="Excel Files (*.xlsx *.xls)",
         )[0]
         if selected_path:
@@ -186,9 +193,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def __output_file_picker(self) -> None:
         """Select Output File Button Function"""
+        if self.__output_path:
+            preselected_dir = self.__output_path
+        elif self.__input_path:
+            preselected_dir = self.__input_path
+        else:
+            preselected_dir = "/"
+
         selected_path = QFileDialog.getSaveFileName(
             caption="select output file",
-            directory=self.__input_path if self.__input_path else "/",
+            directory=preselected_dir,
             filter="Excel Files (*.xlsx *.xls)",
         )[0]
 
