@@ -6,6 +6,8 @@ import pytest
 from app import MainWindow
 from PyQt6.QtWidgets import QFileDialog, QMessageBox
 
+from app import MainWindow
+from data_structures import Participant
 from excel_tool import Writer
 
 
@@ -166,3 +168,81 @@ def test_undo_redo_branch(main_window_fixture):
         [],
     ]
     assert main_window_fixture._MainWindow__history_index == 2
+
+
+@pytest.fixture
+def participants_list() -> list[Participant]:
+    """Fixture of example of input from Reader
+
+    :return: test participants_list
+    """
+    return [
+        Participant({"Name": "Paul"}),
+        Participant({"Name": "Paul"}),
+        Participant({"Name": "Leon"}),
+        Participant({"Name": ""}),
+    ]
+
+
+def test_calculate_distibution(main_window_fixture, participants_list):
+    """Test if distribution is calculated correctly"""
+    window = main_window_fixture
+
+    result = window.__calculate_distribution(
+        participants_list,
+        "Name",
+    )
+    expected = [
+        ("Leon", 1),
+        ("Paul", 2),
+    ]
+
+    assert result == expected
+
+
+@pytest.fixture
+def distribution() -> list[tuple[str, int]]:
+    """Fixture of example of distribution input
+
+    :return: unsorted distribution
+    """
+    return [
+        ("Beta", 1),
+        ("Alpha", 1),
+        ("Charlie", 2),
+    ]
+
+
+def test_sort_distribution(main_window_fixture, distribution):
+    """Test if provided distribution is sorted correctly"""
+    window = main_window_fixture
+
+    # Sort by Value (Initial Case)
+
+    assert window.sorting_comboBox.currentIndex == 0
+
+    result = window.__sort_distribution(distribution)
+    expected = [
+        ("Alpha", 1),
+        ("Beta", 1),
+        ("Charlie", 2),
+    ]
+
+    assert result == expected
+
+    # Sort by Frequency
+
+    window.sorting_comboBox.setCurrentIndex(1)
+
+    assert window.sorting_comboBox.currentIndex == 1
+
+    result = window.__sort_distribution(distribution)
+    expected = [
+        ("Charlie", 2),
+        ("Alpha", 1),
+        ("Beta", 1),
+    ]
+
+    assert result == expected
+
+    window.sorting_comboBox.setCurrentIndex(0)
