@@ -1,8 +1,10 @@
 """Module which handles reading and writing of excel files"""
 
 import os
+from typing import IO
 import openpyxl as opxl
 from openpyxl.styles import PatternFill
+import python_calamine
 from data_structures import Participant, Group, Iteration, Assignment
 
 
@@ -52,7 +54,7 @@ class Reader:
 class Reader:
     """class that reads excel sheets and turns the table into a list of participants"""
 
-    def read_calamine(filepath: os.PathLike) -> list[Participant]:
+    def read(filepath: os.PathLike) -> list[Participant]:
         file: IO[bytes]
         file = open(filepath, "rb")
         workbook = python_calamine.CalamineWorkbook.from_filelike(file)
@@ -62,16 +64,23 @@ class Reader:
         headers = list(map(str, next(rows)))
 
         participant_list: list[Participant] = []
-        i: int = 0
+        j: int = 0
 
         for row in rows:
-            p: Participant = Participant(i)
-            p.attributes[headers] = dict(zip(headers, row))
+            p: Participant = Participant(j)
+
+            for i in range(0, len(headers)):
+                p.attributes[headers[i]] = str(row[i])
+
             participant_list.append(p)
+            j += 1
 
         print(participant_list)
 
         return participant_list
+
+
+class Writer:
 
     def __write_participant(
         self,
