@@ -6,6 +6,7 @@ from openpyxl.styles import PatternFill
 from data_structures import Participant, Group, Iteration, Assignment
 
 
+'''
 class Reader:
     """class that reads excel sheets and turns the table into a list of participants"""
 
@@ -45,43 +46,32 @@ class Reader:
             participant_list.append(p)
 
         return participant_list
+'''
 
 
-class Writer:
-    """Class that writes excel sheet and turns calculated groups in an understandable format.
-    Only meant to be used once. Object of Writer should only be present when writing file
-    """
+class Reader:
+    """class that reads excel sheets and turns the table into a list of participants"""
 
-    __row_index: int = 1
-    __filepath: os.PathLike
+    def read_calamine(filepath: os.PathLike) -> list[Participant]:
+        file: IO[bytes]
+        file = open(filepath, "rb")
+        workbook = python_calamine.CalamineWorkbook.from_filelike(file)
+        rows = iter(workbook.get_sheet_by_index(0).to_python())
 
-    # Colors for coloring the first cell for better understandability
-    __fill_colors: tuple[PatternFill] = (
-        PatternFill(start_color="00CCFFCC", fill_type="solid"),  # green
-        PatternFill(start_color="00CC99FF", fill_type="solid"),  # violet
-    )
+        headers: dict[int, str]
+        headers = list(map(str, next(rows)))
 
-    def __init__(self, filepath: os.PathLike) -> None:
-        self.__filepath = filepath
+        participant_list: list[Participant] = []
+        i: int = 0
 
-    def __write_header(
-        self, iteration_number: int, attribute_list: list[str], ws
-    ) -> None:
-        """This function writes the header for an iteration with the iteration number and
-        header row(group, list of attributes).
+        for row in rows:
+            p: Participant = Participant(i)
+            p.attributes[headers] = dict(zip(headers, row))
+            participant_list.append(p)
 
-        :param iteration_number: number of the iteration to be written
-        :param attribute_list: list of attribute names of participants
-        :param row_index: row index to be written to
-        :param ws: worksheet to be written on
-        """
+        print(participant_list)
 
-        ws.cell(self.__row_index, 1).value = f"Iteration {iteration_number}:"
-        self.__row_index += 1
-        ws.cell(self.__row_index, 1).value = "GroupNr"
-
-        for i, attribute in enumerate(attribute_list):
-            ws.cell(self.__row_index, 2 + i).value = attribute
+        return participant_list
 
     def __write_participant(
         self,
