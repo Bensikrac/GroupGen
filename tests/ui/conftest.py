@@ -13,7 +13,7 @@ def app_fixture():
 
 @pytest.fixture(scope="session")
 def main_window_fixture(app_fixture):
-    window = MainWindow("assets/main_window.ui")
+    window = MainWindow()
     # window.show()
     yield window
     window.close()

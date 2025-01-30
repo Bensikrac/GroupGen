@@ -15,7 +15,15 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
+      - name: Install Qt
+        run: | 
+          sudo apt-get update
+          sudo apt-get install -y qt6-base-dev
       - name: Test with pytest
         run: |
-          python -m pip install -e '.[dev]' --upgrade pip
+          export QT_QPA_PLATFORM=offscreen
+          python -m venv venv
+          source ./venv/bin/activate
+          python -m pip install -e '.[dev,gui]' --upgrade pip
+          python -m PyQt6.uic.pyuic -o src/assets assets/
           pytest -v -s

@@ -12,7 +12,6 @@ from PyQt6.QtGui import (
     QFont,
 )
 from PyQt6.QtCore import Qt, QMimeData
-from app import MainWindow
 from ui.attribute_table_items import CheckableHeaderItem, MergeableAttributeItem
 
 
@@ -23,7 +22,7 @@ class AttributeMergeTable(QTableWidget):
     synonyms: list[list[str]] = []
     values: list[list[str]] = []
     dragged_item: MergeableAttributeItem | None
-    __main_window: MainWindow
+    __main_window: "MainWindow"
 
     def __init__(self, parent: QWidget | None = None):
         super().__init__(parent)
@@ -40,7 +39,7 @@ class AttributeMergeTable(QTableWidget):
             clicked_item.setFont(font)
             self.update()
 
-    def set_main_window(self, main_window: MainWindow) -> None:
+    def set_main_window(self, main_window: "MainWindow") -> None:
         """Sets the table's connected main window to a given value.
 
         :param main_window: The main window to set as this table's main window
