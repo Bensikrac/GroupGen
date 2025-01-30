@@ -52,7 +52,7 @@ class Reader:
 
 
 class Reader:
-    """class that reads excel sheets and turns the table into a list of participants"""
+    """class that reads excel sheets and turns the table into a list of participants using python_calamine"""
 
     def read(filepath: os.PathLike) -> list[Participant]:
         file: IO[bytes]
@@ -70,12 +70,19 @@ class Reader:
             p: Participant = Participant(j)
 
             for i in range(0, len(headers)):
-                p.attributes[headers[i]] = str(row[i])
+                interpret_as_int: bool = False
+                # All numeric types get interpreted as float. To get rid of the .0 behind full numbers, the number has to be cast to integer first
+                if isinstance(row[i], float):
+                    if row[i].is_integer():
+                        interpret_as_int = True
+
+                # Cast to string, except when th .0 has to be removed. Then cast to String, then to
+                p.attributes[headers[i]] = (
+                    str(int(row[i])) if interpret_as_int else str(row[i])
+                )
 
             participant_list.append(p)
             j += 1
-
-        print(participant_list)
 
         return participant_list
 
