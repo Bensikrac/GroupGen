@@ -228,11 +228,18 @@
     </item>
     <item>
      <widget class="AttributeMergeTable" name="attributes_table">
+      <property name="focusPolicy">
+       <enum>Qt::FocusPolicy::WheelFocus</enum>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QTableWidget::item:focus { background: transparent; }
+QTableWidget::item:hover { background: transparent; }</string>
+      </property>
       <property name="dragEnabled">
-       <bool>true</bool>
+       <bool>false</bool>
       </property>
       <property name="dragDropMode">
-       <enum>QAbstractItemView::DragDropMode::DragDrop</enum>
+       <enum>QAbstractItemView::DragDropMode::NoDragDrop</enum>
       </property>
       <property name="defaultDropAction">
        <enum>Qt::DropAction::CopyAction</enum>

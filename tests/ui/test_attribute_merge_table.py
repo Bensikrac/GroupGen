@@ -9,24 +9,34 @@ from ui.attribute_merge_table import AttributeMergeTable, MergeableAttributeItem
 from ui.attribute_table_items import CheckableHeaderItem
 
 
-def test_mouse_press_event(app_fixture):
-    """Tests if a QMouseEvent correctly sets the dragged item."""
-    test_window: MainWindow = MainWindow()
-    test_table: AttributeMergeTable = test_window.attributes_table
+def test_mouse_press_event(main_window_fixture):
+    """Tests if a left QMouseEvent correctly sets the dragged item and a right doesnt."""
+    test_table: AttributeMergeTable = main_window_fixture.attributes_table
     test_item = MergeableAttributeItem("test", 2)
     test_table.setItem(0, 0, test_item)
-    test_event = QMouseEvent(
+    test_event_1 = QMouseEvent(
+        QEvent.Type.MouseButtonPress,
+        QPointF(20, 150),
+        Qt.MouseButton.RightButton,
+        Qt.MouseButton.RightButton,
+        Qt.KeyboardModifier.NoModifier,
+    )
+
+    with patch.object(AttributeMergeTable, "itemAt", return_value=test_item):
+        test_table.mousePressEvent(test_event_1)
+    assert test_table._AttributeMergeTable__dragged_item == None
+
+    test_event_2 = QMouseEvent(
         QEvent.Type.MouseButtonPress,
         QPointF(20, 150),
         Qt.MouseButton.LeftButton,
         Qt.MouseButton.LeftButton,
         Qt.KeyboardModifier.NoModifier,
     )
-    with patch.object(QDrag, "exec", return_value=None):
-        with patch.object(AttributeMergeTable, "itemAt", return_value=test_item):
-            test_table.mousePressEvent(test_event)
-    assert test_table.dragged_item == test_item
-    test_window.close()
+
+    with patch.object(AttributeMergeTable, "itemAt", return_value=test_item):
+        test_table.mousePressEvent(test_event_2)
+    assert test_table._AttributeMergeTable__dragged_item == test_item
 
 
 def test_drop_event_new_synonym(app_fixture):
@@ -37,7 +47,7 @@ def test_drop_event_new_synonym(app_fixture):
     target_item = MergeableAttributeItem("ipsum", 3)
     test_table.synonyms = [["foo", "bar"]]
     test_table.setItem(0, 0, target_item)
-    test_table.dragged_item = drag_item
+    test_table._AttributeMergeTable__dragged_item = drag_item
     test_event = QDropEvent(
         QPointF(0, 0),
         Qt.DropAction.CopyAction,
@@ -53,7 +63,7 @@ def test_drop_event_new_synonym(app_fixture):
         ) as mock,
     ):
         test_table.dropEvent(test_event)
-    assert test_table.dragged_item == None
+    assert test_table._AttributeMergeTable__dragged_item == None
     assert test_table.synonyms == [["foo", "bar"], ["ipsum", "lorem"]]
     mock.assert_called()
     test_window.close()
@@ -67,7 +77,7 @@ def test_drop_event_merge_synonym(app_fixture):
     target_item = MergeableAttributeItem("ipsum", 3)
     test_table.synonyms = [["lorem", "foo"], ["ipsum", "bar"]]
     test_table.setItem(0, 0, target_item)
-    test_table.dragged_item = drag_item
+    test_table._AttributeMergeTable__dragged_item = drag_item
     test_event = QDropEvent(
         QPointF(0, 0),
         Qt.DropAction.CopyAction,
@@ -83,7 +93,7 @@ def test_drop_event_merge_synonym(app_fixture):
         ) as mock,
     ):
         test_table.dropEvent(test_event)
-    assert test_table.dragged_item == None
+    assert test_table._AttributeMergeTable__dragged_item == None
     test_table.synonyms = [["ipsum", "bar", "lorem", "foo"]]
     mock.assert_called()
     test_window.close()
@@ -97,22 +107,6 @@ def test_find_preferred_synonym(app_fixture):
     assert test_table.find_preferred_synonym("foo") == "lorem"
     assert test_table.find_preferred_synonym("ipsum") == "ipsum"
     assert test_table.find_preferred_synonym("42") == "42"
-    test_window.close()
-
-
-def test_accept_events(app_fixture):
-    """Tests if QDragMoveEvents are accepted without issue."""
-    test_window: MainWindow = MainWindow()
-    test_table: AttributeMergeTable = test_window.attributes_table
-    test_enter_event = QDragEnterEvent(
-        QPoint(0, 0),
-        Qt.DropAction.CopyAction,
-        QMimeData(),
-        Qt.MouseButton.LeftButton,
-        Qt.KeyboardModifier.NoModifier,
-    )
-    test_table.dragEnterEvent(test_enter_event)
-    test_table.dragMoveEvent(test_enter_event)
     test_window.close()
 
 
