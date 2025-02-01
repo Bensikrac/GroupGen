@@ -9,12 +9,12 @@ from PyQt6.QtWidgets import (
 )
 from PyQt6.QtGui import (
     QMouseEvent,
-    QDropEvent,
     QFont,
+    QWheelEvent,
 )
 from PyQt6.QtCore import Qt
 from ui.attribute_table_items import CheckableHeaderItem, MergeableAttributeItem
-from PyQt6.QtCore import QPoint
+from PyQt6.QtCore import QPoint, QModelIndex
 
 
 class AttributeMergeTable(QTableWidget):
@@ -30,8 +30,23 @@ class AttributeMergeTable(QTableWidget):
         super().__init__(parent)
         header = self.horizontalHeader()
         header.sectionClicked.connect(self.__header_click)
+        self.setStyleSheet(
+            """
+            QTableWidget::item:selected {
+                background: transparent;
+                color: black;
+            }
+        """
+        )
+        self.setSelectionMode(QTableWidget.SelectionMode.NoSelection)
+        self.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+        self.verticalScrollBar().valueChanged.connect(lambda: self.clearSelection())
+        self.horizontalScrollBar().valueChanged.connect(lambda: self.clearSelection())
+        self.setMouseTracking(False)
+        self.viewport().setMouseTracking(False)
+        self.setStyleSheet("QTableWidget::item:hover { background: none; }")
 
-    def __header_click(self, col: int):
+    def __header_click(self, col: int) -> None:
         clicked_item = self.horizontalHeaderItem(col)
         if isinstance(clicked_item, CheckableHeaderItem):
             clicked_item.checked = not clicked_item.checked
@@ -59,10 +74,14 @@ class AttributeMergeTable(QTableWidget):
 
             if isinstance(clicked_item, MergeableAttributeItem):
                 self.__dragged_item = clicked_item
-        else:
-            super().mousePressEvent(event)
+        # else:
+        # super().mousePressEvent(event)
 
     def mouseReleaseEvent(self, event: QMouseEvent) -> None:
+        """Accepts the drop if one is ongoing and updates synonyms and table accordingly.
+
+        :param event: The triggering event
+        """
         if event.button() == Qt.MouseButton.LeftButton:
             target_cell: QTableWidgetItem = self.itemAt(event.position().toPoint())
             if self.__can_drop(event.position().toPoint()):
@@ -91,20 +110,39 @@ class AttributeMergeTable(QTableWidget):
 
         else:
             super().mouseReleaseEvent(event)
+        self.clearSelection()
+        self.update()
 
     def mouseMoveEvent(self, event: QMouseEvent) -> None:
+        """Sets the cursor shape during a drag depending on the current mouse position.
+
+        :param event: The triggering event
+        """
+        self.clearSelection()
         if self.__dragged_item != None:
             if self.__can_drop(event.position().toPoint()):
-                target_cell: QTableWidgetItem = self.itemAt(event.position().toPoint())
                 self.setCursor(Qt.CursorShape.DragCopyCursor)
+                # target_cell: QTableWidgetItem = self.itemAt(event.position().toPoint())
             else:
                 self.setCursor(Qt.CursorShape.ForbiddenCursor)
-            self.setCurrentItem(self.__dragged_item)
+            self.__dragged_item.setSelected(True)
         else:
-            self.setCurrentItem(None)
             super().mouseMoveEvent(event)
+        self.update()
+
+    def wheelEvent(self, event: QWheelEvent) -> None:
+        """Keeps dragged item selected."""
+        super().wheelEvent(event)
+        self.clearSelection()
+        if self.__dragged_item != None:
+            self.__dragged_item.setSelected(True)
 
     def __can_drop(self, point: QPoint) -> bool:
+        """Returns whether a drop can currently happen at the given.
+
+        :param point: The position where the drop would happen
+        :return: True or False depending on whether a drop can happen
+        """
         target_cell: QTableWidgetItem = self.itemAt(point)
         return (
             self.__dragged_item != None
@@ -113,44 +151,6 @@ class AttributeMergeTable(QTableWidget):
             and target_cell.value != self.__dragged_item.value
             and self.column(target_cell) == self.column(self.__dragged_item)
         )
-
-    @override
-    def dropEvent(self, event: QDropEvent) -> None:
-        """Accepts the drop if it is valid cell and updates the synonyms and table accordingly
-
-        :param event: The triggering event
-        """
-        target_cell: QTableWidgetItem = self.itemAt(event.position().toPoint())
-        if (
-            target_cell is not None
-            and isinstance(target_cell, MergeableAttributeItem)
-            and target_cell.value != self.__dragged_item.value
-            and self.column(target_cell) == self.column(self.__dragged_item)
-        ):
-            # self.main_window.add_state_to_history(copy.deepcopy(self.synonyms))
-
-            target_list: list[str]
-            for synonym_list in self.synonyms:
-                if (
-                    target_cell.value == synonym_list[0]
-                    and not self.__dragged_item.value in synonym_list
-                ):
-                    target_list = synonym_list
-                    break
-            else:
-                target_list = [target_cell.value]
-                self.synonyms.append(target_list)
-            old_list: list[str] = self.find_synonyms_for_value(
-                self.__dragged_item.value
-            )
-            target_list.extend(old_list)
-            if old_list in self.synonyms:
-                self.synonyms.remove(old_list)
-            self.__main_window.construct_attribute_table()
-            event.accept()
-            self.__main_window.add_state_to_history(copy.deepcopy(self.synonyms))
-        self.__dragged_item = None
-        event.accept()
 
     def find_synonyms_for_value(self, value: str) -> list[str]:
         """Returns the list of values that the given value is the preferred synonym for.

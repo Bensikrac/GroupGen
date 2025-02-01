@@ -22,6 +22,9 @@
     <height>648</height>
    </size>
   </property>
+  <property name="focusPolicy">
+   <enum>Qt::FocusPolicy::ClickFocus</enum>
+  </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
@@ -229,11 +232,10 @@
     <item>
      <widget class="AttributeMergeTable" name="attributes_table">
       <property name="focusPolicy">
-       <enum>Qt::FocusPolicy::WheelFocus</enum>
+       <enum>Qt::FocusPolicy::ClickFocus</enum>
       </property>
       <property name="styleSheet">
-       <string notr="true">QTableWidget::item:focus { background: transparent; }
-QTableWidget::item:hover { background: transparent; }</string>
+       <string notr="true"/>
       </property>
       <property name="dragEnabled">
        <bool>false</bool>
