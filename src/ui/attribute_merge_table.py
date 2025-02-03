@@ -14,7 +14,7 @@ from PyQt6.QtGui import (
 )
 from PyQt6.QtCore import Qt
 from ui.attribute_table_items import CheckableHeaderItem, MergeableAttributeItem
-from PyQt6.QtCore import QPoint, QModelIndex
+from PyQt6.QtCore import QPoint, QModelIndex, QEvent
 
 
 class AttributeMergeTable(QTableWidget):
@@ -120,22 +120,27 @@ class AttributeMergeTable(QTableWidget):
         """
         self.clearSelection()
         if self.__dragged_item != None:
+            self.__updateMouseAndSelection(event)
+        else:
+            super().mouseMoveEvent(event)
+        self.update()
+
+    def __updateMouseAndSelection(self, event: QMouseEvent | QWheelEvent) -> None:
+        self.clearSelection()
+        if self.__dragged_item != None:
             if self.__can_drop(event.position().toPoint()):
                 self.setCursor(Qt.CursorShape.DragCopyCursor)
                 # target_cell: QTableWidgetItem = self.itemAt(event.position().toPoint())
             else:
                 self.setCursor(Qt.CursorShape.ForbiddenCursor)
             self.__dragged_item.setSelected(True)
-        else:
-            super().mouseMoveEvent(event)
         self.update()
 
     def wheelEvent(self, event: QWheelEvent) -> None:
         """Keeps dragged item selected."""
         super().wheelEvent(event)
         self.clearSelection()
-        if self.__dragged_item != None:
-            self.__dragged_item.setSelected(True)
+        self.__updateMouseAndSelection(event)
 
     def __can_drop(self, point: QPoint) -> bool:
         """Returns whether a drop can currently happen at the given.
