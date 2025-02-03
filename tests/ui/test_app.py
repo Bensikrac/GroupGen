@@ -73,14 +73,14 @@ def test_run_workflow(main_window_fixture):
 
 def test_run_workflow_path_errors(app_fixture):
     """Tests if run_workflow handles missing paths correctly."""
-    test_window: MainWindow = MainWindow("assets/main_window.ui")
+    test_window: MainWindow = MainWindow()
     test_window._MainWindow__output_path = "test_data/test_output.xlsx"
     with pytest.raises(ValueError) as error:
         test_window._MainWindow__run_algorithm()
     assert "Input Path not set" in str(error.value)
     test_window.close()
 
-    test_window_2: MainWindow = MainWindow("assets/main_window.ui")
+    test_window_2: MainWindow = MainWindow()
     test_window_2._MainWindow__input_path = "test_data/test_data_short_1.xlsx"
     with pytest.raises(ValueError) as error:
         test_window_2._MainWindow__run_algorithm()

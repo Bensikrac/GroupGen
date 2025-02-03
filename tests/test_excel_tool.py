@@ -1,5 +1,5 @@
 import pytest
-import excel_tool
+import excel_tool as excel_tool
 from data_structures import Participant
 
 

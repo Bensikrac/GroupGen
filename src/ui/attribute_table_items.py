@@ -1,7 +1,7 @@
 """Module containing cells for the attribute table"""
 
 from typing import override
-from PyQt6.QtWidgets import QTableWidget, QTableWidgetItem
+from PyQt6.QtWidgets import QTableWidgetItem
 
 
 class MergeableAttributeItem(QTableWidgetItem):
