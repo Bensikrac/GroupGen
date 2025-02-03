@@ -8,86 +8,76 @@ import python_calamine
 from data_structures import Participant, Group, Iteration, Assignment
 
 
-'''
-class Reader:
-    """class that reads excel sheets and turns the table into a list of participants"""
-
-    __filepath: os.PathLike
-
-    def __init__(self, path: os.PathLike) -> None:
-        """create a new reader with the given path
-
-        :param path: filepath used for reading the excel sheet
-        """
-        self.__filepath = path
-
-    def read(self) -> list[Participant]:
-        """main read function, returns the parsed list of participants
-
-        :return: a list of Participants found in the excel file with their attributes
-        """
-
-        participant_list: list[Participant] = []
-
-        dataframe = opxl.load_workbook(self.__filepath)
-        dataframe_active = dataframe.active
-
-        header_list: dict[int, str] = {}
-
-        header_row = next(dataframe_active.rows)
-
-        for i, entry in enumerate(header_row):
-            header_list[i] = entry.value
-
-        for i in range(1, dataframe_active.max_row):
-            p: Participant = Participant(i)
-
-            for j in range(0, dataframe_active.max_column):
-                p.attributes[header_list[j]] = list(dataframe_active)[i][j].value
-
-            participant_list.append(p)
-
-        return participant_list
-'''
-
-
 class Reader:
     """class that reads excel sheets and turns the table into a list of participants using python_calamine"""
 
     def read(filepath: os.PathLike) -> list[Participant]:
-        file: IO[bytes]
-        file = open(filepath, "rb")
-        workbook = python_calamine.CalamineWorkbook.from_filelike(file)
-        rows = iter(workbook.get_sheet_by_index(0).to_python())
+        with open(filepath, "rb") as file:
+            workbook = python_calamine.CalamineWorkbook.from_filelike(file)
+            rows = iter(workbook.get_sheet_by_index(0).to_python())
 
-        headers: dict[int, str]
-        headers = list(map(str, next(rows)))
+            headers = list(map(str, next(rows)))
 
-        participant_list: list[Participant] = []
-        j: int = 0
+            participant_list: list[Participant] = []
+            j: int = 0
 
-        for row in rows:
-            p: Participant = Participant(j)
+            for row in rows:
+                p: Participant = Participant(j)
 
-            for i in range(0, len(headers)):
-                interpret_as_int: bool = False
-                # All numeric types get interpreted as float. To get rid of the .0 behind full numbers, the number has to be cast to integer first
-                if isinstance(row[i], float):
-                    if row[i].is_integer():
-                        interpret_as_int = True
+                # All dates will be represented in the following form: 2025-01-31
+                for i in range(0, len(headers)):
+                    interpret_as_int: bool = False
+                    # All numeric types get interpreted as float. To get rid of the .0 behind full numbers, the number has to be cast to integer first
+                    if isinstance(row[i], float):
+                        if row[i].is_integer():
+                            interpret_as_int = True
 
-                # Cast to string, except when th .0 has to be removed. Then cast to String, then to
-                p.attributes[headers[i]] = (
-                    str(int(row[i])) if interpret_as_int else str(row[i])
-                )
+                    # Cast to string, except when th .0 has to be removed. Then cast to String, then to
+                    p.attributes[headers[i]] = (
+                        str(int(row[i])) if interpret_as_int else str(row[i])
+                    )
 
-            participant_list.append(p)
-            j += 1
+                participant_list.append(p)
+                j += 1
 
         return participant_list
 
 
 class Writer:
+    """Class that writes excel sheet and turns calculated groups in an understandable format.
+    Only meant to be used once. Object of Writer should only be present when writing file
+    """
+
+    __row_index: int = 1
+    __filepath: os.PathLike
+
+    # Colors for coloring the first cell for better understandability
+    __fill_colors: tuple[PatternFill] = (
+        PatternFill(start_color="00CCFFCC", fill_type="solid"),  # green
+        PatternFill(start_color="00CC99FF", fill_type="solid"),  # violet
+    )
+
+    def __init__(self, filepath: os.PathLike) -> None:
+        self.__filepath = filepath
+
+    def __write_header(
+        self, iteration_number: int, attribute_list: list[str], ws
+    ) -> None:
+        """This function writes the header for an iteration with the iteration number and
+        header row(group, list of attributes).
+
+        :param iteration_number: number of the iteration to be written
+        :param attribute_list: list of attribute names of participants
+        :param row_index: row index to be written to
+        :param ws: worksheet to be written on
+        """
+
+        ws.cell(self.__row_index, 1).value = f"Iteration {iteration_number}:"
+        self.__row_index += 1
+        ws.cell(self.__row_index, 1).value = "GroupNr"
+
+        for i, attribute in enumerate(attribute_list):
+            ws.cell(self.__row_index, 2 + i).value = attribute
 
     def __write_participant(
         self,
