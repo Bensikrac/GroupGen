@@ -105,7 +105,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         :param current: current progress
         :param maximum: maximum progress
         """
-        self.output_progress.setValue(int((float(current)/float(maximum))*100.0))
+        self.output_progress.setValue(int((float(current) / float(maximum)) * 100.0))
         self.output_progress.repaint()
 
     def __synonym_filter_participants(self) -> set[Participant]:

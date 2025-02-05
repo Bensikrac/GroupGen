@@ -37,7 +37,7 @@ class SimulatedAnnealingAlgorithm:
         temperature_scaling: float = 15,
         mix_weight: float = 1,
         diversity_weight: float = 1,
-        progress_callback: Callable[[int, int], None] | None = None
+        progress_callback: Callable[[int, int], None] | None = None,
     ) -> Assignment:
         """Return a group assignment generated using simulated annealing.
 
@@ -61,7 +61,8 @@ class SimulatedAnnealingAlgorithm:
             participants, groups_per_iteration, iterations
         )
         objective: ObjectiveFunction = ObjectiveFunction(self.attributes)
-        if progress_callback is not None: progress_callback(0, max_cycles)
+        if progress_callback is not None:
+            progress_callback(0, max_cycles)
         for i in range(1, max_cycles + 1):
             temperature: float = self.get_temperature(
                 i / max_cycles, intitial_temperature, temperature_scaling
@@ -81,7 +82,8 @@ class SimulatedAnnealingAlgorithm:
                     assignment, mix_weight, diversity_weight
                 )
             )
-            if progress_callback is not None: progress_callback(i, max_cycles)
+            if progress_callback is not None:
+                progress_callback(i, max_cycles)
         return assignment
 
     def __should_take_step(
