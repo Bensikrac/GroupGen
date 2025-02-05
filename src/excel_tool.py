@@ -28,7 +28,7 @@ class Reader:
 
             # All dates will be represented in the following form: 2025-01-31
             for i in range(0, len(headers)):
-                if row[i].is_integer():
+                if isinstance(row[i], float) and row[i].is_integer():
                     p.attributes[headers[i]] = f"{row[i]:.0f}"
                 else:
                     p.attributes[headers[i]] = str(row[i])
