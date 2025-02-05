@@ -1,7 +1,6 @@
 """Module which handles reading and writing of excel files"""
 
 import os
-from typing import IO
 import openpyxl as opxl
 from openpyxl.styles import PatternFill
 import python_calamine
@@ -12,33 +11,30 @@ class Reader:
     """class that reads excel sheets and turns the table into a list of participants using python_calamine"""
 
     def read(filepath: os.PathLike) -> list[Participant]:
-        with open(filepath, "rb") as file:
-            workbook = python_calamine.CalamineWorkbook.from_filelike(file)
-            rows = iter(workbook.get_sheet_by_index(0).to_python())
+        """Reads an excel file on the speciefied location and creates a list of participants from it.
 
-            headers = list(map(str, next(rows)))
+        :param filepath: The path to the file to be read
+        :return: The list of participants with initialized attributes"""
+        workbook = python_calamine.CalamineWorkbook.from_path(filepath)
+        rows = iter(workbook.get_sheet_by_index(0).to_python())
 
-            participant_list: list[Participant] = []
-            j: int = 0
+        headers = list(map(str, next(rows)))
 
-            for row in rows:
-                p: Participant = Participant(j)
+        participant_list: list[Participant] = []
+        j: int = 0
 
-                # All dates will be represented in the following form: 2025-01-31
-                for i in range(0, len(headers)):
-                    interpret_as_int: bool = False
-                    # All numeric types get interpreted as float. To get rid of the .0 behind full numbers, the number has to be cast to integer first
-                    if isinstance(row[i], float):
-                        if row[i].is_integer():
-                            interpret_as_int = True
+        for row in rows:
+            p: Participant = Participant(j)
 
-                    # Cast to string, except when th .0 has to be removed. Then cast to String, then to
-                    p.attributes[headers[i]] = (
-                        str(int(row[i])) if interpret_as_int else str(row[i])
-                    )
+            # All dates will be represented in the following form: 2025-01-31
+            for i in range(0, len(headers)):
+                if row[i].is_integer():
+                    p.attributes[headers[i]] = f"{row[i]:.0f}"
+                else:
+                    p.attributes[headers[i]] = str(row[i])
 
-                participant_list.append(p)
-                j += 1
+            participant_list.append(p)
+            j += 1
 
         return participant_list
 
