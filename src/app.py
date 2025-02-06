@@ -344,7 +344,7 @@ def asset_path(relative_path) -> str:
     :param relative_path: The relative path to the assset
     :return: The absolute path
     """
-    # pylint: disable=locally-disabled, protected-access, broad-exception-caught
+    # pylint: disable=locally-disabled, protected-access, broad-exception-caught, no-member
     if sys.platform.startswith("win32"):
         try:
             # PyInstaller creates a temp folder and stores path in _MEIPASS
