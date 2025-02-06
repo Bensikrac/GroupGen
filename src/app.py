@@ -46,9 +46,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.setWindowTitle("GroupGen")
         self.setWindowIcon(QIcon(asset_path("groupgen_logo3_icon.ico")))
 
-        app_id = "impulse.groupgen.app"
-        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(app_id)
-        time.sleep(1)
+        if sys.platform.startswith("win32"):
+            app_id = "impulse.groupgen.app"
+            ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(app_id)
+            time.sleep(1)
 
         self.input_pick_button.clicked.connect(self.__input_file_picker)
         # self.read_input_button.clicked.connect(self.__read_input_file)
