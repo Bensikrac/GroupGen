@@ -219,7 +219,7 @@ def test_sort_distribution(main_window_fixture, distribution):
 
     # Sort by Value (Initial Case)
 
-    assert window.sorting_comboBox.currentIndex == 0
+    assert window.sorting_comboBox.currentIndex() == 0
 
     result = window.__sort_distribution(distribution)
     expected = [
@@ -234,7 +234,7 @@ def test_sort_distribution(main_window_fixture, distribution):
 
     window.sorting_comboBox.setCurrentIndex(1)
 
-    assert window.sorting_comboBox.currentIndex == 1
+    assert window.sorting_comboBox.currentIndex() == 1
 
     result = window.__sort_distribution(distribution)
     expected = [

@@ -13,7 +13,4 @@ def app_fixture():
 
 @pytest.fixture(scope="session")
 def main_window_fixture(app_fixture):
-    window = MainWindow()
-    # window.show()
-    yield window
-    window.close()
+    return MainWindow()
