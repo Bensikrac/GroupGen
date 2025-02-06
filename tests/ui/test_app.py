@@ -219,7 +219,7 @@ def test_sort_distribution(main_window_fixture, distribution):
 
     # Sort by Value (Initial Case)
 
-    assert window.sorting_comboBox.currentIndex() == 0
+    assert window.sorting_comboBox.currentText() == "Value"
 
     result = window.__sort_distribution(distribution)
     expected = [
@@ -232,9 +232,9 @@ def test_sort_distribution(main_window_fixture, distribution):
 
     # Sort by Frequency
 
-    window.sorting_comboBox.setCurrentIndex(1)
+    window.sorting_comboBox.setCurrentText("Frequency")
 
-    assert window.sorting_comboBox.currentIndex() == 1
+    assert window.sorting_comboBox.currentText() == "Frequency"
 
     result = window.__sort_distribution(distribution)
     expected = [
