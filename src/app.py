@@ -4,12 +4,15 @@ import copy
 from operator import itemgetter
 import os
 import sys
+import time
+import ctypes
 from PyQt6.QtWidgets import (
     QApplication,
     QMainWindow,
     QFileDialog,
     QTableWidgetItem,
 )
+from PyQt6.QtGui import QIcon
 from ui.attribute_table_items import CheckableHeaderItem
 from excel_tool import Reader, Writer
 from data_structures import Participant, Assignment
@@ -41,6 +44,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.attributes_table.set_main_window(self)
 
         self.setWindowTitle("GroupGen")
+        self.setWindowIcon(QIcon(asset_path("groupgen_logo3_icon.ico")))
+
+        app_id = "impulse.groupgen.app"
+        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(app_id)
+        time.sleep(1)
 
         self.input_pick_button.clicked.connect(self.__input_file_picker)
         # self.read_input_button.clicked.connect(self.__read_input_file)
@@ -326,6 +334,22 @@ def main():
     window: MainWindow = MainWindow()
     window.show()
     app.exec()
+
+
+def asset_path(relative_path) -> str:
+    """Returns the absolute path to an assets, works as dev and with pyinstaller.
+    Assumes the asset is in assets/ and added as data  on the top level in pyinstaller.
+
+    :param relative_path: The relative path to the assset
+    :return: The absolute path
+    """
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = "assets/"
+
+    return os.path.join(base_path, relative_path)
 
 
 if __name__ == "__main__":
