@@ -405,7 +405,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         :return: sorted attribute distribution list
         """
 
-        if self.sorting_comboBox.currentIndex() == 0:
+        if self.sorting_comboBox.currentText() == "Value":
             return sorted(distribution, key=itemgetter(0))
         return sorted(distribution, key=lambda x: (1 / x[1], x[0]))
 
