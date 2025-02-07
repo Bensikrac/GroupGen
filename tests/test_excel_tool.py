@@ -1,13 +1,13 @@
 import os
 import pytest
 import excel_tool
-from excel_tool import Reader, Writer
+from excel_tool import Writer
 from data_structures import Participant
 from data_structures import Assignment, Iteration, Group
 
 
 def main(self):
-    list = Reader.read("test_data/excel_reader_test_0.xlsx")
+    list = excel_tool.read_calamine("test_data/excel_reader_test_0.xlsx")
     __output_path: os.PathLike = "test_data/excel_writer_test_0.xlsx"
 
     testobject1 = Participant(
@@ -88,12 +88,11 @@ def main(self):
 
     assign: Assignment = [iter1, iter2]
 
-    Writer(self.__output_path).write_file(assign)
+    Writer.write_file(assign, __output_path)
 
     # Now check if the groups and iterations match please
 
 
 def test_errors():
     with pytest.raises(Exception):
-        reader = excel_tool.Reader("/")
-        reader.read()
+        excel_tool.read_calamine("/")

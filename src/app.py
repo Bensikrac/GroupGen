@@ -10,8 +10,9 @@ from PyQt6.QtWidgets import (
     QFileDialog,
     QTableWidgetItem,
 )
+import excel_tool
 from ui.attribute_table_items import CheckableHeaderItem
-from excel_tool import Reader, Writer
+from excel_tool import Writer
 from data_structures import Participant, Assignment
 from algorithm.simulated_annealing_algorithm import SimulatedAnnealingAlgorithm
 from assets.main_window import Ui_MainWindow
@@ -83,7 +84,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             1000,
         )
 
-        Writer(self.__output_path).write_file(final_assignment)
+        Writer.write_file(final_assignment, self.__output_path)
 
         self.state_label.setText("Status: Finished!")
         self.state_label.repaint()
@@ -134,7 +135,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.state_label.repaint()
         self.__set_buttons_enabled(False)
 
-        self.__participants_list = Reader.read(self.__input_path)
+        self.__participants_list = excel_tool.read_calamine(self.__input_path)
         self.__attributes_list = self.__participants_list[0].attributes.keys()
 
         # Construct Table
