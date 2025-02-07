@@ -134,7 +134,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.state_label.repaint()
         self.__set_buttons_enabled(False)
 
-        self.__participants_list = Reader(self.__input_path).read()
+        self.__participants_list = Reader.read(self.__input_path)
         self.__attributes_list = self.__participants_list[0].attributes.keys()
 
         # Construct Table
