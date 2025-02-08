@@ -44,7 +44,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.attributes_table.set_main_window(self)
 
         self.setWindowTitle("GroupGen")
-        self.setWindowIcon(QIcon(asset_path("groupgen_logo3_icon.ico")))
+        # self.setWindowIcon(QIcon(asset_path("groupgen_logo3_icon.ico")))
+        QApplication.setWindowIcon(QIcon(asset_path("groupgen_logo3_icon.ico")))
 
         if sys.platform.startswith("win32"):
             app_id = "impulse.groupgen.app"
