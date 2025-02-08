@@ -4,12 +4,19 @@ import copy
 from operator import itemgetter
 import os
 import sys
+import time
 from PyQt6.QtWidgets import (
     QApplication,
     QMainWindow,
     QFileDialog,
     QTableWidgetItem,
+    QMessageBox,
+    QPushButton,
+    QAbstractButton,
 )
+from PyQt6.QtGui import QDesktopServices
+from PyQt6.QtCore import QUrl, Qt, QProcess, QDir
+from algorithm.objective_function import ObjectiveFunction
 from ui.attribute_table_items import CheckableHeaderItem
 from excel_tool import Reader, Writer
 from data_structures import Participant, Assignment
@@ -69,8 +76,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.state_label.setText("Status: Preparing...")
         self.state_label.repaint()
 
+        start_time: float = time.time()
+
+        filtered_attributes: list[str] = self.__filter_enabled_attributes()
         algorithm_instance: SimulatedAnnealingAlgorithm = SimulatedAnnealingAlgorithm(
-            self.__filter_enabled_attributes()
+            filtered_attributes
         )
 
         self.state_label.setText("Status: Calculating...")
@@ -87,6 +97,74 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.state_label.setText("Status: Finished!")
         self.state_label.repaint()
+
+        time_passed: float = time.time() - start_time
+        objective: ObjectiveFunction = ObjectiveFunction(filtered_attributes)
+        average_participants_met: float = objective.average_meetings(final_assignment)
+        mix_cost: float = objective.mix_cost(final_assignment)
+        diversity_cost: float = objective.diversity_cost(final_assignment)
+        objective.calculate_weighted_cost
+
+        message_box: QMessageBox = QMessageBox()
+        message_box.setTextFormat(Qt.TextFormat.RichText)
+        message_box.setText(
+            "Algorithm executed successfully in "
+            + str(round(time_passed, 1))
+            + " seconds"
+        )
+        message_box.setInformativeText(
+            "Group assignments saved to </i>" + str(self.__output_path) + "</i>"
+        )
+        message_box.setDetailedText(
+            "The average participant encounters "
+            + str(round(average_participants_met, 1))
+            + " distinct other participants in this assignment."
+            + os.linesep
+            + os.linesep
+            + "(mix cost: "
+            + str(round(mix_cost, 4))
+            + ", diversity cost: "
+            + str(round(diversity_cost, 4))
+            + ")"
+        )
+        # message_box.setStandardButtons(
+        #    QMessageBox.StandardButton.Open | QMessageBox.StandardButton.Ok
+        # )
+
+        ok_button: QPushButton | None = message_box.addButton(
+            "Ok", QMessageBox.ButtonRole.AcceptRole
+        )
+        open_button: QPushButton | None = message_box.addButton(
+            "Open File", QMessageBox.ButtonRole.ActionRole
+        )
+        explorer_button: QPushButton | None = None
+        if sys.platform.startswith("win32"):
+            explorer_button = message_box.addButton(
+                "Show in Explorer", QMessageBox.ButtonRole.ActionRole
+            )
+        message_box.setDefaultButton(ok_button)
+        message_box.setEscapeButton(ok_button)
+        # message_box.setIcon(QMessageBox.Icon.Information)
+        message_box.setWindowTitle("GroupGen: Algorithm executed successfully!")
+        message_box.exec()
+        response: QAbstractButton | None = message_box.clickedButton()
+
+        if response == open_button:
+            QDesktopServices.openUrl(QUrl(self.__output_path))
+        if response != None and response == explorer_button:
+            self.__open_in_explorer(self.__output_path)
+
+    def __open_in_explorer(self, path: os.PathLike) -> None:
+        """Opens the file explorer with the file at the given path highlighted if on windows.
+
+        :param path: the path to the file to highlight
+        """
+        path = os.path.abspath(path)
+        if sys.platform == "win32":
+            args = []
+            args.append("/select,")
+            args.append(QDir.toNativeSeparators(path))
+            QProcess.startDetached("explorer", args)
 
     def __synonym_filter_participants(self) -> set[Participant]:
         """Returns a set of partcicpants that are each equivalent to one of the stored participants,
