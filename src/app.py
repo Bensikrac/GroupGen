@@ -17,10 +17,10 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtGui import QDesktopServices
 from PyQt6.QtCore import QUrl, Qt, QProcess, QDir
 from algorithm.objective_function import ObjectiveFunction
+from algorithm.simulated_annealing_algorithm import SimulatedAnnealingAlgorithm
 from ui.attribute_table_items import CheckableHeaderItem
 from excel_tool import Reader, Writer
 from data_structures import Participant, Assignment
-from algorithm.simulated_annealing_algorithm import SimulatedAnnealingAlgorithm
 from assets.main_window import Ui_MainWindow
 
 type HistoryState = list[list[str]]
@@ -103,7 +103,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         average_participants_met: float = objective.average_meetings(final_assignment)
         mix_cost: float = objective.mix_cost(final_assignment)
         diversity_cost: float = objective.diversity_cost(final_assignment)
-        objective.calculate_weighted_cost
+        weighted_cost: float = objective.calculate_weighted_cost(final_assignment)
 
         message_box: QMessageBox = QMessageBox()
         message_box.setTextFormat(Qt.TextFormat.RichText)
@@ -121,7 +121,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             + " distinct other participants in this assignment."
             + os.linesep
             + os.linesep
-            + "(mix cost: "
+            + "(weighted cost: "
+            + str(round(weighted_cost, 4))
+            + ", mix cost: "
             + str(round(mix_cost, 4))
             + ", diversity cost: "
             + str(round(diversity_cost, 4))
@@ -151,7 +153,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         if response == open_button:
             QDesktopServices.openUrl(QUrl(self.__output_path))
-        if response != None and response == explorer_button:
+        if response is not None and response == explorer_button:
             self.__open_in_explorer(self.__output_path)
 
     def __open_in_explorer(self, path: os.PathLike) -> None:
