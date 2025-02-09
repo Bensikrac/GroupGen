@@ -55,6 +55,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.run_algorithm_button.setEnabled(False)
         # self.select_synonym_button.setEnabled(False)
         self.select_synonym_label.setVisible(False)
+        self.excluded_column_count_label.setVisible(False)
+        self.excluded_column_number_label.setVisible(False)
         self.undo_button.setEnabled(False)
         self.redo_button.setEnabled(False)
         self.reset_synonyms_button.setEnabled(False)
@@ -144,6 +146,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.state_label.setText("Status: Finished Reading...")
         self.state_label.repaint()
         self.select_synonym_label.setVisible(True)
+        self.excluded_column_count_label.setVisible(True)
+        self.excluded_column_number_label.setVisible(True)
+        self.excluded_column_number_label.setText("0")
         self.__set_buttons_enabled(True)
         self.__update_undo_redo()
 

@@ -49,6 +49,12 @@ class AttributeMergeTable(QTableWidget):
     def __header_click(self, col: int) -> None:
         clicked_item = self.horizontalHeaderItem(col)
         if isinstance(clicked_item, CheckableHeaderItem):
+            newcount: int = (
+                int(self.__main_window.excluded_column_number_label.text()) + 1
+                if clicked_item.checked
+                else int(self.__main_window.excluded_column_number_label.text()) - 1
+            )
+            self.__main_window.excluded_column_number_label.setText(str(newcount))
             clicked_item.checked = not clicked_item.checked
             font: QFont = QFont()
             # font.setBold(clicked_item.checked)
