@@ -7,11 +7,7 @@ from PyQt6.QtWidgets import (
     QTableWidgetItem,
     QWidget,
 )
-from PyQt6.QtGui import (
-    QMouseEvent,
-    QFont,
-    QWheelEvent,
-)
+from PyQt6.QtGui import QMouseEvent, QFont, QWheelEvent, QColor
 from PyQt6.QtCore import Qt
 from ui.attribute_table_items import CheckableHeaderItem, MergeableAttributeItem
 from PyQt6.QtCore import QPoint, QModelIndex, QEvent
@@ -55,6 +51,19 @@ class AttributeMergeTable(QTableWidget):
                 else int(self.__main_window.excluded_column_number_label.text()) - 1
             )
             self.__main_window.excluded_column_number_label.setText(str(newcount))
+
+            if clicked_item.checked == False:
+                self.setColumnWidth(col, 100)
+                for i in range(0, self.rowCount()):
+                    if self.item(i, col) is not None:
+                        self.item(i, col).setBackground(QColor("#FFFFFF"))
+                        self.item(i, col).setForeground(QColor("#000000"))
+            else:
+                self.setColumnWidth(col, 1)
+                for i in range(0, self.rowCount()):
+                    if self.item(i, col) is not None:
+                        self.item(i, col).setBackground(QColor("#AAAFB4"))
+                        self.item(i, col).setForeground(QColor("#555555"))
             clicked_item.checked = not clicked_item.checked
             font: QFont = QFont()
             # font.setBold(clicked_item.checked)
