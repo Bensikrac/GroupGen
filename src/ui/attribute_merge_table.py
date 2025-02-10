@@ -7,7 +7,7 @@ from PyQt6.QtWidgets import (
     QTableWidgetItem,
     QWidget,
 )
-from PyQt6.QtGui import QMouseEvent, QFont, QWheelEvent, QColor
+from PyQt6.QtGui import QMouseEvent, QFont, QWheelEvent, QColor, QBrush
 from PyQt6.QtCore import Qt
 from ui.attribute_table_items import CheckableHeaderItem, MergeableAttributeItem
 from PyQt6.QtCore import QPoint, QModelIndex, QEvent
@@ -21,6 +21,8 @@ class AttributeMergeTable(QTableWidget):
     values: list[list[str]] = []
     __dragged_item: MergeableAttributeItem | None = None
     __main_window: "MainWindow"
+    __saved_background: QBrush = None
+    __saved_foreground: QBrush = None
 
     def __init__(self, parent: QWidget | None = None):
         super().__init__(parent)
@@ -55,9 +57,12 @@ class AttributeMergeTable(QTableWidget):
             if clicked_item.checked == False:
                 for i in range(0, self.rowCount()):
                     if self.item(i, col) is not None:
-                        self.item(i, col).setBackground(QColor("#FFFFFF"))
-                        self.item(i, col).setForeground(QColor("#000000"))
+                        self.item(i, col).setBackground(self.__saved_background)
+                        self.item(i, col).setForeground(self.__saved_foreground)
             else:
+                if self.item(0, col) is not None:
+                    self.__saved_background = self.item(i, col).background()
+                    self.__saved_foreground = self.item(i, col).foreground()
                 for i in range(0, self.rowCount()):
                     if self.item(i, col) is not None:
                         self.item(i, col).setBackground(QColor("#AAAFB4"))
