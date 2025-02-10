@@ -53,13 +53,11 @@ class AttributeMergeTable(QTableWidget):
             self.__main_window.excluded_column_number_label.setText(str(newcount))
 
             if clicked_item.checked == False:
-                self.setColumnWidth(col, 100)
                 for i in range(0, self.rowCount()):
                     if self.item(i, col) is not None:
                         self.item(i, col).setBackground(QColor("#FFFFFF"))
                         self.item(i, col).setForeground(QColor("#000000"))
             else:
-                self.setColumnWidth(col, 1)
                 for i in range(0, self.rowCount()):
                     if self.item(i, col) is not None:
                         self.item(i, col).setBackground(QColor("#AAAFB4"))
