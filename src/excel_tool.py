@@ -3,46 +3,38 @@
 import os
 import openpyxl as opxl
 from openpyxl.styles import PatternFill
+import python_calamine
 from data_structures import Participant, Group, Iteration, Assignment
 
 
 class Reader:
-    """class that reads excel sheets and turns the table into a list of participants"""
+    """class that reads excel sheets and turns the table into a list of participants using python_calamine"""
 
-    __filepath: os.PathLike
+    def read(filepath: os.PathLike) -> list[Participant]:
+        """Reads an excel file on the speciefied location and creates a list of participants from it.
 
-    def __init__(self, path: os.PathLike) -> None:
-        """create a new reader with the given path
+        :param filepath: The path to the file to be read
+        :return: The list of participants with initialized attributes"""
+        workbook = python_calamine.CalamineWorkbook.from_path(filepath)
+        rows = iter(workbook.get_sheet_by_index(0).to_python())
 
-        :param path: filepath used for reading the excel sheet
-        """
-        self.__filepath = path
-
-    def read(self) -> list[Participant]:
-        """main read function, returns the parsed list of participants
-
-        :return: a list of Participants found in the excel file with their attributes
-        """
+        headers = list(map(str, next(rows)))
 
         participant_list: list[Participant] = []
+        j: int = 0
 
-        dataframe = opxl.load_workbook(self.__filepath)
-        dataframe_active = dataframe.active
+        for row in rows:
+            p: Participant = Participant(j)
 
-        header_list: dict[int, str] = {}
-
-        header_row = next(dataframe_active.rows)
-
-        for i, entry in enumerate(header_row):
-            header_list[i] = entry.value
-
-        for i in range(1, dataframe_active.max_row):
-            p: Participant = Participant(i)
-
-            for j in range(0, dataframe_active.max_column):
-                p.attributes[header_list[j]] = list(dataframe_active)[i][j].value
+            # All dates will be represented in the following form: 2025-01-31
+            for i in range(0, len(headers)):
+                if isinstance(row[i], float) and row[i].is_integer():
+                    p.attributes[headers[i]] = f"{row[i]:.0f}"
+                else:
+                    p.attributes[headers[i]] = str(row[i])
 
             participant_list.append(p)
+            j += 1
 
         return participant_list
 

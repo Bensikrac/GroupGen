@@ -4,14 +4,12 @@ import copy
 from operator import itemgetter
 import os
 import sys
-from PyQt6 import uic
 from PyQt6.QtWidgets import (
     QApplication,
     QMainWindow,
     QFileDialog,
     QTableWidgetItem,
 )
-from PyQt6.QtCore import QRect, QModelIndex
 from ui.attribute_table_items import CheckableHeaderItem
 from excel_tool import Reader, Writer
 from data_structures import Participant, Assignment
@@ -126,20 +124,27 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def __input_file_picker(self) -> None:
         """Select Input File Button Function"""
-        selectedPath = QFileDialog.getOpenFileName(
+        if self.__input_path:
+            preselected_dir = self.__input_path
+        elif self.__output_path:
+            preselected_dir = self.__output_path
+        else:
+            preselected_dir = "/"
+
+        selected_path = QFileDialog.getOpenFileName(
             caption="select input file",
-            directory=self.__output_path if self.__output_path else "/",
+            directory=preselected_dir,
             filter="Excel Files (*.xlsx *.xls)",
         )[0]
-        if selectedPath:
-            self.__input_path = selectedPath
+        if selected_path:
+            self.__input_path = selected_path
 
-        self.output_progress.setVisible(False)
-        self.input_file_path_line_edit.setText(self.__input_path)
-        self.input_file_path_line_edit.repaint()
+            self.output_progress.setVisible(False)
+            self.input_file_path_line_edit.setText(self.__input_path)
+            self.input_file_path_line_edit.repaint()
 
-        # self.read_input_button.setEnabled(True)
-        self.__read_input_file()
+            # self.read_input_button.setEnabled(True)
+            self.__read_input_file()
 
     def __read_input_file(self) -> None:
         """Read Input File Button Function"""
@@ -148,7 +153,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.state_label.repaint()
         self.__set_buttons_enabled(False)
 
-        self.__participants_list = Reader(self.__input_path).read()
+        self.__participants_list = Reader.read(self.__input_path)
         self.__attributes_list = self.__participants_list[0].attributes.keys()
 
         # Construct Table
@@ -207,22 +212,29 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def __output_file_picker(self) -> None:
         """Select Output File Button Function"""
-        selectedPath = QFileDialog.getSaveFileName(
+        if self.__output_path:
+            preselected_dir = self.__output_path
+        elif self.__input_path:
+            preselected_dir = self.__input_path
+        else:
+            preselected_dir = "/"
+
+        selected_path = QFileDialog.getSaveFileName(
             caption="select output file",
-            directory=self.__input_path if self.__input_path else "/",
+            directory=preselected_dir,
             filter="Excel Files (*.xlsx *.xls)",
         )[0]
 
-        if selectedPath:
-            if not (selectedPath.endswith(".xlsx") or selectedPath.endswith(".xls")):
-                selectedPath += ".xlsx"
-            self.__output_path = selectedPath
+        if selected_path:
+            if not (selected_path.endswith(".xlsx") or selected_path.endswith(".xls")):
+                selected_path += ".xlsx"
 
-        self.output_progress.setVisible(False)
-        self.output_file_path_line_edit.setText(self.__output_path)
-        self.output_file_path_line_edit.repaint()
+            self.output_progress.setVisible(False)
+            self.__output_path = selected_path
+            self.output_file_path_line_edit.setText(self.__output_path)
+            self.output_file_path_line_edit.repaint()
 
-        self.run_algorithm_button.setEnabled(True)
+            self.run_algorithm_button.setEnabled(True)
 
     def construct_attribute_table(self) -> None:
         """Construct Attribute Table"""
@@ -232,12 +244,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         max_row_count: int = 0
         for j, attrbutes in enumerate(self.__attributes_list):
-            headerItem: QTableWidgetItem | None = (
+            header_item: QTableWidgetItem | None = (
                 self.attributes_table.horizontalHeaderItem(j)
             )
             if not (
-                isinstance(headerItem, CheckableHeaderItem)
-                and headerItem.text() == attrbutes
+                isinstance(header_item, CheckableHeaderItem)
+                and header_item.text() == attrbutes
             ):
                 should_be_checked: bool = (
                     attrbutes.lower()
@@ -331,6 +343,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
 def main():
+    """Entrypoint"""
     app: QApplication = QApplication(sys.argv)
     window: MainWindow = MainWindow()
     window.show()
