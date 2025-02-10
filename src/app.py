@@ -59,6 +59,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.redo_button.setEnabled(False)
         self.reset_synonyms_button.setEnabled(False)
 
+        output_progress_size_policy = self.output_progress.sizePolicy()
+        output_progress_size_policy.setRetainSizeWhenHidden(True)
+        self.output_progress.setSizePolicy(output_progress_size_policy)
+        self.output_progress.setVisible(False)
+
     def __run_algorithm(self) -> None:
         """Executes the algorithm and and writes the output."""
         if self.__input_path is None:
@@ -76,17 +81,30 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.state_label.setText("Status: Calculating...")
         self.state_label.repaint()
 
+        self.output_progress.setValue(0)
+        self.output_progress.setVisible(True)
+
         final_assignment: Assignment = algorithm_instance.find_assignment(
             self.__synonym_filter_participants(),
             int(self.groups_spinbox.value()),
             int(self.iterations_spinbox.value()),
             1000,
+            progress_callback=self.__progress_callback,
         )
 
         Writer(self.__output_path).write_file(final_assignment)
 
         self.state_label.setText("Status: Finished!")
         self.state_label.repaint()
+
+    def __progress_callback(self, current: int, maximum: int) -> None:
+        """Callback for the progress bar
+
+        :param current: current progress
+        :param maximum: maximum progress
+        """
+        self.output_progress.setValue(int((float(current) / float(maximum)) * 100.0))
+        self.output_progress.repaint()
 
     def __synonym_filter_participants(self) -> set[Participant]:
         """Returns a set of partcicpants that are each equivalent to one of the stored participants,
@@ -121,6 +139,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if selected_path:
             self.__input_path = selected_path
 
+            self.output_progress.setVisible(False)
             self.input_file_path_line_edit.setText(self.__input_path)
             self.input_file_path_line_edit.repaint()
 
@@ -210,8 +229,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             if not (selected_path.endswith(".xlsx") or selected_path.endswith(".xls")):
                 selected_path += ".xlsx"
 
+            self.output_progress.setVisible(False)
             self.__output_path = selected_path
             self.output_file_path_line_edit.setText(self.__output_path)
+            self.output_file_path_line_edit.repaint()
+
             self.run_algorithm_button.setEnabled(True)
 
     def construct_attribute_table(self) -> None:
