@@ -61,8 +61,8 @@ class AttributeMergeTable(QTableWidget):
                         self.item(i, col).setForeground(self.__saved_foreground)
             else:
                 if self.item(0, col) is not None:
-                    self.__saved_background = self.item(i, col).background()
-                    self.__saved_foreground = self.item(i, col).foreground()
+                    self.__saved_background = self.item(0, col).background()
+                    self.__saved_foreground = self.item(0, col).foreground()
                 for i in range(0, self.rowCount()):
                     if self.item(i, col) is not None:
                         self.item(i, col).setBackground(QColor("#AAAFB4"))
