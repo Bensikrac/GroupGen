@@ -188,7 +188,7 @@ def test_calculate_distibution(main_window_fixture, participants_list):
     """Test if distribution is calculated correctly"""
     window = main_window_fixture
 
-    result = window.__calculate_distribution(
+    result = window._MainWindow__calculate_distribution(
         participants_list,
         "Name",
     )
@@ -221,7 +221,7 @@ def test_sort_distribution(main_window_fixture, distribution):
 
     assert window.sorting_comboBox.currentText() == "Value"
 
-    result = window.__sort_distribution(distribution)
+    result = window._MainWindow__sort_distribution(distribution)
     expected = [
         ("Alpha", 1),
         ("Beta", 1),
@@ -236,7 +236,7 @@ def test_sort_distribution(main_window_fixture, distribution):
 
     assert window.sorting_comboBox.currentText() == "Frequency"
 
-    result = window.__sort_distribution(distribution)
+    result = window._MainWindow__sort_distribution(distribution)
     expected = [
         ("Charlie", 2),
         ("Alpha", 1),
