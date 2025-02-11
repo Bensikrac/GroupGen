@@ -17,25 +17,32 @@ class Reader:
         :param filepath: The path to the file to be read
         :return: The list of participants with initialized attributes"""
         workbook = python_calamine.CalamineWorkbook.from_path(filepath)
-        rows = iter(workbook.get_sheet_by_index(0).to_python())
+        rows = workbook.get_sheet_by_index(0).to_python()
 
+        columnes = list(map(list, zip(*rows)))
+        non_empty_columnes: list[int] = []
+
+        for i, column in enumerate(columnes):
+            filtered_column = list(filter(None, column))
+            if len(filtered_column) != 1:
+                non_empty_columnes += [i]
+
+        rows = iter(rows)
         headers = list(map(str, next(rows)))
 
         participant_list: list[Participant] = []
-        j: int = 0
 
         for row in rows:
-            p: Participant = Participant(j)
+            p: Participant = Participant()
 
             # All dates will be represented in the following form: 2025-01-31
-            for i, header in enumerate(headers):
+            for i in non_empty_columnes:
                 if isinstance(row[i], float) and row[i].is_integer():
-                    p.attributes[header] = f"{row[i]:.0f}"
+                    p.attributes[headers[i]] = f"{row[i]:.0f}"
                 else:
-                    p.attributes[header] = str(row[i])
+                    p.attributes[headers[i]] = str(row[i])
 
             participant_list.append(p)
-            j += 1
 
         return participant_list
 
