@@ -338,10 +338,10 @@ def main():
 
 
 def asset_path(relative_path) -> str:
-    """Returns the absolute path to an assets, works as dev and with pyinstaller.
-    Assumes the asset is in assets/ and added as data  on the top level in pyinstaller.
+    """Returns the path to an asset for usage with Qt, works as dev and with pyinstaller.
+    Assumes the asset is in assets/ and added as data on the top level in pyinstaller.
 
-    :param relative_path: The relative path to the assset
+    :param relative_path: The path to the asset relative to assets/
     :return: The absolute path
     """
     # pylint: disable=locally-disabled, protected-access, broad-exception-caught, no-member
