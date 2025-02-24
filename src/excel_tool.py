@@ -19,13 +19,13 @@ class Reader:
         workbook = python_calamine.CalamineWorkbook.from_path(filepath)
         rows = workbook.get_sheet_by_index(0).to_python()
 
-        columnes = list(map(list, zip(*rows)))
-        non_empty_columnes: list[int] = []
+        columns = list(map(list, zip(*rows)))
+        non_empty_columns: list[int] = []
 
-        for i, column in enumerate(columnes):
+        for i, column in enumerate(columns):
             filtered_column = list(filter(None, column))
             if len(filtered_column) != 1:
-                non_empty_columnes += [i]
+                non_empty_columns += [i]
 
         rows = iter(rows)
         headers = list(map(str, next(rows)))
@@ -36,7 +36,7 @@ class Reader:
             p: Participant = Participant()
 
             # All dates will be represented in the following form: 2025-01-31
-            for i in non_empty_columnes:
+            for i in non_empty_columns:
                 if isinstance(row[i], float) and row[i].is_integer():
                     p.attributes[headers[i]] = f"{row[i]:.0f}"
                 else:
