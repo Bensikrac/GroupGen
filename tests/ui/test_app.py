@@ -4,7 +4,7 @@ from unittest.mock import patch
 
 import pytest
 from app import MainWindow
-from PyQt6.QtWidgets import QFileDialog
+from PyQt6.QtWidgets import QFileDialog, QMessageBox
 
 from excel_tool import Writer
 
@@ -67,7 +67,8 @@ def test_run_workflow(main_window_fixture):
     main_window_fixture.iterations_spinbox.setValue(2)
 
     with patch.object(Writer, "write_file", return_value=None):
-        main_window_fixture._MainWindow__run_algorithm()
+        with patch.object(QMessageBox, "exec", return_value=None):
+            main_window_fixture._MainWindow__run_algorithm()
     assert main_window_fixture.state_label.text() == "Status: Finished!"
 
 

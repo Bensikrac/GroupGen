@@ -20,6 +20,32 @@ class ObjectiveFunction:
         self.__cached_mix_cost_max = -1.0
         self.__cached_diversity_cost_max = -1.0
 
+    def average_meetings(self, assignment: Assignment) -> float:
+        """Returns the average number of distinct participants a participant meets in a given assignment.
+
+        :param assignment: the assignment to calculate the average for
+        :return: the average number of participants met
+        """
+
+        participants: set[Participant] = set()
+        for group in assignment[0]:
+            participants = participants.union(group)
+
+        groups: list[Group] = [
+            group for iteration in assignment for group in iteration
+        ]  # list of all groups in assignment
+
+        amounts_met: list[int] = []
+
+        for participant in participants:
+            people_met: set[Participant] = set()
+            for group in groups:
+                if participant in group:
+                    people_met = people_met.union(group)
+            amounts_met.append(len(people_met) - 1)
+
+        return sum(amounts_met) / len(amounts_met)
+
     def mix_cost(self, assignment: Assignment) -> float:
         """Calculate a score based on the number of different participants each participant meets
 
