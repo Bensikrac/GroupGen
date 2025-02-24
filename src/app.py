@@ -108,26 +108,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         message_box: QMessageBox = QMessageBox()
         message_box.setTextFormat(Qt.TextFormat.RichText)
         message_box.setText(
-            "Algorithm executed successfully in "
-            + str(round(time_passed, 1))
-            + " seconds"
+            f"Algorithm executed successfully in {round(time_passed, 1)} seconds"
         )
         message_box.setInformativeText(
-            "Group assignments saved to </i>" + str(self.__output_path) + "</i>"
+            f"Group assignments saved to {self.__output_path}"
         )
         message_box.setDetailedText(
-            "The average participant encounters "
-            + str(round(average_participants_met, 1))
-            + " distinct other participants in this assignment."
+            f"The average participant encounters {round(average_participants_met, 1)} distinct other participants in this assignment."
             + os.linesep
             + os.linesep
-            + "(weighted cost: "
-            + str(round(weighted_cost, 4))
-            + ", mix cost: "
-            + str(round(mix_cost, 4))
-            + ", diversity cost: "
-            + str(round(diversity_cost, 4))
-            + ")"
+            + f"(weighted cost: {round(weighted_cost, 4)},  mix cost: {round(mix_cost, 4)}, diversity cost: {round(diversity_cost, 4)})"
         )
         # message_box.setStandardButtons(
         #    QMessageBox.StandardButton.Open | QMessageBox.StandardButton.Ok
