@@ -176,7 +176,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             args.append("/select,")
             args.append(QDir.toNativeSeparators(path))
             QProcess.startDetached("explorer", args)
-            
+
     def __progress_callback(self, current: int, maximum: int) -> None:
         """Callback for the progress bar
 
