@@ -7,11 +7,7 @@ from PyQt6.QtWidgets import (
     QTableWidgetItem,
     QWidget,
 )
-from PyQt6.QtGui import (
-    QMouseEvent,
-    QFont,
-    QWheelEvent,
-)
+from PyQt6.QtGui import QMouseEvent, QFont, QWheelEvent, QColor, QBrush
 from PyQt6.QtCore import Qt
 from ui.attribute_table_items import CheckableHeaderItem, MergeableAttributeItem
 from PyQt6.QtCore import QPoint, QModelIndex, QEvent
@@ -25,6 +21,8 @@ class AttributeMergeTable(QTableWidget):
     values: list[list[str]] = []
     __dragged_item: MergeableAttributeItem | None = None
     __main_window: "MainWindow"
+    __saved_background: QBrush = None
+    __saved_foreground: QBrush = None
 
     def __init__(self, parent: QWidget | None = None):
         super().__init__(parent)
@@ -49,6 +47,26 @@ class AttributeMergeTable(QTableWidget):
     def __header_click(self, col: int) -> None:
         clicked_item = self.horizontalHeaderItem(col)
         if isinstance(clicked_item, CheckableHeaderItem):
+            newcount: int = (
+                int(self.__main_window.excluded_column_number_label.text()) + 1
+                if clicked_item.checked
+                else int(self.__main_window.excluded_column_number_label.text()) - 1
+            )
+            self.__main_window.excluded_column_number_label.setText(str(newcount))
+
+            if clicked_item.checked == False:
+                for i in range(0, self.rowCount()):
+                    if self.item(i, col) is not None:
+                        self.item(i, col).setBackground(self.__saved_background)
+                        self.item(i, col).setForeground(self.__saved_foreground)
+            else:
+                if self.item(0, col) is not None:
+                    self.__saved_background = self.item(0, col).background()
+                    self.__saved_foreground = self.item(0, col).foreground()
+                for i in range(0, self.rowCount()):
+                    if self.item(i, col) is not None:
+                        self.item(i, col).setBackground(QColor("#AAAFB4"))
+                        self.item(i, col).setForeground(QColor("#555555"))
             clicked_item.checked = not clicked_item.checked
             font: QFont = QFont()
             # font.setBold(clicked_item.checked)

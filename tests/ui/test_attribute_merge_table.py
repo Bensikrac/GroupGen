@@ -211,13 +211,16 @@ def test_header_clicked(app_fixture):
     test_table._AttributeMergeTable__header_click(0)
     assert not test_item_1.checked
     assert test_item_1.font().strikeOut()
+    assert test_window.excluded_column_number_label.text() == "1"
 
     test_table._AttributeMergeTable__header_click(0)
     assert test_item_1.checked
     assert not test_item_1.font().strikeOut()
+    assert test_window.excluded_column_number_label.text() == "0"
 
     test_table._AttributeMergeTable__header_click(1)
     assert not test_item_2.checked
     assert test_item_2.font().strikeOut()
+    assert test_window.excluded_column_number_label.text() == "1"
 
     test_window.close()

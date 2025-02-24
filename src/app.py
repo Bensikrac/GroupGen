@@ -5,6 +5,8 @@ from operator import itemgetter
 import os
 import sys
 import time
+import ctypes
+
 from PyQt6.QtWidgets import (
     QApplication,
     QMainWindow,
@@ -14,7 +16,7 @@ from PyQt6.QtWidgets import (
     QPushButton,
     QAbstractButton,
 )
-from PyQt6.QtGui import QDesktopServices
+from PyQt6.QtGui import QDesktopServices, QIcon
 from PyQt6.QtCore import QUrl, Qt, QProcess, QDir
 from algorithm.objective_function import ObjectiveFunction
 from algorithm.simulated_annealing_algorithm import SimulatedAnnealingAlgorithm
@@ -48,6 +50,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.attributes_table.set_main_window(self)
 
         self.setWindowTitle("GroupGen")
+        # self.setWindowIcon(QIcon(asset_path("groupgen_logo3_icon.ico")))
+        QApplication.setWindowIcon(QIcon(asset_path("groupgen_logo3_icon.ico")))
+
+        if sys.platform.startswith("win32"):
+            app_id = "impulse.groupgen.app"
+            ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(app_id)
 
         self.input_pick_button.clicked.connect(self.__input_file_picker)
         # self.read_input_button.clicked.connect(self.__read_input_file)
@@ -62,9 +70,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.run_algorithm_button.setEnabled(False)
         # self.select_synonym_button.setEnabled(False)
         self.select_synonym_label.setVisible(False)
+        self.excluded_column_count_label.setVisible(False)
+        self.excluded_column_number_label.setVisible(False)
         self.undo_button.setEnabled(False)
         self.redo_button.setEnabled(False)
         self.reset_synonyms_button.setEnabled(False)
+
+        output_progress_size_policy = self.output_progress.sizePolicy()
+        output_progress_size_policy.setRetainSizeWhenHidden(True)
+        self.output_progress.setSizePolicy(output_progress_size_policy)
+        self.output_progress.setVisible(False)
 
     def __run_algorithm(self) -> None:
         """Executes the algorithm and and writes the output."""
@@ -86,11 +101,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.state_label.setText("Status: Calculating...")
         self.state_label.repaint()
 
+        self.output_progress.setValue(0)
+        self.output_progress.setVisible(True)
+
         final_assignment: Assignment = algorithm_instance.find_assignment(
             self.__synonym_filter_participants(),
             int(self.groups_spinbox.value()),
             int(self.iterations_spinbox.value()),
             1000,
+            progress_callback=self.__progress_callback,
         )
 
         Writer(self.__output_path).write_file(final_assignment)
@@ -157,6 +176,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             args.append("/select,")
             args.append(QDir.toNativeSeparators(path))
             QProcess.startDetached("explorer", args)
+            
+    def __progress_callback(self, current: int, maximum: int) -> None:
+        """Callback for the progress bar
+
+        :param current: current progress
+        :param maximum: maximum progress
+        """
+        self.output_progress.setValue(int((float(current) / float(maximum)) * 100.0))
+        self.output_progress.repaint()
 
     def __synonym_filter_participants(self) -> set[Participant]:
         """Returns a set of partcicpants that are each equivalent to one of the stored participants,
@@ -191,6 +219,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if selected_path:
             self.__input_path = selected_path
 
+            self.output_progress.setVisible(False)
             self.input_file_path_line_edit.setText(self.__input_path)
             self.input_file_path_line_edit.repaint()
 
@@ -214,6 +243,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.state_label.setText("Status: Finished Reading...")
         self.state_label.repaint()
         self.select_synonym_label.setVisible(True)
+        self.excluded_column_count_label.setVisible(True)
+        self.excluded_column_number_label.setVisible(True)
+        self.excluded_column_number_label.setText("0")
         self.__set_buttons_enabled(True)
         self.__update_undo_redo()
 
@@ -280,8 +312,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             if not (selected_path.endswith(".xlsx") or selected_path.endswith(".xls")):
                 selected_path += ".xlsx"
 
+            self.output_progress.setVisible(False)
             self.__output_path = selected_path
             self.output_file_path_line_edit.setText(self.__output_path)
+            self.output_file_path_line_edit.repaint()
+
             self.run_algorithm_button.setEnabled(True)
 
     def construct_attribute_table(self) -> None:
@@ -396,6 +431,26 @@ def main():
     window: MainWindow = MainWindow()
     window.show()
     app.exec()
+
+
+def asset_path(relative_path) -> str:
+    """Returns the path to an asset for usage with Qt, works as dev and with pyinstaller.
+    Assumes the asset is in assets/ and added as data on the top level in pyinstaller.
+
+    :param relative_path: The path to the asset relative to assets/
+    :return: The path to the asset, transformed so it is usable as an asset in Qt without further modification
+    """
+    # pylint: disable=locally-disabled, protected-access, broad-exception-caught, no-member
+    if sys.platform.startswith("win32"):
+        try:
+            # PyInstaller creates a temp folder and stores path in _MEIPASS
+            base_path = sys._MEIPASS
+        except Exception:
+            base_path = "assets/"
+    else:
+        base_path = "assets/"
+
+    return os.path.join(base_path, relative_path)
 
 
 if __name__ == "__main__":

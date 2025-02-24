@@ -10,6 +10,7 @@ from data_structures import Participant, Group, Iteration, Assignment
 class Reader:
     """class that reads excel sheets and turns the table into a list of participants using python_calamine"""
 
+    @staticmethod
     def read(filepath: os.PathLike) -> list[Participant]:
         """Reads an excel file on the speciefied location and creates a list of participants from it.
 
@@ -27,11 +28,11 @@ class Reader:
             p: Participant = Participant(j)
 
             # All dates will be represented in the following form: 2025-01-31
-            for i in range(0, len(headers)):
+            for i, header in enumerate(headers):
                 if isinstance(row[i], float) and row[i].is_integer():
-                    p.attributes[headers[i]] = f"{row[i]:.0f}"
+                    p.attributes[header] = f"{row[i]:.0f}"
                 else:
-                    p.attributes[headers[i]] = str(row[i])
+                    p.attributes[header] = str(row[i])
 
             participant_list.append(p)
             j += 1

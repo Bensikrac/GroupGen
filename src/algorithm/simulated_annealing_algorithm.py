@@ -3,7 +3,7 @@
 from copy import copy
 from math import exp
 from random import Random
-from typing import Any
+from typing import Any, Callable
 from algorithm.objective_function import ObjectiveFunction
 from algorithm.random_algorithm import RandomAlgorithm
 from data_structures import Assignment, Iteration, Participant
@@ -37,6 +37,7 @@ class SimulatedAnnealingAlgorithm:
         temperature_scaling: float = 15,
         mix_weight: float = 1,
         diversity_weight: float = 1,
+        progress_callback: Callable[[int, int], None] | None = None,
     ) -> Assignment:
         """Return a group assignment generated using simulated annealing.
 
@@ -51,6 +52,7 @@ class SimulatedAnnealingAlgorithm:
         :param mix_weight: the weight of the mix cost when evaluating assignments,
         only the size of this number compared to the diversity weight matters, defaults to 1
         :param diversity_weight: the weight of the diversity cost, defaults to 1
+        :param progress_callback: gets called with current progress and total progress (optional)
 
         :return: the generated assignment
         """
@@ -59,6 +61,8 @@ class SimulatedAnnealingAlgorithm:
             participants, groups_per_iteration, iterations
         )
         objective: ObjectiveFunction = ObjectiveFunction(self.attributes)
+        if progress_callback is not None:
+            progress_callback(0, max_cycles)
         for i in range(1, max_cycles + 1):
             temperature: float = self.get_temperature(
                 i / max_cycles, intitial_temperature, temperature_scaling
@@ -78,6 +82,8 @@ class SimulatedAnnealingAlgorithm:
                     assignment, mix_weight, diversity_weight
                 )
             )
+            if progress_callback is not None:
+                progress_callback(i, max_cycles)
         return assignment
 
     def __should_take_step(
