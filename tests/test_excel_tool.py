@@ -6,9 +6,10 @@ from data_structures import Participant
 from data_structures import Assignment, Iteration, Group
 
 
-def main(self):
+def test_tool():
+    Participant.current_uid = 0
     list = Reader.read("test_data/excel_reader_test_0.xlsx")
-    __output_path: os.PathLike = "test_data/excel_writer_test_0.xlsx"
+    output_path: os.PathLike = "test_data/excel_writer_test_0.xlsx"
 
     testobject1 = Participant(
         0,
@@ -88,7 +89,7 @@ def main(self):
 
     assign: Assignment = [iter1, iter2]
 
-    Writer(self.__output_path).write_file(assign)
+    Writer(output_path).write_file(assign)
 
     # Now check if the groups and iterations match please
 
