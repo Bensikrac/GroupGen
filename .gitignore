@@ -52,6 +52,9 @@ coverage.xml
 .pytest_cache/
 cover/
 
+# Writer test files
+test_data/test_data/excel_writer_test_0.xlsx
+
 # Translations
 *.mo
 *.pot
