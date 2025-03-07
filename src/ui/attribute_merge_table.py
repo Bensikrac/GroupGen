@@ -61,11 +61,11 @@ class AttributeMergeTable(QTableWidget):
             # Update attribute state to the next one (wrapping back to NORMAL after the last state)
             clicked_item.state = AttributeState((clicked_item.state.value + 1) % 4)
 
-            self.__update_column_visuals(col, clicked_item.state)
+            self.update_column_visuals(col, clicked_item.state)
             # font.setBold(clicked_item.checked)
             self.update()
 
-    def __update_column_visuals(self, col: int, state: AttributeState):
+    def update_column_visuals(self, col: int, state: AttributeState):
         font: QFont = QFont()
         font.setStrikeOut(False)
         font.setItalic(False)
@@ -81,6 +81,7 @@ class AttributeMergeTable(QTableWidget):
 
         if state == AttributeState.DEACTIVATED:
             font.setStrikeOut(True)
+            header_item.setForeground(QBrush(transparent_text_color))
 
             for i in range(0, self.rowCount()):
                 if self.item(i, col) is not None:

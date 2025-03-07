@@ -23,7 +23,7 @@ class SimulatedAnnealingAlgorithm:
     temperatures: list[float] = []
     scores: list[float] = []
 
-    def __init__(self, attributes: list[str], random_instance: Random = None):
+    def __init__(self, attributes: list[str], random_instance: Random = None, attribute_weights: dict[str, float] = dict()):
         self.__random = Random() if random_instance is None else random_instance
         self.attributes = attributes
 

@@ -22,6 +22,7 @@ class ObjectiveFunction:
         self.__attribute_classes = attribute_classes
         self.__cached_mix_cost_max = -1.0
         self.__cached_diversity_cost_max = -1.0
+        self.__attribute_weights = attribute_weights
 
     def average_meetings(self, assignment: Assignment) -> float:
         """Returns the average number of distinct participants a participant meets in a given assignment.
