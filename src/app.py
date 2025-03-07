@@ -20,7 +20,7 @@ from PyQt6.QtGui import QDesktopServices, QIcon
 from PyQt6.QtCore import QUrl, Qt, QProcess, QDir
 from algorithm.objective_function import ObjectiveFunction
 from algorithm.simulated_annealing_algorithm import SimulatedAnnealingAlgorithm
-from ui.attribute_table_items import CheckableHeaderItem
+from ui.attribute_table_items import AttributeState, CheckableHeaderItem
 from excel_tool import Reader, Writer
 from data_structures import Participant, Assignment
 from assets.main_window import Ui_MainWindow
@@ -351,7 +351,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
                 self.attributes_table.setHorizontalHeaderItem(
                     j,
-                    CheckableHeaderItem(attrbutes, should_be_checked),
+                    CheckableHeaderItem(
+                        attrbutes,
+                        (
+                            AttributeState.NORMAL
+                            if should_be_checked
+                            else AttributeState.DEACTIVATED
+                        ),
+                    ),
                 )
 
             unique_attributes: list[tuple[str, int]] = self.__calculate_distribution(
@@ -427,6 +434,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 def main():
     """Entrypoint"""
+    QApplication.setStyle("fusion")
     app: QApplication = QApplication(sys.argv)
     window: MainWindow = MainWindow()
     window.show()

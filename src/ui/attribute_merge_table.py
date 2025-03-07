@@ -7,9 +7,13 @@ from PyQt6.QtWidgets import (
     QTableWidgetItem,
     QWidget,
 )
-from PyQt6.QtGui import QMouseEvent, QFont, QWheelEvent, QColor, QBrush
+from PyQt6.QtGui import QMouseEvent, QFont, QWheelEvent, QColor, QBrush, QStyleHints, QGuiApplication
 from PyQt6.QtCore import Qt
-from ui.attribute_table_items import CheckableHeaderItem, MergeableAttributeItem
+from ui.attribute_table_items import (
+    AttributeState,
+    CheckableHeaderItem,
+    MergeableAttributeItem,
+)
 from PyQt6.QtCore import QPoint, QModelIndex, QEvent
 
 
@@ -28,8 +32,13 @@ class AttributeMergeTable(QTableWidget):
         super().__init__(parent)
         header = self.horizontalHeader()
         header.sectionClicked.connect(self.__header_click)
+        header.sectionDoubleClicked.connect(self.__header_click)
         self.setStyleSheet(
             """
+            QTableWidget::item {
+                border-radius: 0px 
+            }
+
             QTableWidget::item:selected {
                 background: transparent;
                 color: black;
@@ -45,34 +54,65 @@ class AttributeMergeTable(QTableWidget):
         self.setStyleSheet("QTableWidget::item:hover { background: none; }")
 
     def __header_click(self, col: int) -> None:
+        print("click")
         clicked_item = self.horizontalHeaderItem(col)
         if isinstance(clicked_item, CheckableHeaderItem):
-            newcount: int = (
-                int(self.__main_window.excluded_column_number_label.text()) + 1
-                if clicked_item.checked
-                else int(self.__main_window.excluded_column_number_label.text()) - 1
-            )
-            self.__main_window.excluded_column_number_label.setText(str(newcount))
 
-            if clicked_item.checked == False:
-                for i in range(0, self.rowCount()):
-                    if self.item(i, col) is not None:
-                        self.item(i, col).setBackground(self.__saved_background)
-                        self.item(i, col).setForeground(self.__saved_foreground)
-            else:
-                if self.item(0, col) is not None:
-                    self.__saved_background = self.item(0, col).background()
-                    self.__saved_foreground = self.item(0, col).foreground()
-                for i in range(0, self.rowCount()):
-                    if self.item(i, col) is not None:
-                        self.item(i, col).setBackground(QColor("#AAAFB4"))
-                        self.item(i, col).setForeground(QColor("#555555"))
-            clicked_item.checked = not clicked_item.checked
-            font: QFont = QFont()
+            # Update attribute state to the next one (wrapping back to NORMAL after the last state)
+            clicked_item.state = AttributeState((clicked_item.state.value + 1) % 4)
+
+            self.__update_column_visuals(col, clicked_item.state)
             # font.setBold(clicked_item.checked)
-            font.setStrikeOut(not clicked_item.checked)
-            clicked_item.setFont(font)
             self.update()
+
+    def __update_column_visuals(self, col: int, state: AttributeState):
+        font: QFont = QFont()
+        font.setStrikeOut(False)
+        font.setItalic(False)
+        font.setBold(False)
+        header_item: QTableWidgetItem = self.horizontalHeaderItem(col)
+
+        if QGuiApplication.styleHints().colorScheme() == Qt.ColorScheme.Dark:
+            full_text_color: QColor = QColor(255, 255, 255)
+            transparent_text_color: QColor = QColor(255, 255, 255, 150)
+        else:
+            full_text_color: QColor = QColor(0, 0, 0)
+            transparent_text_color: QColor = QColor(0, 0, 0, 150)
+
+        if state == AttributeState.DEACTIVATED:
+            font.setStrikeOut(True)
+
+            for i in range(0, self.rowCount()):
+                if self.item(i, col) is not None:
+                    #self.item(i, col).setBackground(self.__saved_background)
+                    self.item(i, col).setData(Qt.ItemDataRole.BackgroundRole, QColor(125, 125, 125, 20))
+                    self.item(i, col).setData(Qt.ItemDataRole.ForegroundRole, transparent_text_color)
+        elif state == AttributeState.PRIORITIZED:
+            font.setBold(True)
+            header_item.setForeground(QBrush(QColor(20, 255, 50)))
+
+            for i in range(0, self.rowCount()):
+                if self.item(i, col) is not None:
+                    #self.item(i, col).setBackground(self.__saved_background)
+                    self.item(i, col).setData(Qt.ItemDataRole.BackgroundRole, QColor(0, 200, 0, 10))
+                    self.item(i, col).setData(Qt.ItemDataRole.ForegroundRole, full_text_color)
+        elif state == AttributeState.DEPRIORITIZED:
+            font.setItalic(True)
+            header_item.setForeground(QBrush(QColor(225, 50, 50)))
+
+            for i in range(0, self.rowCount()):
+                if self.item(i, col) is not None:
+                    #self.item(i, col).setBackground(self.__saved_background)
+                    self.item(i, col).setData(Qt.ItemDataRole.BackgroundRole, QColor(200, 0, 0, 10))
+                    self.item(i, col).setData(Qt.ItemDataRole.ForegroundRole, full_text_color)
+        else:
+            header_item.setForeground(QBrush(full_text_color))
+
+            for i in range(0, self.rowCount()):
+                if self.item(i, col) is not None:
+                    self.item(i, col).setData(Qt.ItemDataRole.BackgroundRole, QColor(0,0,0,0))
+                    self.item(i, col).setData(Qt.ItemDataRole.ForegroundRole, full_text_color)
+        header_item.setFont(font)
 
     def set_main_window(self, main_window: "MainWindow") -> None:
         """Sets the table's connected main window to a given value.
@@ -92,6 +132,11 @@ class AttributeMergeTable(QTableWidget):
 
             if isinstance(clicked_item, MergeableAttributeItem):
                 self.__dragged_item = clicked_item
+            else:
+                columnIndex: int = self.columnAt(event.pos().x())
+                if columnIndex != -1:
+                    self.__header_click(columnIndex)
+            
         # else:
         # super().mousePressEvent(event)
 

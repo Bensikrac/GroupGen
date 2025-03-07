@@ -1,5 +1,6 @@
 """Module containing cells for the attribute table"""
 
+from enum import Enum
 from typing import override
 from PyQt6.QtWidgets import QTableWidgetItem
 
@@ -18,15 +19,24 @@ class MergeableAttributeItem(QTableWidgetItem):
         self.value = value
 
 
-class CheckableHeaderItem(QTableWidgetItem):
-    """A QTablewidgetItem that can be checked and unchecked with a click.
+class AttributeState(Enum):
+    NORMAL = 0
+    DEACTIVATED = 1
+    PRIORITIZED = 2
+    DEPRIORITIZED = 3
 
-    :param text: The text the itrem is labeled with, defaults to ""
-    :param checked: Whether the item starts out enabled or not, defaults to False
+
+class CheckableHeaderItem(QTableWidgetItem):
+    """A QTablewidgetItem that stores a state.
+
+    :param text: The text the item is labeled with, defaults to ""
+    :param checked: The state the item starts with, defaults to NORMAL
     """
 
-    checked: bool
+    state: AttributeState
 
-    def __init__(self, text: str = "", checked: bool = False) -> None:
+    def __init__(
+        self, text: str = "", state: AttributeState = AttributeState.NORMAL
+    ) -> None:
         super().__init__(text)
-        self.checked = checked
+        self.state = state

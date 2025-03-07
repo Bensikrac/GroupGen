@@ -8,10 +8,13 @@ class ObjectiveFunction:
     """Contains all calculations necessary to evaluate the quality of a group assignment"""
 
     __attribute_classes: list[str]
+    __attribute_weights: dict[str, float]
     __cached_mix_cost_max: float
     __cached_diversity_cost_max: float
 
-    def __init__(self, attribute_classes: list[str]) -> None:
+    def __init__(
+        self, attribute_classes: list[str], attribute_weights: dict[str, float] = dict()
+    ) -> None:
         """Set attributes to the given list
 
         :param attributes: a list of attributes
@@ -143,11 +146,15 @@ class ObjectiveFunction:
         """
 
         count: float = 0.0
+        weight: float = 1
+
+        if attribute in self.__attribute_weights.keys():
+            weight = self.__attribute_weights[attribute]
 
         for participant in group:
             if participant.get_attribute(attribute) == value:
                 count += 1.0
-        return count**2
+        return weight * count**2
 
     def __diversity_cost_max(self, sample_assignment: Assignment) -> float:
         """Return an upper bound for the unnormalized diversity cost,
