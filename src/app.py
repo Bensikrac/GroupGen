@@ -81,6 +81,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if QGuiApplication.styleHints().colorScheme() == Qt.ColorScheme.Dark:
             ignored_text = "<span style='color: rgba(255, 255, 255, 150);'><s>ignored,</s></span>"
 
+        self.weigh_attribute_label.setTextFormat(Qt.TextFormat.RichText)
         self.weigh_attribute_label.setText(
             "Click on a column header to switch between that attribute being treated normally, "+
             ignored_text +
