@@ -85,7 +85,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.weigh_attribute_label.setText(
             "Click on a column header to switch between that attribute being treated normally, "+
             ignored_text +
-            "<span style='color: rgb(20, 255, 50);'><b> prioritized by a factor of 2</b></span>" +
+            "<span style='color: rgb(20, 200, 50);'><b> prioritized by a factor of 2</b></span>" +
             " or "+
             "<span style='color: rgb(225, 50, 50);'><i>deprioritized by a factor 2</i></span>"+
             " by the algorithm"

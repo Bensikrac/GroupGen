@@ -94,7 +94,7 @@ class AttributeMergeTable(QTableWidget):
                     self.item(i, col).setData(Qt.ItemDataRole.ForegroundRole, transparent_text_color)
         elif state == AttributeState.PRIORITIZED:
             font.setBold(True)
-            header_item.setForeground(QBrush(QColor(20, 255, 50)))
+            header_item.setForeground(QBrush(QColor(20, 200, 50)))
 
             for i in range(0, self.rowCount()):
                 if self.item(i, col) is not None:
