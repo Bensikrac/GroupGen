@@ -7,6 +7,7 @@ from random import Random
 import sys
 import time
 import ctypes
+from typing import override
 
 from PyQt6.QtWidgets import (
     QApplication,
@@ -17,7 +18,7 @@ from PyQt6.QtWidgets import (
     QPushButton,
     QAbstractButton,
 )
-from PyQt6.QtGui import QDesktopServices, QIcon, QGuiApplication
+from PyQt6.QtGui import QDesktopServices, QIcon, QGuiApplication, QFocusEvent
 from PyQt6.QtCore import QUrl, Qt, QProcess, QDir
 from algorithm.objective_function import ObjectiveFunction
 from algorithm.simulated_annealing_algorithm import SimulatedAnnealingAlgorithm
@@ -454,6 +455,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 result.append(new_entry)
 
         return sorted(result, key=itemgetter(0))
+    
+    @override
+    def focusOutEvent(self, event: QFocusEvent):
+        """Reconstructs the table on focus-in to avoid weirdness with selection highlighting."""
+        super().focusOutEvent(event)
+        self.construct_attribute_table()
 
 
 def main():

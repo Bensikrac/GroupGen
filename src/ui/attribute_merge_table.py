@@ -7,14 +7,14 @@ from PyQt6.QtWidgets import (
     QTableWidgetItem,
     QWidget,
 )
-from PyQt6.QtGui import QMouseEvent, QFont, QWheelEvent, QColor, QBrush, QStyleHints, QGuiApplication
+from PyQt6.QtGui import QMouseEvent, QFont, QWheelEvent, QColor, QBrush, QGuiApplication, QFocusEvent
 from PyQt6.QtCore import Qt
 from ui.attribute_table_items import (
     AttributeState,
     CheckableHeaderItem,
     MergeableAttributeItem,
 )
-from PyQt6.QtCore import QPoint, QModelIndex, QEvent
+from PyQt6.QtCore import QPoint
 
 
 class AttributeMergeTable(QTableWidget):
@@ -54,7 +54,6 @@ class AttributeMergeTable(QTableWidget):
         self.setStyleSheet("QTableWidget::item:hover { background: none; }")
 
     def __header_click(self, col: int) -> None:
-        print("click")
         clicked_item = self.horizontalHeaderItem(col)
         if isinstance(clicked_item, CheckableHeaderItem):
 
@@ -66,6 +65,11 @@ class AttributeMergeTable(QTableWidget):
             self.update()
 
     def update_column_visuals(self, col: int, state: AttributeState):
+        """Updates the visuals of a given column to represent a given state.
+
+        :param col: The column to change
+        :param state: The state
+        """
         font: QFont = QFont()
         font.setStrikeOut(False)
         font.setItalic(False)
@@ -133,10 +137,7 @@ class AttributeMergeTable(QTableWidget):
 
             if isinstance(clicked_item, MergeableAttributeItem):
                 self.__dragged_item = clicked_item
-            else:
-                columnIndex: int = self.columnAt(event.pos().x())
-                if columnIndex != -1:
-                    self.__header_click(columnIndex)
+            
             
         # else:
         # super().mousePressEvent(event)
@@ -185,8 +186,6 @@ class AttributeMergeTable(QTableWidget):
         self.clearSelection()
         if self.__dragged_item != None:
             self.__updateMouseAndSelection(event)
-        else:
-            super().mouseMoveEvent(event)
         self.update()
 
     def __updateMouseAndSelection(self, event: QMouseEvent | QWheelEvent) -> None:
@@ -205,6 +204,12 @@ class AttributeMergeTable(QTableWidget):
         super().wheelEvent(event)
         self.clearSelection()
         self.__updateMouseAndSelection(event)
+
+    @override
+    def focusInEvent(self, event: QFocusEvent):
+        """Reconstructs the table on focus-in to avoid weirdness with selection highlighting."""
+        super().focusInEvent(event)
+        self.__main_window.construct_attribute_table()
 
     def __can_drop(self, point: QPoint) -> bool:
         """Returns whether a drop can currently happen at the given.

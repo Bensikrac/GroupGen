@@ -20,6 +20,8 @@ class MergeableAttributeItem(QTableWidgetItem):
 
 
 class AttributeState(Enum):
+    """The state of an attribute/column of the attribute table.
+    """
     NORMAL = 0
     DEACTIVATED = 1
     PRIORITIZED = 2
@@ -30,7 +32,7 @@ class CheckableHeaderItem(QTableWidgetItem):
     """A QTablewidgetItem that stores a state.
 
     :param text: The text the item is labeled with, defaults to ""
-    :param checked: The state the item starts with, defaults to NORMAL
+    :param state: The state the item starts with, defaults to NORMAL
     """
 
     state: AttributeState
