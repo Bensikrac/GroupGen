@@ -15,9 +15,10 @@ class ObjectiveFunction:
     def __init__(
         self, attribute_classes: list[str], attribute_weights: dict[str, float] = dict()
     ) -> None:
-        """Set attributes to the given list
+        """Set attributes to the given list and attribute_weights to the given dict
 
         :param attributes: a list of attributes
+        :param attribute_weights: a dict mapping attributes to float weights, defaults to an empty dict
         """
         self.__attribute_classes = attribute_classes
         self.__cached_mix_cost_max = -1.0

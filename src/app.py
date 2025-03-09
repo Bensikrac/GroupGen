@@ -77,19 +77,23 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.redo_button.setEnabled(False)
         self.reset_synonyms_button.setEnabled(False)
 
-        ignored_text: str = "<span style='color: rgba(0, 0, 0, 150);'><s>ignored,</s></span>"
+        ignored_text: str = (
+            "<span style='color: rgba(0, 0, 0, 150);'><s>ignored,</s></span>"
+        )
         if QGuiApplication.styleHints().colorScheme() == Qt.ColorScheme.Dark:
-            ignored_text = "<span style='color: rgba(255, 255, 255, 150);'><s>ignored,</s></span>"
+            ignored_text = (
+                "<span style='color: rgba(255, 255, 255, 150);'><s>ignored,</s></span>"
+            )
 
         self.weigh_attribute_label.setTextFormat(Qt.TextFormat.RichText)
         self.weigh_attribute_label.setText(
-            "Click on a column header to switch between that attribute being treated normally, "+
-            ignored_text +
-            "<span style='color: rgb(20, 200, 50);'><b> prioritized by a factor of 2</b></span>" +
-            " or "+
-            "<span style='color: rgb(225, 50, 50);'><i>deprioritized by a factor 2</i></span>"+
-            " by the algorithm"
-            )
+            "Click on a column header to switch between that attribute being treated normally, "
+            + ignored_text
+            + "<span style='color: rgb(20, 200, 50);'><b> prioritized by a factor of 2</b></span>"
+            + " or "
+            + "<span style='color: rgb(225, 50, 50);'><i>deprioritized by a factor 2</i></span>"
+            + " by the algorithm"
+        )
 
         output_progress_size_policy = self.output_progress.sizePolicy()
         output_progress_size_policy.setRetainSizeWhenHidden(True)
@@ -348,7 +352,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 and header_item.text() == attrbutes
             ):
                 should_be_checked: bool = (
-                    attrbutes.lower() not in [
+                    attrbutes.lower()
+                    not in [
                         "name",
                         "first name",
                         "last name",
@@ -383,8 +388,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
             for i, (attr, nmb) in enumerate(unique_attributes):
                 self.attributes_table.set_value(i, j, attr, nmb)
-            
-            new_header_item: CheckableHeaderItem = self.attributes_table.horizontalHeaderItem(j)
+
+            new_header_item: CheckableHeaderItem = (
+                self.attributes_table.horizontalHeaderItem(j)
+            )
             self.attributes_table.update_column_visuals(j, new_header_item.state)
 
         self.attributes_table.update()
@@ -393,7 +400,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         enabled_attributes: list[str] = []
         for i in range(len(self.__attributes_list)):
             item: QTableWidgetItem = self.attributes_table.horizontalHeaderItem(i)
-            if isinstance(item, CheckableHeaderItem) and item.state != AttributeState.DEACTIVATED:
+            if (
+                isinstance(item, CheckableHeaderItem)
+                and item.state != AttributeState.DEACTIVATED
+            ):
                 enabled_attributes.append(list(self.__attributes_list)[i])
         return enabled_attributes
 
@@ -456,7 +466,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 result.append(new_entry)
 
         return sorted(result, key=itemgetter(0))
-    
+
     @override
     def focusOutEvent(self, event: QFocusEvent):
         """Reconstructs the table on focus-in to avoid weirdness with selection highlighting."""

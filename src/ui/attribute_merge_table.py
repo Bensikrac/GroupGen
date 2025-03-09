@@ -7,7 +7,15 @@ from PyQt6.QtWidgets import (
     QTableWidgetItem,
     QWidget,
 )
-from PyQt6.QtGui import QMouseEvent, QFont, QWheelEvent, QColor, QBrush, QGuiApplication, QFocusEvent
+from PyQt6.QtGui import (
+    QMouseEvent,
+    QFont,
+    QWheelEvent,
+    QColor,
+    QBrush,
+    QGuiApplication,
+    QFocusEvent,
+)
 from PyQt6.QtCore import Qt
 from ui.attribute_table_items import (
     AttributeState,
@@ -89,34 +97,50 @@ class AttributeMergeTable(QTableWidget):
 
             for i in range(0, self.rowCount()):
                 if self.item(i, col) is not None:
-                    #self.item(i, col).setBackground(self.__saved_background)
-                    self.item(i, col).setData(Qt.ItemDataRole.BackgroundRole, QColor(125, 125, 125, 20))
-                    self.item(i, col).setData(Qt.ItemDataRole.ForegroundRole, transparent_text_color)
+                    # self.item(i, col).setBackground(self.__saved_background)
+                    self.item(i, col).setData(
+                        Qt.ItemDataRole.BackgroundRole, QColor(125, 125, 125, 20)
+                    )
+                    self.item(i, col).setData(
+                        Qt.ItemDataRole.ForegroundRole, transparent_text_color
+                    )
         elif state == AttributeState.PRIORITIZED:
             font.setBold(True)
             header_item.setForeground(QBrush(QColor(20, 200, 50)))
 
             for i in range(0, self.rowCount()):
                 if self.item(i, col) is not None:
-                    #self.item(i, col).setBackground(self.__saved_background)
-                    self.item(i, col).setData(Qt.ItemDataRole.BackgroundRole, QColor(0, 200, 0, 10))
-                    self.item(i, col).setData(Qt.ItemDataRole.ForegroundRole, full_text_color)
+                    # self.item(i, col).setBackground(self.__saved_background)
+                    self.item(i, col).setData(
+                        Qt.ItemDataRole.BackgroundRole, QColor(0, 200, 0, 10)
+                    )
+                    self.item(i, col).setData(
+                        Qt.ItemDataRole.ForegroundRole, full_text_color
+                    )
         elif state == AttributeState.DEPRIORITIZED:
             font.setItalic(True)
             header_item.setForeground(QBrush(QColor(225, 50, 50)))
 
             for i in range(0, self.rowCount()):
                 if self.item(i, col) is not None:
-                    #self.item(i, col).setBackground(self.__saved_background)
-                    self.item(i, col).setData(Qt.ItemDataRole.BackgroundRole, QColor(200, 0, 0, 10))
-                    self.item(i, col).setData(Qt.ItemDataRole.ForegroundRole, full_text_color)
+                    # self.item(i, col).setBackground(self.__saved_background)
+                    self.item(i, col).setData(
+                        Qt.ItemDataRole.BackgroundRole, QColor(200, 0, 0, 10)
+                    )
+                    self.item(i, col).setData(
+                        Qt.ItemDataRole.ForegroundRole, full_text_color
+                    )
         else:
             header_item.setForeground(QBrush(full_text_color))
 
             for i in range(0, self.rowCount()):
                 if self.item(i, col) is not None:
-                    self.item(i, col).setData(Qt.ItemDataRole.BackgroundRole, QColor(0,0,0,0))
-                    self.item(i, col).setData(Qt.ItemDataRole.ForegroundRole, full_text_color)
+                    self.item(i, col).setData(
+                        Qt.ItemDataRole.BackgroundRole, QColor(0, 0, 0, 0)
+                    )
+                    self.item(i, col).setData(
+                        Qt.ItemDataRole.ForegroundRole, full_text_color
+                    )
         header_item.setFont(font)
 
     def set_main_window(self, main_window: "MainWindow") -> None:
@@ -137,8 +161,7 @@ class AttributeMergeTable(QTableWidget):
 
             if isinstance(clicked_item, MergeableAttributeItem):
                 self.__dragged_item = clicked_item
-            
-            
+
         # else:
         # super().mousePressEvent(event)
 

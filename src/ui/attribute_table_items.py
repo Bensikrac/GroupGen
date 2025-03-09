@@ -20,8 +20,8 @@ class MergeableAttributeItem(QTableWidgetItem):
 
 
 class AttributeState(Enum):
-    """The state of an attribute/column of the attribute table.
-    """
+    """The state of an attribute/column of the attribute table."""
+
     NORMAL = 0
     DEACTIVATED = 1
     PRIORITIZED = 2
