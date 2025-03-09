@@ -19,13 +19,20 @@ class SimulatedAnnealingAlgorithm:
 
     __random: Random
     attributes: list[str]
+    attribute_weights: dict[str, float]
 
     temperatures: list[float] = []
     scores: list[float] = []
 
-    def __init__(self, attributes: list[str], random_instance: Random = None):
+    def __init__(
+        self,
+        attributes: list[str],
+        random_instance: Random = None,
+        attribute_weights: dict[str, float] = dict(),
+    ):
         self.__random = Random() if random_instance is None else random_instance
         self.attributes = attributes
+        self.attribute_weights = attribute_weights
 
     def find_assignment(
         self,
@@ -60,7 +67,9 @@ class SimulatedAnnealingAlgorithm:
         assignment: Assignment = random.find_assignment(
             participants, groups_per_iteration, iterations
         )
-        objective: ObjectiveFunction = ObjectiveFunction(self.attributes)
+        objective: ObjectiveFunction = ObjectiveFunction(
+            self.attributes, self.attribute_weights
+        )
         if progress_callback is not None:
             progress_callback(0, max_cycles)
         for i in range(1, max_cycles + 1):

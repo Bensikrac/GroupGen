@@ -8,7 +8,7 @@ from PyQt6.QtWidgets import QTableWidget
 
 from app import MainWindow
 from ui.attribute_merge_table import AttributeMergeTable, MergeableAttributeItem
-from ui.attribute_table_items import CheckableHeaderItem
+from ui.attribute_table_items import AttributeState, CheckableHeaderItem
 
 
 def test_mouse_press_event(app_fixture):
@@ -203,24 +203,23 @@ def test_header_clicked(app_fixture):
     test_window: MainWindow = MainWindow()
     test_table: AttributeMergeTable = test_window.attributes_table
     test_table.setColumnCount(2)
-    test_item_1: CheckableHeaderItem = CheckableHeaderItem("lorem", True)
-    test_item_2: CheckableHeaderItem = CheckableHeaderItem("ipsum", True)
+    test_item_1: CheckableHeaderItem = CheckableHeaderItem("lorem")
+    test_item_2: CheckableHeaderItem = CheckableHeaderItem("ipsum")
     test_table.setHorizontalHeaderItem(0, test_item_1)
     test_table.setHorizontalHeaderItem(1, test_item_2)
 
     test_table._AttributeMergeTable__header_click(0)
-    assert not test_item_1.checked
+    assert test_item_1.state == AttributeState.DEACTIVATED
     assert test_item_1.font().strikeOut()
-    assert test_window.excluded_column_number_label.text() == "1"
 
     test_table._AttributeMergeTable__header_click(0)
-    assert test_item_1.checked
+    assert test_item_1.state == AttributeState.PRIORITIZED
     assert not test_item_1.font().strikeOut()
-    assert test_window.excluded_column_number_label.text() == "0"
+    assert test_item_1.font().bold()
 
     test_table._AttributeMergeTable__header_click(1)
-    assert not test_item_2.checked
+    assert test_item_2.state == AttributeState.DEACTIVATED
+    assert test_item_1.state == AttributeState.PRIORITIZED
     assert test_item_2.font().strikeOut()
-    assert test_window.excluded_column_number_label.text() == "1"
 
     test_window.close()

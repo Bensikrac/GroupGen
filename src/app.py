@@ -3,9 +3,11 @@
 import copy
 from operator import itemgetter
 import os
+from random import Random
 import sys
 import time
 import ctypes
+from typing import override
 
 from PyQt6.QtWidgets import (
     QApplication,
@@ -16,11 +18,11 @@ from PyQt6.QtWidgets import (
     QPushButton,
     QAbstractButton,
 )
-from PyQt6.QtGui import QDesktopServices, QIcon
+from PyQt6.QtGui import QDesktopServices, QIcon, QGuiApplication, QFocusEvent
 from PyQt6.QtCore import QUrl, Qt, QProcess, QDir
 from algorithm.objective_function import ObjectiveFunction
 from algorithm.simulated_annealing_algorithm import SimulatedAnnealingAlgorithm
-from ui.attribute_table_items import CheckableHeaderItem
+from ui.attribute_table_items import AttributeState, CheckableHeaderItem
 from excel_tool import Reader, Writer
 from data_structures import Participant, Assignment
 from assets.main_window import Ui_MainWindow
@@ -70,11 +72,28 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.run_algorithm_button.setEnabled(False)
         # self.select_synonym_button.setEnabled(False)
         self.select_synonym_label.setVisible(False)
-        self.excluded_column_count_label.setVisible(False)
-        self.excluded_column_number_label.setVisible(False)
+        self.weigh_attribute_label.setVisible(False)
         self.undo_button.setEnabled(False)
         self.redo_button.setEnabled(False)
         self.reset_synonyms_button.setEnabled(False)
+
+        ignored_text: str = (
+            "<span style='color: rgba(0, 0, 0, 150);'><s>ignored,</s></span>"
+        )
+        if QGuiApplication.styleHints().colorScheme() == Qt.ColorScheme.Dark:
+            ignored_text = (
+                "<span style='color: rgba(255, 255, 255, 150);'><s>ignored,</s></span>"
+            )
+
+        self.weigh_attribute_label.setTextFormat(Qt.TextFormat.RichText)
+        self.weigh_attribute_label.setText(
+            "Click on a column header to switch between that attribute being treated normally, "
+            + ignored_text
+            + "<span style='color: rgb(20, 200, 50);'><b> prioritized by a factor of 2</b></span>"
+            + " or "
+            + "<span style='color: rgb(225, 50, 50);'><i>deprioritized by a factor 2</i></span>"
+            + " by the algorithm"
+        )
 
         output_progress_size_policy = self.output_progress.sizePolicy()
         output_progress_size_policy.setRetainSizeWhenHidden(True)
@@ -95,7 +114,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         filtered_attributes: list[str] = self.__filter_enabled_attributes()
         algorithm_instance: SimulatedAnnealingAlgorithm = SimulatedAnnealingAlgorithm(
-            filtered_attributes
+            filtered_attributes, Random(), self.__get_attribute_weights()
         )
 
         self.state_label.setText("Status: Calculating...")
@@ -243,9 +262,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.state_label.setText("Status: Finished Reading...")
         self.state_label.repaint()
         self.select_synonym_label.setVisible(True)
-        self.excluded_column_count_label.setVisible(True)
-        self.excluded_column_number_label.setVisible(True)
-        self.excluded_column_number_label.setText("0")
+        self.weigh_attribute_label.setVisible(True)
         self.__set_buttons_enabled(True)
         self.__update_undo_redo()
 
@@ -351,7 +368,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
                 self.attributes_table.setHorizontalHeaderItem(
                     j,
-                    CheckableHeaderItem(attrbutes, should_be_checked),
+                    CheckableHeaderItem(
+                        attrbutes,
+                        (
+                            AttributeState.NORMAL
+                            if should_be_checked
+                            else AttributeState.DEACTIVATED
+                        ),
+                    ),
                 )
 
             unique_attributes: list[tuple[str, int]] = self.__calculate_distribution(
@@ -365,15 +389,34 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             for i, (attr, nmb) in enumerate(unique_attributes):
                 self.attributes_table.set_value(i, j, attr, nmb)
 
-            self.attributes_table.update()
+            new_header_item: CheckableHeaderItem = (
+                self.attributes_table.horizontalHeaderItem(j)
+            )
+            self.attributes_table.update_column_visuals(j, new_header_item.state)
+
+        self.attributes_table.update()
 
     def __filter_enabled_attributes(self) -> list[str]:
         enabled_attributes: list[str] = []
         for i in range(len(self.__attributes_list)):
             item: QTableWidgetItem = self.attributes_table.horizontalHeaderItem(i)
-            if isinstance(item, CheckableHeaderItem) and item.checked:
+            if (
+                isinstance(item, CheckableHeaderItem)
+                and item.state != AttributeState.DEACTIVATED
+            ):
                 enabled_attributes.append(list(self.__attributes_list)[i])
         return enabled_attributes
+
+    def __get_attribute_weights(self) -> dict[str, float]:
+        attribute_weights: dict[str, float] = dict()
+        for i in range(len(self.__attributes_list)):
+            item: QTableWidgetItem = self.attributes_table.horizontalHeaderItem(i)
+            if isinstance(item, CheckableHeaderItem):
+                if item.state == AttributeState.PRIORITIZED:
+                    attribute_weights[item.text()] = 2
+                if item.state == AttributeState.DEPRIORITIZED:
+                    attribute_weights[item.text()] = 0.5
+        return attribute_weights
 
     def __set_buttons_enabled(self, enable: bool) -> None:
         """Enable/Disable all Buttons of the Main Window
@@ -424,9 +467,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         return sorted(result, key=itemgetter(0))
 
+    @override
+    def focusOutEvent(self, event: QFocusEvent):
+        """Reconstructs the table on focus-in to avoid weirdness with selection highlighting."""
+        super().focusOutEvent(event)
+        self.construct_attribute_table()
+
 
 def main():
     """Entrypoint"""
+    QApplication.setStyle("fusion")
     app: QApplication = QApplication(sys.argv)
     window: MainWindow = MainWindow()
     window.show()
