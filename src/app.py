@@ -488,8 +488,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def focusOutEvent(self, event: QFocusEvent):
         """Reconstructs the table on focus-in to avoid weirdness with selection highlighting."""
         super().focusOutEvent(event)
-        if self.__attributes_list:
-            self.construct_attribute_table()
+        self.construct_attribute_table()
 
 
 def main():
