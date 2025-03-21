@@ -123,15 +123,23 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.output_progress.setValue(0)
         self.output_progress.setVisible(True)
 
-        final_assignment: Assignment = algorithm_instance.find_assignment(
-            self.__synonym_filter_participants(),
-            int(self.groups_spinbox.value()),
-            int(self.iterations_spinbox.value()),
-            1000,
-            progress_callback=self.__progress_callback,
-        )
+        try:
+            final_assignment: Assignment = algorithm_instance.find_assignment(
+                self.__synonym_filter_participants(),
+                int(self.groups_spinbox.value()),
+                int(self.iterations_spinbox.value()),
+                1000,
+                progress_callback=self.__progress_callback,
+            )
+        except Exception as algorithm_exception:
+            self.__show_warning_popup(f"A problem occured while running the algorithm: {algorithm_exception}")
+            return
 
-        Writer(self.__output_path).write_file(final_assignment)
+        try:
+            Writer(self.__output_path).write_file(final_assignment)
+        except Exception as writer_exception:
+            self.__show_warning_popup(f"A problem occured while running the algorithm: {writer_exception}", "Make sure the selected output file can be modified and is not open in another application")
+            return
 
         self.state_label.setText("Status: Finished!")
         self.state_label.repaint()
@@ -195,6 +203,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             args.append("/select,")
             args.append(QDir.toNativeSeparators(path))
             QProcess.startDetached("explorer", args)
+
+    def __show_warning_popup(self, message: str, info: str = "") -> None:
+        message_box: QMessageBox = QMessageBox()
+        message_box.setWindowTitle("GroupGen: Warning")
+        message_box.setTextFormat(Qt.TextFormat.RichText)
+        message_box.setText(message)
+        message_box.setInformativeText(info)
+        message_box.setIcon(QMessageBox.Icon.Warning)
+        message_box.exec()
 
     def __progress_callback(self, current: int, maximum: int) -> None:
         """Callback for the progress bar
@@ -471,7 +488,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def focusOutEvent(self, event: QFocusEvent):
         """Reconstructs the table on focus-in to avoid weirdness with selection highlighting."""
         super().focusOutEvent(event)
-        self.construct_attribute_table()
+        if self.__attributes_list:
+            self.construct_attribute_table()
 
 
 def main():
