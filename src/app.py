@@ -133,6 +133,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             int(self.iterations_spinbox.value()),
             1000,
             progress_callback=self.__progress_callback,
+            # diversity_weight=2
         )
 
         Writer(self.__output_path).write_file(final_assignment)

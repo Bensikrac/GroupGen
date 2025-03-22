@@ -11,6 +11,7 @@ class ObjectiveFunction:
     __attribute_weights: dict[str, float]
     __cached_mix_cost_max: float
     __cached_diversity_cost_max: float
+    __cached_average_meetings_max: float
 
     def __init__(
         self, attribute_classes: list[str], attribute_weights: dict[str, float] = dict()
@@ -24,6 +25,7 @@ class ObjectiveFunction:
         self.__cached_mix_cost_max = -1.0
         self.__cached_diversity_cost_max = -1.0
         self.__attribute_weights = attribute_weights
+        self.__cached_average_meetings_max = -1.0
 
     def average_meetings(self, assignment: Assignment) -> float:
         """Returns the average number of distinct participants a participant meets in a given assignment.
@@ -51,8 +53,36 @@ class ObjectiveFunction:
 
         return sum(amounts_met) / len(amounts_met)
 
+    def average_meetings_max(self, assignment: Assignment) -> float:
+        """Returns an upper bound for the average number of distinct participants a participant meets in a given assignment.
+
+        :param assignment: the assignment to calculate the bound for
+        :return: the bound
+        """
+
+        if self.__cached_average_meetings_max < 0.0:
+            participants: set[Participant] = set()
+            for group in assignment[0]:
+                participants = participants.union(group)
+            self.__cached_average_meetings_max = min(
+                len(assignment) * (len(assignment[0][0]) - 1), len(participants)
+            )
+        return self.__cached_average_meetings_max
+
     def mix_cost(self, assignment: Assignment) -> float:
         """Calculate a score based on the number of different participants each participant meets
+
+        :param assignment: the group assignment to evaluate
+
+        :return: a score between 0 and 1, the lower the better
+        """
+        return 1 - (
+            self.average_meetings(assignment) / self.average_meetings_max(assignment)
+        )
+        # return self.intersection_mix_cost(assignment)
+
+    def intersection_mix_cost(self, assignment: Assignment) -> float:
+        """Calculate a score based on the number of different participants each participant meets using the old method.
 
         :param assignment: the group assignment to evaluate
 
