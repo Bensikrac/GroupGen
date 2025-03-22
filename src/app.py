@@ -38,6 +38,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     """
 
     # pylint: disable=too-few-public-methods
+    # pylint: disable=too-many-instance-attributes
 
     __input_path: os.PathLike | None = None
     __output_path: os.PathLike | None = None
@@ -104,6 +105,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         output_progress_size_policy.setRetainSizeWhenHidden(True)
         self.output_progress.setSizePolicy(output_progress_size_policy)
         self.output_progress.setVisible(False)
+
+        self.start_time: float = time.time()
+        self.filtered_attributes: list[str] = []
+        self.algorithm_worker = AlgorithmWorker()
+        self.algorithm_thread = QThread()
 
     def __start_algorithm(self) -> None:
         """Starts the algorithm on a new thread."""
