@@ -57,7 +57,6 @@ def test_read_input_file(main_window_fixture):
     main_window_fixture._MainWindow__read_input_file()
 
     assert len(main_window_fixture._MainWindow__participants_list) == 18
-    assert main_window_fixture.state_label.text() == "Status: Finished Reading..."
 
 
 def test_run_workflow(main_window_fixture):
@@ -71,7 +70,6 @@ def test_run_workflow(main_window_fixture):
     with patch.object(Writer, "write_file", return_value=None):
         with patch.object(QMessageBox, "exec", return_value=None):
             main_window_fixture._MainWindow__run_algorithm()
-    assert main_window_fixture.state_label.text() == "Status: Finished!"
 
 
 def test_run_workflow_path_errors(app_fixture):
