@@ -111,9 +111,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if self.__output_path is None:
             raise ValueError("Output Path not set")
 
-        self.state_label.setText("Status: Preparing...")
-        self.state_label.repaint()
-
         start_time: float = time.time()
 
         filtered_attributes: list[str] = self.__filter_enabled_attributes()
@@ -121,10 +118,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             filtered_attributes, Random(), self.__get_attribute_weights()
         )
 
-        self.state_label.setText("Status: Calculating...")
-        self.state_label.repaint()
-
-        self.output_progress.setValue(0)
+        self.output_progress.reset()
+        self.output_progress.setFormat("%p%")
         self.output_progress.setVisible(True)
 
         final_assignment: Assignment = algorithm_instance.find_assignment(
@@ -137,8 +132,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         Writer(self.__output_path).write_file(final_assignment)
 
-        self.state_label.setText("Status: Finished!")
-        self.state_label.repaint()
+        self.output_progress.setFormat("Finished!")
+        self.output_progress.update()
 
         time_passed: float = time.time() - start_time
         objective: ObjectiveFunction = ObjectiveFunction(filtered_attributes)
@@ -252,8 +247,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def __read_input_file(self) -> None:
         """Read Input File Button Function"""
 
-        self.state_label.setText("Status: Reading...")
-        self.state_label.repaint()
         self.__set_buttons_enabled(False)
 
         self.__participants_list = Reader.read(self.__input_path)
@@ -263,8 +256,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.attributes_table.synonyms = []
         self.construct_attribute_table()
 
-        self.state_label.setText("Status: Finished Reading...")
-        self.state_label.repaint()
         self.select_synonym_label.setVisible(True)
         self.weigh_attribute_label.setVisible(True)
         self.__set_buttons_enabled(True)
