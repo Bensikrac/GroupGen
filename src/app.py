@@ -132,13 +132,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 progress_callback=self.__progress_callback,
             )
         except Exception as algorithm_exception:
-            self.__show_warning_popup(f"A problem occured while running the algorithm: {algorithm_exception}")
+            self.__show_warning_popup(
+                f"A problem occured while running the algorithm: {algorithm_exception}"
+            )
             return
 
         try:
             Writer(self.__output_path).write_file(final_assignment)
         except Exception as writer_exception:
-            self.__show_warning_popup(f"A problem occured while running the algorithm: {writer_exception}", "Make sure the selected output file can be modified and is not open in another application")
+            self.__show_warning_popup(
+                f"A problem occured while running the algorithm: {writer_exception}",
+                "Make sure the selected output file can be modified and is not open in another application",
+            )
             return
 
         self.state_label.setText("Status: Finished!")
@@ -205,6 +210,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             QProcess.startDetached("explorer", args)
 
     def __show_warning_popup(self, message: str, info: str = "") -> None:
+        """Shows a warning popup with the given test and optional info text.
+
+        :param message: The text to display
+        :param info: Text to display below the main text, defaults to ""
+        """
         message_box: QMessageBox = QMessageBox()
         message_box.setWindowTitle("GroupGen: Warning")
         message_box.setTextFormat(Qt.TextFormat.RichText)
