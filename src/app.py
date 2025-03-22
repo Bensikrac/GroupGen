@@ -67,6 +67,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.reset_synonyms_button.clicked.connect(self.__reset_synonyms)
         self.undo_button.clicked.connect(self.__undo)
         self.redo_button.clicked.connect(self.__redo)
+        self.sorting_comboBox.currentIndexChanged.connect(
+            self.construct_attribute_table
+        )
 
         # self.read_input_button.setEnabled(False)
         self.run_algorithm_button.setEnabled(False)
@@ -76,6 +79,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.undo_button.setEnabled(False)
         self.redo_button.setEnabled(False)
         self.reset_synonyms_button.setEnabled(False)
+        self.sorting_comboBox.setEnabled(False)
 
         ignored_text: str = (
             "<span style='color: rgba(0, 0, 0, 150);'><s>ignored,</s></span>"
@@ -431,6 +435,22 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.undo_button.setEnabled(enable)
         self.redo_button.setEnabled(enable)
         self.reset_synonyms_button.setEnabled(enable)
+        self.sorting_comboBox.setEnabled(enable)
+
+    def __sort_distribution(
+        self, distribution: list[tuple[str, int]]
+    ) -> list[tuple[str, int]]:
+        """Function for sorting an attribute distribution. Returns the list sorted by Value (Ascending) if sorting
+        is set to Names or sorted by 1. Frequency (Descending), 2. Value (Ascending) if sorting is set to Frequency
+
+        :param distribution: current unsorted attribute distribution list
+
+        :return: sorted attribute distribution list
+        """
+
+        if self.sorting_comboBox.currentText() == "Value":
+            return sorted(distribution, key=itemgetter(0))
+        return sorted(distribution, key=lambda x: (1 / x[1], x[0]))
 
     def __calculate_distribution(
         self, participants: list[Participant], attribute: str
@@ -465,7 +485,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 result.remove(old_entry)
                 result.append(new_entry)
 
-        return sorted(result, key=itemgetter(0))
+        result = self.__sort_distribution(result)
+
+        return result
 
     @override
     def focusOutEvent(self, event: QFocusEvent):
