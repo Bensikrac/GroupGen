@@ -61,7 +61,9 @@ class AttributeMergeTable(QTableWidget):
         self.setMouseTracking(False)
         self.viewport().setMouseTracking(False)
         self.setStyleSheet("QTableWidget::item:hover { background: none; }")
-        self.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
+        self.horizontalHeader().setSectionResizeMode(
+            QHeaderView.ResizeMode.ResizeToContents
+        )
 
     def __header_click(self, col: int) -> None:
         clicked_item = self.horizontalHeaderItem(col)
