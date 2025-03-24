@@ -164,7 +164,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         :param assignment_object: the :type AssignmentObject: emitted by the algorithm worker
         """
         final_assignment: Assignment = assignment_object
-        Writer(self.__output_path).write_file(final_assignment)
+        try:
+            Writer(self.__output_path).write_file(final_assignment)
+        except Exception as writer_exception:
+            self.__show_warning_popup(
+                f"A problem occured while running the algorithm: {writer_exception}",
+                "Make sure the selected output file can be modified and is not open in another application",
+            )
+            return
 
         self.output_progress.setFormat("Finished!")
         self.output_progress.update()
