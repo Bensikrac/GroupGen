@@ -122,7 +122,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             raise ValueError("Output Path not set")
 
         self.start_time: float = time.time()
-    
+
         self.filtered_attributes: list[str] = self.__filter_enabled_attributes()
         algorithm_instance: SimulatedAnnealingAlgorithm = SimulatedAnnealingAlgorithm(
             self.filtered_attributes, Random(), self.__get_attribute_weights()
