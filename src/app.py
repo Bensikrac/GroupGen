@@ -220,7 +220,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         response: QAbstractButton | None = message_box.clickedButton()
 
         if response == open_button:
-            QDesktopServices.openUrl(QUrl(self.__output_path))
+            QDesktopServices.openUrl(QUrl.fromLocalFile(self.__output_path))
         if response is not None and response == explorer_button:
             self.__open_in_explorer(self.__output_path)
 
