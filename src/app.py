@@ -19,10 +19,11 @@ from PyQt6.QtWidgets import (
     QAbstractButton,
 )
 from PyQt6.QtGui import QDesktopServices, QIcon, QGuiApplication, QFocusEvent
-from PyQt6.QtCore import QUrl, Qt, QProcess, QDir
+from PyQt6.QtCore import QUrl, Qt, QProcess, QDir, QThread
 from algorithm.objective_function import ObjectiveFunction
 from algorithm.simulated_annealing_algorithm import SimulatedAnnealingAlgorithm
 from ui.attribute_table_items import AttributeState, CheckableHeaderItem
+from ui.algorithm_worker import AlgorithmWorker
 from excel_tool import Reader, Writer
 from data_structures import Participant, Assignment
 from assets.main_window import Ui_MainWindow
@@ -37,6 +38,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     """
 
     # pylint: disable=too-few-public-methods
+    # pylint: disable=too-many-instance-attributes
 
     __input_path: os.PathLike | None = None
     __output_path: os.PathLike | None = None
@@ -62,7 +64,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.input_pick_button.clicked.connect(self.__input_file_picker)
         # self.read_input_button.clicked.connect(self.__read_input_file)
         self.output_pick_button.clicked.connect(self.__output_file_picker)
-        self.run_algorithm_button.clicked.connect(self.__run_algorithm)
+        self.run_algorithm_button.clicked.connect(self.__start_algorithm)
         # self.select_synonym_button.clicked.connect()
         self.reset_synonyms_button.clicked.connect(self.__reset_synonyms)
         self.undo_button.clicked.connect(self.__undo)
@@ -107,38 +109,61 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.output_progress.setSizePolicy(output_progress_size_policy)
         self.output_progress.setVisible(False)
 
-    def __run_algorithm(self) -> None:
-        """Executes the algorithm and and writes the output."""
+        self.start_time: float = time.time()
+        self.filtered_attributes: list[str] = []
+        self.algorithm_worker = AlgorithmWorker()
+        self.algorithm_thread = QThread()
+
+    def __start_algorithm(self) -> None:
+        """Starts the algorithm on a new thread."""
         if self.__input_path is None:
             raise ValueError("Input Path not set")
         if self.__output_path is None:
             raise ValueError("Output Path not set")
 
-        start_time: float = time.time()
+        self.start_time: float = time.time()
 
-        filtered_attributes: list[str] = self.__filter_enabled_attributes()
+        self.filtered_attributes: list[str] = self.__filter_enabled_attributes()
         algorithm_instance: SimulatedAnnealingAlgorithm = SimulatedAnnealingAlgorithm(
-            filtered_attributes, Random(), self.__get_attribute_weights()
+            self.filtered_attributes, Random(), self.__get_attribute_weights()
         )
 
         self.output_progress.reset()
         self.output_progress.setFormat("%p%")
         self.output_progress.setVisible(True)
 
-        try:
-            final_assignment: Assignment = algorithm_instance.find_assignment(
-                self.__synonym_filter_participants(),
-                int(self.groups_spinbox.value()),
-                int(self.iterations_spinbox.value()),
-                1000,
-                progress_callback=self.__progress_callback,
-            )
-        except Exception as algorithm_exception:
-            self.__show_warning_popup(
-                f"A problem occured while running the algorithm: {algorithm_exception}"
-            )
-            return
+        # setup worker
+        self.algorithm_worker = AlgorithmWorker()
+        self.algorithm_thread = QThread()
+        self.algorithm_worker.moveToThread(self.algorithm_thread)
 
+        # thread startup and cleanup
+        self.algorithm_thread.started.connect(self.algorithm_worker.run)
+        self.algorithm_thread.finished.connect(self.algorithm_thread.deleteLater)
+
+        # worker startup and cleanup
+        self.algorithm_worker.progress.connect(self.__progress_callback)
+        self.algorithm_worker.finished.connect(self.__on_algorithm_finished)
+        self.algorithm_worker.finished.connect(self.algorithm_thread.quit)
+        self.algorithm_worker.finished.connect(self.algorithm_worker.deleteLater)
+
+        # worker variables
+        self.algorithm_worker.algorithm_instance = algorithm_instance
+        self.algorithm_worker.participants = self.__synonym_filter_participants()
+        self.algorithm_worker.number_of_groups = int(self.groups_spinbox.value())
+        self.algorithm_worker.number_of_iterations = int(
+            self.iterations_spinbox.value()
+        )
+        self.algorithm_worker.number_of_epochs = 1000
+
+        self.algorithm_thread.start()
+
+    def __on_algorithm_finished(self, assignment_object: object) -> None:
+        """Callback for the algorithm worker thread. Writes the assignment of the algorithm and shows a notification.
+
+        :param assignment_object: the :type AssignmentObject: emitted by the algorithm worker
+        """
+        final_assignment: Assignment = assignment_object
         try:
             Writer(self.__output_path).write_file(final_assignment)
         except Exception as writer_exception:
@@ -151,8 +176,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.output_progress.setFormat("Finished!")
         self.output_progress.update()
 
-        time_passed: float = time.time() - start_time
-        objective: ObjectiveFunction = ObjectiveFunction(filtered_attributes)
+        time_passed: float = time.time() - self.start_time
+        objective: ObjectiveFunction = ObjectiveFunction(self.filtered_attributes)
         average_participants_met: float = objective.average_meetings(final_assignment)
         mix_cost: float = objective.mix_cost(final_assignment)
         diversity_cost: float = objective.diversity_cost(final_assignment)
