@@ -77,6 +77,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.redo_button.setEnabled(False)
         self.reset_synonyms_button.setEnabled(False)
 
+        self.iterations_spinbox.setMinimum(1)
+        self.groups_spinbox.setMinimum(2)
+
         ignored_text: str = (
             "<span style='color: rgba(0, 0, 0, 150);'><s>ignored,</s></span>"
         )

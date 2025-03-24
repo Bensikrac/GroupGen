@@ -58,6 +58,9 @@ class ObjectiveFunction:
 
         :return: a score between 0 and 1, the lower the better
         """
+        if len(assignment) == 1:
+            return 0
+
         cost: float = 0.0
         groups: list[Group] = [
             group for iteration in assignment for group in iteration
@@ -78,6 +81,10 @@ class ObjectiveFunction:
         :return: the upper bound,
           holds for all assignments of the same shape
         """
+        if len(sample_assignment) == 1:
+            self.__cached_mix_cost_max = 1
+            return 1
+
         if self.__cached_mix_cost_max < 0.0:
             participant_count: int = 0
             for group in sample_assignment[0]:
