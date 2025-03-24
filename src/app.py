@@ -83,6 +83,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.reset_synonyms_button.setEnabled(False)
         self.sorting_comboBox.setEnabled(False)
 
+        self.iterations_spinbox.setMinimum(1)
+        self.groups_spinbox.setMinimum(2)
+
         ignored_text: str = (
             "<span style='color: rgba(0, 0, 0, 150);'><s>ignored,</s></span>"
         )
@@ -118,20 +121,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if self.__output_path is None:
             raise ValueError("Output Path not set")
 
-        self.state_label.setText("Status: Preparing...")
-        self.state_label.repaint()
-
         self.start_time: float = time.time()
-
+    
         self.filtered_attributes: list[str] = self.__filter_enabled_attributes()
         algorithm_instance: SimulatedAnnealingAlgorithm = SimulatedAnnealingAlgorithm(
             self.filtered_attributes, Random(), self.__get_attribute_weights()
         )
 
-        self.state_label.setText("Status: Calculating...")
-        self.state_label.repaint()
-
-        self.output_progress.setValue(0)
+        self.output_progress.reset()
+        self.output_progress.setFormat("%p%")
         self.output_progress.setVisible(True)
 
         # setup worker
@@ -168,8 +166,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         final_assignment: Assignment = assignment_object
         Writer(self.__output_path).write_file(final_assignment)
 
-        self.state_label.setText("Status: Finished!")
-        self.state_label.repaint()
+        self.output_progress.setFormat("Finished!")
+        self.output_progress.update()
 
         time_passed: float = time.time() - self.start_time
         objective: ObjectiveFunction = ObjectiveFunction(self.filtered_attributes)
@@ -231,6 +229,20 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             args.append(QDir.toNativeSeparators(path))
             QProcess.startDetached("explorer", args)
 
+    def __show_warning_popup(self, message: str, info: str = "") -> None:
+        """Shows a warning popup with the given test and optional info text.
+
+        :param message: The text to display
+        :param info: Text to display below the main text, defaults to ""
+        """
+        message_box: QMessageBox = QMessageBox()
+        message_box.setWindowTitle("GroupGen: Warning")
+        message_box.setTextFormat(Qt.TextFormat.RichText)
+        message_box.setText(message)
+        message_box.setInformativeText(info)
+        message_box.setIcon(QMessageBox.Icon.Warning)
+        message_box.exec()
+
     def __progress_callback(self, current: int, maximum: int) -> None:
         """Callback for the progress bar
 
@@ -283,8 +295,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def __read_input_file(self) -> None:
         """Read Input File Button Function"""
 
-        self.state_label.setText("Status: Reading...")
-        self.state_label.repaint()
         self.__set_buttons_enabled(False)
 
         self.__participants_list = Reader.read(self.__input_path)
@@ -294,8 +304,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.attributes_table.synonyms = []
         self.construct_attribute_table()
 
-        self.state_label.setText("Status: Finished Reading...")
-        self.state_label.repaint()
         self.select_synonym_label.setVisible(True)
         self.weigh_attribute_label.setVisible(True)
         self.__set_buttons_enabled(True)

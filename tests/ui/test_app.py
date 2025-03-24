@@ -57,7 +57,6 @@ def test_read_input_file(main_window_fixture):
     main_window_fixture._MainWindow__read_input_file()
 
     assert len(main_window_fixture._MainWindow__participants_list) == 18
-    assert main_window_fixture.state_label.text() == "Status: Finished Reading..."
 
 
 def test_run_workflow(main_window_fixture):
