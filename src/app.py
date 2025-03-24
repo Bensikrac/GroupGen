@@ -41,7 +41,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     __input_path: os.PathLike | None = None
     __output_path: os.PathLike | None = None
     __participants_list: list[Participant]
-    __attributes_list: list[str]
+    __attributes_list: list[str] = []
     __history: list[HistoryState] = [[]]
     __history_index: int = 0
 
